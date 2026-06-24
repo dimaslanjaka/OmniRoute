@@ -177,6 +177,8 @@
 - **chore(claude,codex):** bump pinned CLI identities — Claude `2.1.158 → 2.1.187`, Codex `0.132.0 → 0.142.0`. ([#4883](https://github.com/diegosouzapw/OmniRoute/pull/4883))
 - **chore(dashboard):** rename Qoder display label from "Qoder AI" to "Qoder". ([#4733](https://github.com/diegosouzapw/OmniRoute/pull/4733))
 
+- **feat(proxy):** support auth-less `host:port` batch import and surface proxy-test failures. (thanks @dimaslanjaka)
+
 ---
 
 ## [3.8.35] — 2026-06-23
