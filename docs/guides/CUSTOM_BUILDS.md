@@ -89,6 +89,31 @@ ENABLED_PROVIDERS=openai,anthropic npm run dev
 
 The dev server will only show and route to enabled providers.
 
+### Start the production server after a custom build
+
+After a successful `npm run build:providers:target`, start the production server with the **same** env var:
+
+```bash
+# Must set ENABLED_PROVIDERS at runtime too — the filter re-reads it when modules load
+cross-env ENABLED_PROVIDERS=gemini,gemini-cli,codex,kiro,opencode,mimocode,ollama-cloud,nvidia,antigravity,openai-compatible-*,anthropic-compatible-* npm run start
+```
+
+> **Why both build-time and runtime?** The provider filter reads `ENABLED_PROVIDERS` from `process.env` lazily when the provider module is first imported. At build time it controls what gets compiled into the bundle; at startup the production server loads those modules fresh and needs the same env var to re-apply the filter. Without it at runtime, the server would show all 231+ providers even though the build only included your target set — the UI would reference providers that were never compiled in.
+
+For convenience, save the list to `.env` so both build and start pick it up automatically:
+
+```ini
+# .env
+ENABLED_PROVIDERS=gemini,gemini-cli,codex,kiro,opencode,mimocode,ollama-cloud,nvidia,antigravity,openai-compatible-*,anthropic-compatible-*
+```
+
+Then simply:
+
+```bash
+npm run build:providers:target
+npm run start
+```
+
 ### Verify which providers are active
 
 Start the app and check:
