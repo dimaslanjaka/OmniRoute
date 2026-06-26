@@ -47,7 +47,7 @@ import { V0VercelWebExecutor } from "./v0-vercel-web.ts";
 import { KimiWebExecutor } from "./kimi-web.ts";
 import { DoubaoWebExecutor } from "./doubao-web.ts";
 import { QwenWebExecutor } from "./qwen-web.ts";
-import { KimiExecutor } from "./kimi.ts"
+import { KimiExecutor } from "./kimi.ts";
 import { TheOldLlmExecutor } from "./theoldllm.ts";
 import { ChipotleExecutor } from "./chipotle.ts";
 import { LMArenaExecutor } from "./lmarena.ts";
@@ -155,13 +155,22 @@ const executors = {
 
 const defaultCache = new Map();
 
+// ── Build-time / runtime provider allowlist guard ──
+import { isProviderEnabled } from "@/shared/utils/providerFilter";
+
 export function getExecutor(provider) {
+  if (!isProviderEnabled(provider)) {
+    throw new Error(
+      `Provider "${provider}" is not enabled in this build (filtered by ENABLED_PROVIDERS)`
+    );
+  }
   if (executors[provider]) return executors[provider];
   if (!defaultCache.has(provider)) defaultCache.set(provider, new DefaultExecutor(provider));
   return defaultCache.get(provider);
 }
 
 export function hasSpecializedExecutor(provider) {
+  if (!isProviderEnabled(provider)) return false;
   return !!executors[provider];
 }
 

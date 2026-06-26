@@ -4,8 +4,7 @@
  */
 
 export * from "./providers/shared.ts";
-export { REGISTRY } from "./providers/index.ts";
-import { REGISTRY } from "./providers/index.ts";
+import { REGISTRY as _ALL_REGISTRY } from "./providers/index.ts";
 import {
   RegistryModel,
   REASONING_UNSUPPORTED,
@@ -22,6 +21,22 @@ import {
   mapStainlessOs,
   mapStainlessArch,
 } from "./providers/shared.ts";
+
+// ── Build-time / runtime provider allowlist filter ──
+import { isProviderEnabled } from "@/shared/utils/providerFilter";
+
+function _filterRegistry<R extends Record<string, { alias?: string }>>(registry: R): R {
+  const filtered = {} as R;
+  for (const [id, entry] of Object.entries(registry) as [string, { alias?: string }][]) {
+    if (isProviderEnabled(id) || (entry.alias && isProviderEnabled(entry.alias))) {
+      (filtered as Record<string, unknown>)[id] = entry;
+    }
+  }
+  return filtered;
+}
+
+/** Filtered registry — only includes providers allowed by `ENABLED_PROVIDERS`. */
+export const REGISTRY = _filterRegistry(_ALL_REGISTRY);
 
 // ── Generator Functions ───────────────────────────────────────────────────
 
