@@ -15,6 +15,34 @@ type QuickTester = (
   type: string
 ) => Promise<{ ok: boolean; latencyMs: number }>;
 
+type BulkAddResult = {
+  id: string;
+  success: boolean;
+  poolProxyId?: string;
+  error?: string;
+};
+
+const BULK_ADD_CONCURRENCY = 10;
+
+async function mapWithConcurrency<T, R>(
+  items: T[],
+  concurrency: number,
+  worker: (item: T, index: number) => Promise<R>
+): Promise<R[]> {
+  const results = new Array<R>(items.length);
+  let nextIndex = 0;
+  const workerCount = Math.min(concurrency, items.length);
+  const workers = Array.from({ length: workerCount }, async () => {
+    while (true) {
+      const index = nextIndex++;
+      if (index >= items.length) return;
+      results[index] = await worker(items[index], index);
+    }
+  });
+  await Promise.all(workers);
+  return results;
+}
+
 async function testProxyQuick(
   host: string,
   port: number,
@@ -76,49 +104,42 @@ export async function POST(request: Request) {
   }
 
   try {
-    const results: Array<{
-      id: string;
-      success: boolean;
-      poolProxyId?: string;
-      error?: string;
-    }> = [];
+    const results = await mapWithConcurrency(
+      validation.data.ids,
+      BULK_ADD_CONCURRENCY,
+      async (id): Promise<BulkAddResult> => {
+        const freeProxy = await getFreeProxyById(id);
+        if (!freeProxy) {
+          return { id, success: false, error: "Not found" };
+        }
+        if (freeProxy.inPool) {
+          return {
+            id,
+            success: true,
+            poolProxyId: freeProxy.poolProxyId ?? undefined,
+          };
+        }
 
-    for (const id of validation.data.ids) {
-      const freeProxy = await getFreeProxyById(id);
-      if (!freeProxy) {
-        results.push({ id, success: false, error: "Not found" });
-        continue;
-      }
-      if (freeProxy.inPool) {
-        results.push({
-          id,
-          success: true,
-          poolProxyId: freeProxy.poolProxyId ?? undefined,
+        const test = await _quickTester(freeProxy.host, freeProxy.port, freeProxy.type);
+        if (!test.ok) {
+          return { id, success: false, error: "Test failed" };
+        }
+
+        const newPoolProxyId = await promoteFreeProxyToPool(id, {
+          name: `[${freeProxy.source}] ${freeProxy.host}:${freeProxy.port}`,
+          type: freeProxy.type,
+          host: freeProxy.host,
+          port: freeProxy.port,
+          source: freeProxy.source,
         });
-        continue;
+
+        if (!newPoolProxyId) {
+          return { id, success: false, error: "Failed to create registry entry" };
+        }
+
+        return { id, success: true, poolProxyId: newPoolProxyId };
       }
-
-      const test = await _quickTester(freeProxy.host, freeProxy.port, freeProxy.type);
-      if (!test.ok) {
-        results.push({ id, success: false, error: "Test failed" });
-        continue;
-      }
-
-      const newPoolProxyId = await promoteFreeProxyToPool(id, {
-        name: `[${freeProxy.source}] ${freeProxy.host}:${freeProxy.port}`,
-        type: freeProxy.type,
-        host: freeProxy.host,
-        port: freeProxy.port,
-        source: freeProxy.source,
-      });
-
-      if (!newPoolProxyId) {
-        results.push({ id, success: false, error: "Failed to create registry entry" });
-        continue;
-      }
-
-      results.push({ id, success: true, poolProxyId: newPoolProxyId });
-    }
+    );
 
     const succeeded = results.filter((r) => r.success).length;
     const failed = results.filter((r) => !r.success).length;

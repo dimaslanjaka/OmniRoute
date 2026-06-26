@@ -29,11 +29,12 @@ export default function FreePoolTab() {
   const [syncing, setSyncing] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [addingIds, setAddingIds] = useState<Set<string>>(new Set());
+  const [bulkAdding, setBulkAdding] = useState(false);
   const [bulkProgress, setBulkProgress] = useState<string | null>(null);
 
   // Load persisted disabled-sources from localStorage on mount
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- localStorage hydration, runs once
+     
     setDisabledSources(loadDisabledSources());
   }, []);
 
@@ -77,7 +78,7 @@ export default function FreePoolTab() {
   }, [disabledSources, filterProtocol, filterCountry, minQuality]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- async data fetch on filter change
+     
     loadData();
   }, [loadData]);
 
@@ -127,20 +128,29 @@ export default function FreePoolTab() {
   };
 
   const handleBulkAdd = async (ids: string[]) => {
-    if (!ids.length) return;
-    setBulkProgress("Testing proxies...");
+    if (!ids.length || bulkAdding) return;
+    setBulkAdding(true);
+    setBulkProgress(`Testing ${ids.length} proxies...`);
     try {
       const res = await fetch("/api/settings/free-proxies/bulk-add-to-pool", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ids }),
       });
-      const data = await res.json();
-      setBulkProgress(`${data.succeeded ?? 0} added, ${data.failed ?? 0} failed`);
+      const data = await res.json().catch(() => null);
+      if (!res.ok) {
+        setBulkProgress(data?.error?.message || data?.message || "Bulk add failed");
+        return;
+      }
+      setBulkProgress(`${data?.succeeded ?? 0} added, ${data?.failed ?? 0} failed`);
       await loadData();
       setSelected(new Set());
-    } catch {}
-    setTimeout(() => setBulkProgress(null), 4000);
+    } catch {
+      setBulkProgress("Bulk add failed");
+    } finally {
+      setBulkAdding(false);
+      setTimeout(() => setBulkProgress(null), 4000);
+    }
   };
 
   const notInPoolProxies = proxies.filter((p) => !p.inPool);
@@ -211,7 +221,13 @@ export default function FreePoolTab() {
       {selected.size > 0 && (
         <div className="flex items-center gap-2 p-2 bg-primary/10 rounded border border-primary/20">
           <span className="text-xs">{t("proxyFreePoolSelected", { count: selected.size })}</span>
-          <Button size="sm" variant="primary" onClick={() => handleBulkAdd(Array.from(selected))}>
+          <Button
+            size="sm"
+            variant="primary"
+            onClick={() => handleBulkAdd(Array.from(selected))}
+            disabled={bulkAdding}
+            loading={bulkAdding}
+          >
             {t("proxyFreePoolAddSelected")}
           </Button>
           {bulkProgress && <span className="text-xs text-text-muted">{bulkProgress}</span>}
@@ -219,11 +235,14 @@ export default function FreePoolTab() {
       )}
 
       {notInPoolProxies.length > 0 && selected.size === 0 && (
-        <div className="flex justify-end">
+        <div className="flex justify-end items-center gap-2">
+          {bulkProgress && <span className="text-xs text-text-muted">{bulkProgress}</span>}
           <Button
             size="sm"
             variant="secondary"
             onClick={() => handleBulkAdd(notInPoolProxies.slice(0, 100).map((p) => p.id))}
+            disabled={bulkAdding}
+            loading={bulkAdding}
           >
             {t("proxyFreePoolAddVisible")}
           </Button>

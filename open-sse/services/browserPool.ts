@@ -88,7 +88,7 @@ async function resolveCloakLaunch(): Promise<((opts: unknown) => Promise<Browser
   if (state.cloakLaunchResolved) return state.cloakLaunch;
   state.cloakLaunchResolved = true;
   try {
-    const mod = (await import(getCloakbrowserModuleId())) as unknown as {
+    const mod = (await import(/* webpackIgnore: true */ getCloakbrowserModuleId())) as unknown as {
       launch?: (opts: unknown) => Promise<Browser>;
     };
     state.cloakLaunch = mod.launch ?? null;
@@ -152,7 +152,7 @@ interface ResolvePlaywrightProxyDeps {
 // Exported for tests (deps injection avoids mock.module()).
 export async function resolvePlaywrightProxy(
   providerKey: string,
-  deps?: ResolvePlaywrightProxyDeps,
+  deps?: ResolvePlaywrightProxyDeps
 ): Promise<import("playwright").LaunchOptions["proxy"] | undefined> {
   try {
     const resolver =
@@ -164,10 +164,14 @@ export async function resolvePlaywrightProxy(
     const p = await resolver(providerKey);
     if (!p?.host) return undefined;
     const scheme = p.type === "socks5" ? "socks5" : "http";
-    return {
+    const proxy: NonNullable<import("playwright").LaunchOptions["proxy"]> = {
       server: `${scheme}://${p.host}:${p.port}`,
-      ...(p.username ? { username: p.username, password: p.password ?? "" } : {}),
     };
+    if (typeof p.username === "string" && p.username.length > 0) {
+      proxy.username = p.username;
+      proxy.password = typeof p.password === "string" ? p.password : "";
+    }
+    return proxy;
   } catch (err) {
     console.warn("[BrowserPool] Failed to resolve proxy from DB:", err);
     return undefined;
