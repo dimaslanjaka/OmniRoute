@@ -1,3 +1,8 @@
+---
+title: Custom Builds — Provider Allowlists
+description: Build OmniRoute with only the providers you need using ENABLED_PROVIDERS
+---
+
 # Custom Builds — Provider Allowlists
 
 OmniRoute supports **custom builds** that expose only a subset of the 231+ providers.
@@ -39,7 +44,7 @@ Provider IDs are defined in `src/shared/constants/providers.ts`. Common examples
 
 | Provider                    | ID                            |
 | --------------------------- | ----------------------------- |
-| Antigravity                  | `antigravity`                |
+| Antigravity                 | `antigravity`                 |
 | Gemini                      | `gemini`                      |
 | Gemini CLI                  | `gemini-cli`                  |
 | Codex                       | `codex`                       |
