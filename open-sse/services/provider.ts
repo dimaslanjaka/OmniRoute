@@ -403,7 +403,7 @@ export function getTargetFormat(provider, providerSpecificData = null) {
   const entry = getRegistryEntry(provider);
   if (entry) return entry.format || "openai";
   const config = getProviderConfig(provider);
-  return config.format || "openai";
+  return config?.format || "openai";
 }
 
 // Check if last message is from user

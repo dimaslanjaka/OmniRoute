@@ -127,6 +127,10 @@ test("Unknown providers fall back to bearer auth and OpenAI format", () => {
   assert.equal(getTargetFormat("custom-provider"), "openai");
 });
 
+test("target format defaults to OpenAI when provider config is unavailable", () => {
+  assert.equal(getTargetFormat("__proto__"), "openai");
+});
+
 test("native thinking config is removed when the last message is not from the user", () => {
   const assistantLast = {
     messages: [
