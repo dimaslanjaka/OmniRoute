@@ -1,1 +1,0 @@
-cross-env ENABLED_PROVIDERS=gemini,gemini-cli,codex,kiro,opencode,mimocode,ollama-cloud,nvidia,antigravity,openai-compatible-*,anthropic-compatible-* npm run dev > run.log 2>&1
