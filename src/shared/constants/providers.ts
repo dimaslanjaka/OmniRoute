@@ -84,8 +84,6 @@ export function supportsApiKeyOnFreeProvider(providerId: unknown): boolean {
   return typeof providerId === "string" && FREE_APIKEY_PROVIDER_IDS.has(providerId);
 }
 
-// OAuth Providers
-
 // Web / Cookie Providers
 
 // API Key Providers
