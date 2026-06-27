@@ -1,0 +1,84 @@
+name: Build Release Tarball
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "release/*"
+  schedule:
+    # Rebuild the raw install tarball once per day at 01:00 UTC.
+    - cron: "0 1 * * *"
+  workflow_dispatch:
+
+# Least-privilege default: read-only; this workflow only writes the
+# tarball to the same repository, so we grant contents: write.
+permissions:
+  contents: write
+
+# Avoid concurrent runs clobbering the same tarball.
+concurrency:
+  group: release-tarball
+  cancel-in-progress: false
+
+jobs:
+  build-tarball:
+    name: Build and publish release/omniroute.tgz
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # Full history so npm can compute the package version
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Build CLI payload
+        # Builds dist/ + assembles the standalone bundle expected by the
+        # `files` whitelist in package.json (bin/, dist/, @omniroute/, ...).
+        run: npm run build:release
+        env:
+          # Keep logs in CI to a minimum
+          CI: "true"
+
+      - name: Pack tarball
+        working-directory: .
+        run: |
+          mkdir -p release
+          # `npm pack` writes <name>-<version>.tgz to cwd by default.
+          # We rename it to a stable, predictable name so consumers can
+          # pin it without having to know the version in advance.
+          npm pack --silent --pack-destination ./release
+          mv "release/omniroute-$(node -p "require('./package.json').version").tgz" release/omniroute.tgz
+          ls -lh release/
+
+      - name: Verify tarball install and CLI
+        run: |
+          set -euo pipefail
+          # This is the local-file equivalent of:
+          # npx -y omniroute@https://github.com/dimaslanjaka/OmniRoute/raw/main/release/omniroute.tgz
+          npm exec --yes --package ./release/omniroute.tgz -- omniroute --help 2>&1 | tee /tmp/omniroute-help.txt
+          grep -qi "usage" /tmp/omniroute-help.txt
+
+      - name: Commit and push tarball
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          # release/omniroute.tgz is intentionally committed even though *.tgz is ignored.
+          git add -f release/omniroute.tgz
+          # Only commit when there is actually a change to publish.
+          if git diff --cached --quiet; then
+            echo "No changes to commit (tarball unchanged)."
+          else
+            git commit -m "chore(release): rebuild omniroute.tgz [skip ci]"
+            git push origin main
+          fi
