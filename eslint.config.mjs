@@ -1,5 +1,8 @@
 import nextVitals from "eslint-config-next/core-web-vitals";
 import tseslint from "typescript-eslint";
+import prettierPlugin from "eslint-plugin-prettier";
+import prettierConfig from "eslint-config-prettier";
+import prettierrc from "./prettier.config.mjs";
 
 /** @type {import("eslint").Linter.Config[]} */
 const eslintConfig = [
@@ -7,6 +10,7 @@ const eslintConfig = [
   // FASE-02: Security rules (strict everywhere)
   {
     rules: {
+      "prettier/prettier": ["error", prettierrc],
       "no-eval": "error",
       "no-implied-eval": "error",
       "no-new-func": "error",
@@ -21,6 +25,9 @@ const eslintConfig = [
           ],
         },
       ],
+    },
+    plugins: {
+      prettier: prettierPlugin,
     },
   },
   // i18n: ham toLowerCase().includes() arama pattern'ini engelle
