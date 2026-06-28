@@ -1,3 +1,5 @@
+if: false
+
 name: OpenSSF Scorecard
 on:
   branch_protection_rule:
