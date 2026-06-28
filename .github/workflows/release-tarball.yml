@@ -31,6 +31,7 @@ jobs:
         node_modules/
         tmp/
         .build/
+        dist/
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -76,7 +77,9 @@ jobs:
           # pin it without having to know the version in advance.
           npm pack --silent --pack-destination ./release
           mv "release/omniroute-$(node -p "require('./package.json').version").tgz" release/omniroute.tgz
+          sha256sum release/omniroute.tgz > release/checksum.txt
           ls -lh release/
+          cat release/checksum.txt
 
       - name: Verify tarball install and CLI
         run: |
@@ -118,5 +121,7 @@ jobs:
           gh release create "$TAG" \
             --target ${{ github.sha }} \
             --title "CI Build ($(date +%Y-%m-%d))" \
-            --notes "Automated build from commit \`${{ github.sha }}\`." \
-            ./release/omniroute.tgz
+             --notes "Automated build from commit [${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})\
+             Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}." \
+             ./release/omniroute.tgz \
+             ./release/checksum.txt
