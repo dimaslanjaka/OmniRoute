@@ -199,5 +199,77 @@
     }
   },
   "terminal.integrated.fontFamily": "MesloLGM Nerd Font",
-  "terminal.integrated.defaultProfile.windows": "Command Prompt"
+  "terminal.integrated.defaultProfile.windows": "Command Prompt",
+  "eslint.debug": true,
+  "eslint.enable": true,
+  "eslint.format.enable": false,
+  "eslint.probe": [
+    "astro",
+    "civet",
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact",
+    "html",
+    "mdx",
+    "vue",
+    "markdown",
+    "json",
+    "jsonc",
+    "css",
+    "glimmer-js",
+    "glimmer-ts",
+    "svelte",
+    "nunjucks"
+  ],
+  "eslint.run": "onSave",
+  "eslint.useESLintClass": true,
+  "eslint.useRealpaths": true,
+  "eslint.validate": [
+    "astro",
+    "civet",
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact",
+    "html",
+    "mdx",
+    "vue",
+    "markdown",
+    "json",
+    "jsonc",
+    "css",
+    "glimmer-js",
+    "glimmer-ts",
+    "svelte",
+    "nunjucks"
+  ],
+  "eslint.useFlatConfig": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.organizeImports": "never",
+    "source.fixAll.ts": "never",
+    "source.addMissingImports.ts": "never",
+    "source.removeUnused.ts": "never",
+    "source.removeUnusedImports": "never",
+    "source.sort.json": "never",
+    "source.sortImports": "never"
+  },
+  "code-runner.executorMap": {
+    "javascript": "node --no-warnings=ExperimentalWarning",
+    "typescript": "node --no-warnings=ExperimentalWarning --inspect node_modules/tsx/dist/cli.mjs"
+  },
+  "code-runner.executorMapByGlob": {
+    "*.electron.js": "cross-env-shell NODE_ENV=development electron -r ts-node/register",
+    "*.py": "py -u",
+    "*.test.{js,ts}": "node --import tsx/esm --test",
+    "*.test.cjs": "node --import tsx/esm --test",
+    "*.test.mjs": "node --import tsx/esm --test",
+    "*Test.php": "phpunit --debug --testdox --colors=always",
+    "electron-*.ts": "cross-env-shell NODE_ENV=development electron -r ts-node/register",
+    "rollup.*.{js,cjs,mjs,ts}": "rollup -c",
+    "*.sh": "sh",
+    "*.bat": "cmd /c",
+    "*.cmd": "cmd /c"
+  }
 }
