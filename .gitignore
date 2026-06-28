@@ -234,3 +234,5 @@ omniroute.md
 **/commit*.txt
 *.log
 /tmp
+.slim/
+.superpower*/
