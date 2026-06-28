@@ -3,26 +3,24 @@ name: Build Release Tarball
 on:
   push:
     branches: [main]
-    paths-ignore:
-      - "release/*"
   schedule:
     # Rebuild the raw install tarball once per day at 01:00 UTC.
     - cron: "0 1 * * *"
   workflow_dispatch:
 
-# Least-privilege default: read-only; this workflow only writes the
-# tarball to the same repository, so we grant contents: write.
+# Least-privilege default: read-only; this workflow only writes releases,
+# so we grant contents: write.
 permissions:
   contents: write
 
-# Avoid concurrent runs clobbering the same tarball.
+# Avoid concurrent runs clobbering the same release.
 concurrency:
   group: release-tarball
   cancel-in-progress: false
 
 jobs:
   build-tarball:
-    name: Build and publish release/omniroute.tgz
+    name: Build and publish release tarball
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -70,7 +68,7 @@ jobs:
           CI: "true"
 
       - name: Pack tarball
-        working-directory: .
+        # The tarball is written to a local temp folder; it is NOT committed.
         run: |
           mkdir -p release
           # `npm pack` writes <name>-<version>.tgz to cwd by default.
@@ -84,7 +82,7 @@ jobs:
         run: |
           set -euo pipefail
           # This is the local-file equivalent of:
-          # npx -y omniroute@https://github.com/dimaslanjaka/OmniRoute/raw/main/release/omniroute.tgz
+          # npx -y omniroute@https://github.com/dimaslanjaka/OmniRoute/releases/download/ci-build/omniroute.tgz
           npm exec --yes --package ./release/omniroute.tgz -- omniroute --help 2>&1 | tee /tmp/omniroute-help.txt
           grep -qi "usage" /tmp/omniroute-help.txt
 
@@ -95,16 +93,24 @@ jobs:
           path: ${{ env.CACHE_PATHS }}
           key: ${{ steps.cache.outputs.cache-primary-key }}
 
-      - name: Commit and push tarball
+      - name: Create or update GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          # release/omniroute.tgz is intentionally committed even though *.tgz is ignored.
-          git add -f release/omniroute.tgz
-          # Only commit when there is actually a change to publish.
-          if git diff --cached --quiet; then
-            echo "No changes to commit (tarball unchanged)."
-          else
-            git commit -m "chore(release): rebuild omniroute.tgz [skip ci]"
-            git push origin main
-          fi
+          TAG="ci-build"
+
+          # Delete the previous release and its associated tag.
+          # This is safe because the release is purely a CI artifact.
+          # (ignore errors on first run when the release does not yet exist)
+          gh release delete "$TAG" --cleanup-tag --yes 2>/dev/null || true
+          # Extra safety: ensure the tag is gone even if it existed without a release
+          git push origin ":refs/tags/$TAG" 2>/dev/null || true
+
+          # Recreate the release at the current commit with the new tarball.
+          # The download URL never changes:
+          # https://github.com/OWNER/REPO/releases/download/ci-build/omniroute.tgz
+          gh release create "$TAG" \
+            --target ${{ github.sha }} \
+            --title "CI Build ($(date +%Y-%m-%d))" \
+            --notes "Automated build from commit \`${{ github.sha }}\`." \
+            ./release/omniroute.tgz
