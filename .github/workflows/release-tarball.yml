@@ -26,6 +26,13 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    env:
+      CACHE_PATHS: |
+        coverage/
+        logs/
+        node_modules/
+        tmp/
+        .build/
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -38,6 +45,18 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "22"
+
+      # Mirror of dimaslanjaka/nodejs-package-types build-release cache pattern
+      # (lines ~190-210): restore cached build/install folders before install,
+      # then save them after build/pack for subsequent runs.
+      - name: "💾 Restore cache"
+        uses: actions/cache/restore@v4
+        id: cache
+        with:
+          path: ${{ env.CACHE_PATHS }}
+          key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json', 'src/**/*.{js,ts,tsx,mjs,cjs}', 'open-sse/**/*.{js,ts,mjs,cjs}', 'scripts/**/*.{js,ts,mjs,cjs}', 'tsconfig*.json') }}
+          restore-keys: |
+            ${{ runner.os }}-
 
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
@@ -68,6 +87,13 @@ jobs:
           # npx -y omniroute@https://github.com/dimaslanjaka/OmniRoute/raw/main/release/omniroute.tgz
           npm exec --yes --package ./release/omniroute.tgz -- omniroute --help 2>&1 | tee /tmp/omniroute-help.txt
           grep -qi "usage" /tmp/omniroute-help.txt
+
+      - name: "💾 Save cache"
+        if: always() && steps.cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ env.CACHE_PATHS }}
+          key: ${{ steps.cache.outputs.cache-primary-key }}
 
       - name: Commit and push tarball
         run: |
