@@ -72,7 +72,8 @@ export interface ToolProfile {
   allowTools?: readonly string[] | string[];
   /**
    * Tool names that are always removed. Takes priority over allowScopes and
-   * allowTools.
+   * allowTools. Special value `"*"` means deny all (useful for disabling MCP
+   * entirely via `MCP_TOOL_DENY=*` in bin/dev.cmd).
    */
   denyTools?: readonly string[] | string[];
   /**
@@ -127,6 +128,9 @@ function filterEntries(entries: ToolManifestEntry[], profile: ToolProfile): Tool
   const allowScopes = profile.allowScopes ?? [];
   const allowTools = profile.allowTools ?? [];
   const denyTools = profile.denyTools ?? [];
+
+  // `MCP_TOOL_DENY=*` → deny all
+  if (denyTools.includes("*")) return [];
 
   const denySet = new Set<string>(denyTools as string[]);
   const allowToolSet = new Set<string>(allowTools as string[]);
@@ -243,8 +247,15 @@ export function readMcpToolProfileFromEnv(
           .map((s) => s.trim())
           .filter(Boolean)
       : [];
+
   const denyTools = parse(env["MCP_TOOL_DENY"]);
   const allowTools = parse(env["MCP_TOOL_ALLOW"]);
+
+  // `MCP_TOOL_DENY=*` means disable every tool (e.g. `bin/dev.cmd` MCP disabled)
+  if (denyTools.includes("*")) {
+    return { name: "deny-all", denyTools: ["*"] };
+  }
+
   if (denyTools.length === 0 && allowTools.length === 0) return null;
   return {
     name: "env",

@@ -33,4 +33,16 @@ describe("MCP tool profile from env (cardinality opt-in)", () => {
     assert.equal(reduceToolManifest([{ name: "keep_me", scopes: [] }], profile).length, 1);
     assert.equal(reduceToolManifest([{ name: "other", scopes: [] }], profile).length, 0);
   });
+
+  it("MCP_TOOL_DENY=* denies every tool (deny-all shortcut for bin/dev.cmd / bin/prod.cmd)", () => {
+    const profile = readMcpToolProfileFromEnv({ MCP_TOOL_DENY: "*" });
+    assert.ok(profile);
+    assert.deepEqual(profile!.denyTools, ["*"]);
+    const manifest = [
+      { name: "tool_a", scopes: [] },
+      { name: "tool_b", scopes: ["read:x"] },
+      { name: "tool_c", scopes: [] },
+    ];
+    assert.equal(reduceToolManifest(manifest, profile!).length, 0);
+  });
 });
