@@ -233,3 +233,4 @@ omniroute.md
 # custom
 **/commit*.txt
 *.log
+/tmp
