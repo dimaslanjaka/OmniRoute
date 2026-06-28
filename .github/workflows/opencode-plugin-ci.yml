@@ -1,5 +1,3 @@
-if: false
-
 name: opencode-plugin CI
 
 on:

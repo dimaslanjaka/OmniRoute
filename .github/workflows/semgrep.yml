@@ -1,5 +1,3 @@
-if: false
-
 name: semgrep
 on:
   pull_request:

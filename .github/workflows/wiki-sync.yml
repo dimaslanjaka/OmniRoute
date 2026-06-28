@@ -1,5 +1,3 @@
-if: false
-
 name: Wiki Sync
 
 # Keeps the GitHub wiki in sync with docs/ on every release that lands on main.

@@ -1,5 +1,3 @@
-if: false
-
 name: Nightly LLM Security
 on:
   schedule:

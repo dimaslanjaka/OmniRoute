@@ -1,5 +1,3 @@
-if: false
-
 name: Nightly Release-Green
 
 # Solution D — continuous, NON-BLOCKING drift signal for the active release branch.

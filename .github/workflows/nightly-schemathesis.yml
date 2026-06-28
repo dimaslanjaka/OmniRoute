@@ -1,5 +1,3 @@
-if: false
-
 name: Nightly Schemathesis
 on:
   schedule:

@@ -1,5 +1,3 @@
-if: false
-
 name: Nightly Mutation
 on:
   schedule:

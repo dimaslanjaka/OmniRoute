@@ -1,5 +1,3 @@
-if: false
-
 name: Lock released branch
 
 # Two responsibilities (defense in depth — Hard Rule #18 enforcement):

@@ -1,5 +1,3 @@
-if: false
-
 name: Claude Code
 
 on:

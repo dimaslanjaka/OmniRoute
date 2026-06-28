@@ -1,5 +1,3 @@
-if: false
-
 name: Quality Gates
 
 on:

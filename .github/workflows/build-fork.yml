@@ -1,5 +1,3 @@
-if: false
-
 name: Publish Fork Image to GHCR
 
 on:

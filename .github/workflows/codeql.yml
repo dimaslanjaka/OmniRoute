@@ -1,5 +1,3 @@
-if: false
-
 name: CodeQL
 # OWNER ACTION REQUIRED before enabling auto-triggers: advanced CodeQL conflicts with
 # GitHub "default setup" — the analyze step fails with "CodeQL analyses from advanced
