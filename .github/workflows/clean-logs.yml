@@ -1,0 +1,82 @@
+name: Clean GitHub Actions Logs
+env:
+  PUPPETEER_SKIP_DOWNLOAD: "true"
+
+on:
+  workflow_dispatch:
+    inputs:
+      days:
+        description: "Number of days."
+        required: true
+        default: 1
+        type: number
+
+      minimum_runs:
+        description: "The minimum runs to keep for each workflow."
+        required: true
+        default: 0
+        type: number
+
+      delete_workflow_pattern:
+        description: "The name or filename of the workflow. If not set then it will target all workflows."
+        required: false
+        type: string
+
+      delete_workflow_by_state_pattern:
+        description: "Remove workflow by state."
+        required: true
+        default: "All"
+        type: choice
+        options:
+          - "All"
+          - active
+          - deleted
+          - disabled_inactivity
+          - disabled_manually
+
+      delete_run_by_conclusion_pattern:
+        description: "Remove workflow by conclusion."
+        required: true
+        default: "All"
+        type: choice
+        options:
+          - "All"
+          - action_required
+          - cancelled
+          - failure
+          - skipped
+          - success
+
+      dry_run:
+        description: "Only log actions, do not perform any delete operations."
+        required: true
+        default: false
+        type: boolean
+
+  schedule:
+    - cron: "0 0 * * *" # Runs daily at midnight UTC
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  del_runs:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Delete workflow runs
+        uses: Mattraks/delete-workflow-runs@v2
+        with:
+          token: ${{ secrets.ACCESS_TOKEN || secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+
+          # Safe fallbacks for scheduled runs (since schedule has no inputs)
+          retain_days: ${{ inputs.days || 1 }}
+          keep_minimum_runs: ${{ inputs.minimum_runs || 0 }}
+          delete_workflow_pattern: ${{ inputs.delete_workflow_pattern }}
+          delete_workflow_by_state_pattern: ${{ inputs.delete_workflow_by_state_pattern || 'All' }}
+          delete_run_by_conclusion_pattern: ${{ inputs.delete_run_by_conclusion_pattern || 'All' }}
+
+          # Proper boolean handling (NO string truthiness issue)
+          dry_run: ${{ inputs.dry_run || false }}
