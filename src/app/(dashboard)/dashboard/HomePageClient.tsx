@@ -156,7 +156,7 @@ export default function HomePageClient({ machineId }: HomePageClientProps) {
       url: `https://github.com/diegosouzapw/OmniRoute/releases/tag/v${cleanLatest}`,
       desc: `A new version of the OmniRoute desktop app is available. Please download the respective app format for your system to update (current: v${versionInfo?.current || ""}).`,
     };
-  }, [platform, versionInfo?.latest, versionInfo?.current]);
+  }, [versionInfo, platform]);
 
   // Electron internal auto-updater state and listeners
   const [electronUpdateStatus, setElectronUpdateStatus] = useState<{
@@ -210,8 +210,8 @@ export default function HomePageClient({ machineId }: HomePageClientProps) {
   useEffect(() => {
     // Fetch the pin settings (lightweight)
     fetch("/api/settings")
-      .then((r) => (r.ok ? r.json() : {}))
-      .then((data) => {
+      .then((r) => (r.ok ? r.json() : ({} as Record<string, unknown>)))
+      .then((data: Record<string, unknown>) => {
         if (data) {
           if (typeof data.pinProviderQuotaToHome === "boolean") {
             setPinProviderQuotaToHome(data.pinProviderQuotaToHome);
@@ -471,12 +471,24 @@ export default function HomePageClient({ machineId }: HomePageClientProps) {
     const byProvider = new Map<string, { id: string; provider: string; name?: string }>();
     const providerConfig = AI_PROVIDERS as Record<string, { name?: string }>;
 
+    // Build a per-provider enabled-flag from the live connections list so the
+    // topology never shows a provider whose every connection is disabled
+    // (isActive === false). Providers with no connections are excluded too —
+    // they have nothing to route and would only clutter the canvas.
+    const hasEnabledConnection = new Set<string>();
+    for (const conn of providerConnections) {
+      if (conn?.provider && conn.isActive !== false) {
+        hasEnabledConnection.add(conn.provider);
+      }
+    }
+
     const addProvider = (providerId?: string | null, name?: string) => {
       const rawProviderId = typeof providerId === "string" ? providerId.trim() : "";
       if (!rawProviderId) return;
 
       const canonicalProviderId = normalizeProviderId(rawProviderId);
       if (!canonicalProviderId || byProvider.has(canonicalProviderId)) return;
+      if (!hasEnabledConnection.has(canonicalProviderId)) return;
 
       const resolvedName =
         getProviderDisplayLabel(rawProviderId, providerNodes) ||
@@ -497,7 +509,7 @@ export default function HomePageClient({ machineId }: HomePageClientProps) {
     Object.keys(providerMetrics).forEach((provider) => addProvider(provider));
 
     return Array.from(byProvider.values());
-  }, [providerStats, providerMetrics, providerNodes]);
+  }, [providerStats, providerMetrics, providerNodes, providerConnections]);
 
   const { lastProvider, errorProvider } = useMemo(() => {
     let recentProvider = "";
