@@ -13,7 +13,6 @@ name: Wiki Sync
 
 on:
   push:
-    branches: [main]
     paths:
       - "docs/**"
       - "README.md"
