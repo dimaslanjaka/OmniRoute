@@ -14,6 +14,8 @@ const core = await import("../../../src/lib/db/core.ts");
 const apiKeysDb = await import("../../../src/lib/db/apiKeys.ts");
 const settingsDb = await import("../../../src/lib/db/settings.ts");
 const pipeline = await import("../../../src/server/authz/pipeline.ts");
+const csrf = await import("../../../src/server/authz/csrf.ts");
+const dashboardCsrfConstants = await import("../../../src/shared/constants/dashboardCsrf.ts");
 
 const ORIGINAL_JWT = process.env.JWT_SECRET;
 const ORIGINAL_INITIAL = process.env.INITIAL_PASSWORD;
@@ -323,6 +325,94 @@ test("runAuthzPipeline accepts dashboard mutations from configured public origin
   assert.equal(response.headers.get("x-omniroute-route-class"), "MANAGEMENT");
 });
 
+test("runAuthzPipeline rejects dashboard test mutations from dynamic public origins without CSRF", async () => {
+  await forceAuthRequired();
+
+  const response = await pipeline.runAuthzPipeline(
+    request("http://127.0.0.1:20128/api/models/test", {
+      method: "POST",
+      headers: {
+        cookie: await dashboardCookie(),
+        host: "127.0.0.1:20128",
+        origin: "https://random-tunnel.example.test",
+        "content-type": "application/json",
+        "sec-fetch-site": "same-origin",
+      },
+      body: "{}",
+    }),
+    { enforce: true }
+  );
+  const body = await response.json();
+
+  assert.equal(response.status, 403);
+  assert.equal(body.error.code, "INVALID_ORIGIN");
+});
+
+test("runAuthzPipeline accepts dashboard test mutations from dynamic public origins with CSRF", async () => {
+  await forceAuthRequired();
+
+  const cookie = await dashboardCookie();
+  const issued = csrf.issueDashboardCsrfToken(
+    request("http://127.0.0.1:20128/api/auth/csrf", {
+      headers: { cookie },
+    })
+  );
+  assert.ok(issued);
+
+  for (const path of ["/api/combos/test", "/api/models/test", "/api/models/test-all"]) {
+    const response = await pipeline.runAuthzPipeline(
+      request(`http://127.0.0.1:20128${path}`, {
+        method: "POST",
+        headers: {
+          cookie,
+          host: "127.0.0.1:20128",
+          origin: "https://random-tunnel.example.test",
+          "content-type": "application/json",
+          [dashboardCsrfConstants.DASHBOARD_CSRF_HEADER]: issued.token,
+          "sec-fetch-site": "same-origin",
+        },
+        body: "{}",
+      }),
+      { enforce: true }
+    );
+
+    assert.equal(response.status, 200, path);
+    assert.equal(response.headers.get("x-omniroute-route-class"), "MANAGEMENT");
+  }
+});
+
+test("runAuthzPipeline keeps non-test management mutations pinned to known origins with CSRF", async () => {
+  await forceAuthRequired();
+
+  const cookie = await dashboardCookie();
+  const issued = csrf.issueDashboardCsrfToken(
+    request("http://127.0.0.1:20128/api/auth/csrf", {
+      headers: { cookie },
+    })
+  );
+  assert.ok(issued);
+
+  const response = await pipeline.runAuthzPipeline(
+    request("http://127.0.0.1:20128/api/keys", {
+      method: "POST",
+      headers: {
+        cookie,
+        host: "127.0.0.1:20128",
+        origin: "https://random-tunnel.example.test",
+        "content-type": "application/json",
+        [dashboardCsrfConstants.DASHBOARD_CSRF_HEADER]: issued.token,
+        "sec-fetch-site": "same-origin",
+      },
+      body: "{}",
+    }),
+    { enforce: true }
+  );
+  const body = await response.json();
+
+  assert.equal(response.status, 403);
+  assert.equal(body.error.code, "INVALID_ORIGIN");
+});
+
 test("runAuthzPipeline rejects dashboard mutations from invalid browser origin", async () => {
   await forceAuthRequired();
   process.env.NEXT_PUBLIC_BASE_URL = "https://gateway.example.test";
@@ -343,7 +433,67 @@ test("runAuthzPipeline rejects dashboard mutations from invalid browser origin",
 
   assert.equal(response.status, 403);
   assert.equal(body.error.code, "INVALID_ORIGIN");
-  assert.equal(body.error.message, "Invalid request origin");
+  assert.match(body.error.message, /^Invalid request origin\./);
+  assert.match(body.error.message, /OMNIROUTE_PUBLIC_BASE_URL/);
+});
+
+test("runAuthzPipeline answers OPTIONS /v1/models preflight with Allow-Origin (#5242)", async () => {
+  // Literal Wayland AI / Electron repro: browser preflight with an Origin and
+  // no CORS_ALLOW_ALL must still receive Access-Control-Allow-Origin so the
+  // renderer is allowed to read the catalog response.
+  delete process.env.CORS_ALLOW_ALL;
+  delete process.env.CORS_ALLOWED_ORIGINS;
+
+  const response = await pipeline.runAuthzPipeline(
+    request("http://localhost/v1/models", {
+      method: "OPTIONS",
+      headers: { origin: "http://localhost" },
+    }),
+    { enforce: true }
+  );
+
+  assert.equal(response.status, 204);
+  assert.equal(response.headers.get("x-omniroute-route-class"), "CLIENT_API");
+  assert.equal(response.headers.get("Access-Control-Allow-Origin"), "http://localhost");
+  assert.match(response.headers.get("Vary") || "", /Origin/);
+  // Token-auth surface — must NOT advertise credentials with the echoed origin.
+  assert.equal(response.headers.get("Access-Control-Allow-Credentials"), null);
+});
+
+test("runAuthzPipeline serves GET /v1/models with Allow-Origin to dashboard session (#5242)", async () => {
+  await forceAuthRequired();
+  delete process.env.CORS_ALLOW_ALL;
+  delete process.env.CORS_ALLOWED_ORIGINS;
+
+  const response = await pipeline.runAuthzPipeline(
+    request("http://localhost/v1/models", {
+      headers: { cookie: await dashboardCookie(), origin: "http://localhost" },
+    }),
+    { enforce: true }
+  );
+
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get("x-omniroute-route-class"), "CLIENT_API");
+  assert.equal(response.headers.get("Access-Control-Allow-Origin"), "http://localhost");
+  assert.equal(response.headers.get("Access-Control-Allow-Credentials"), null);
+});
+
+test("runAuthzPipeline keeps MANAGEMENT OPTIONS fail-closed for arbitrary origin (#5242)", async () => {
+  delete process.env.CORS_ALLOW_ALL;
+  delete process.env.CORS_ALLOWED_ORIGINS;
+
+  const response = await pipeline.runAuthzPipeline(
+    request("http://localhost/api/keys", {
+      method: "OPTIONS",
+      headers: { origin: "http://localhost" },
+    }),
+    { enforce: true }
+  );
+
+  assert.equal(response.status, 204);
+  assert.equal(response.headers.get("x-omniroute-route-class"), "MANAGEMENT");
+  // Management surface is cookie-authed → no permissive origin echo.
+  assert.equal(response.headers.get("Access-Control-Allow-Origin"), null);
 });
 
 test("runAuthzPipeline refreshes dashboard JWTs near expiry", async () => {
