@@ -176,25 +176,28 @@ if (existsSync(mitmSrc)) {
   mkdirSync(mitmDest, { recursive: true });
 
   // Write a temporary tsconfig.json targeting the mitm directory
+  // rootDir is set to project ROOT (not mitmSrc) so files imported from
+  // outside src/mitm/ (e.g. src/lib/db/core.ts, src/lib/build-profile/featureDisabled.ts)
+  // are properly included in the compilation without TS6059 errors.
+  // moduleResolution: "bundler" avoids TS2835 (needs .js extensions) and
+  // properly resolves the @/* path alias.
   const mitmTsconfig = {
     compilerOptions: {
       target: "ES2022",
-      module: "NodeNext",
-      moduleResolution: "NodeNext",
-      outDir: mitmDest,
-      rootDir: mitmSrc,
+      module: "esnext",
+      moduleResolution: "bundler",
+      outDir: DIST_DIR,
+      rootDir: ROOT,
       strict: false,
       noImplicitAny: false,
       strictNullChecks: false,
       noEmitOnError: true,
       allowImportingTsExtensions: true,
-      rewriteRelativeImportExtensions: true,
-      ignoreDeprecations: "6.0",
       resolveJsonModule: true,
       esModuleInterop: true,
       skipLibCheck: true,
       types: ["node"],
-      baseUrl: ".",
+      baseUrl: ROOT,
       paths: {
         "@/*": ["src/*"],
       },
