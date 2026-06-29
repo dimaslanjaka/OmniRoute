@@ -168,83 +168,62 @@ if (existsSync(distServer)) {
   }
 }
 
-// ── Step 8: Compile + copy MITM cert utilities ─────────────
+// ── Step 8: Stage MITM cert utilities for runtime ────────────
+//
+// Strategy (replaces the earlier `tsc` step that pulled in the whole
+// codebase via transitive imports and surfaced dozens of pre-existing
+// type errors unrelated to MITM):
+//
+//   1. Copy the entire src/mitm/ tree into dist/src/mitm/. The runtime
+//      loads these via `tsx` (the same loader bin/omniroute.mjs already
+//      registers — see `await import("tsx/esm")` in bin/omniroute.mjs).
+//   2. Copy server.cjs (the CommonJS proxy entrypoint, not a TS file).
+//   3. Attempt an esbuild bundle of manager.runtime.ts into .js as a
+//      build-time optimization. If esbuild fails — e.g. because of a
+//      transitive import error — we still have working .ts sources; the
+//      esbuild step is purely a "warm cache" for the runtime.
+//
+// esbuild transpiles without type-checking, mirroring how Step 8.5
+// (MCP server), 8.6 (LLMLingua worker), and 8.7 (CLI entrypoint) bundle
+// their TS sources. Pre-existing TS errors in payloadRules.ts,
+// tlsClient.ts, runtimeSettings.ts, etc. do NOT block the build.
 const mitmSrc = join(ROOT, "src", "mitm");
 const mitmDest = join(DIST_DIR, "src", "mitm");
+const mitmServerSrc = join(mitmSrc, "server.cjs");
 if (existsSync(mitmSrc)) {
-  console.log("  🔨 Compiling MITM utilities (TypeScript → JavaScript)...");
+  console.log("  📦 Staging MITM utilities...");
   mkdirSync(mitmDest, { recursive: true });
 
-  // Write a temporary tsconfig.json targeting the mitm directory
-  // rootDir is set to project ROOT (not mitmSrc) so files imported from
-  // outside src/mitm/ (e.g. src/lib/db/core.ts, src/lib/build-profile/featureDisabled.ts)
-  // are properly included in the compilation without TS6059 errors.
-  // moduleResolution: "bundler" avoids TS2835 (needs .js extensions) and
-  // properly resolves path aliases.
-  // noEmitOnError: false allows emitting JS even when type errors exist in
-  // transitively-imported files from other parts of the codebase.
-  const mitmTsconfig = {
-    compilerOptions: {
-      target: "ES2022",
-      lib: ["es2024"],
-      module: "esnext",
-      moduleResolution: "bundler",
-      outDir: DIST_DIR,
-      rootDir: ROOT,
-      strict: false,
-      noImplicitAny: false,
-      strictNullChecks: false,
-      noEmitOnError: false,
-      allowImportingTsExtensions: true,
-      rewriteRelativeImportExtensions: true,
-      ignoreDeprecations: "6.0",
-      resolveJsonModule: true,
-      esModuleInterop: true,
-      skipLibCheck: true,
-      types: ["node"],
-      baseUrl: ROOT,
-      paths: {
-        "@/*": ["src/*"],
-        "@omniroute/open-sse": ["open-sse"],
-        "@omniroute/open-sse/*": ["open-sse/*"],
-      },
-    },
-    include: [mitmSrc + "/**/*"],
-  };
-  const tmpTsconfigPath = join(ROOT, "tsconfig.mitm.tmp.json");
-  writeFileSync(tmpTsconfigPath, JSON.stringify(mitmTsconfig, null, 2));
+  // 1+2: copy source tree + CommonJS server entrypoint. Runtime resolves
+  // .ts files via the tsx loader registered in bin/omniroute.mjs.
+  cpSync(mitmSrc, mitmDest, { recursive: true });
+  if (existsSync(mitmServerSrc)) {
+    cpSync(mitmServerSrc, join(mitmDest, "server.cjs"));
+  }
+  console.log("  ✅ MITM sources staged at dist/src/mitm/");
 
-  const mitmServerSrc = join(mitmSrc, "server.cjs");
+  // 3: optional pre-compile. Non-fatal on failure — .ts is already there.
+  console.log("  🔨 Pre-compiling MITM manager (esbuild, best-effort)...");
   try {
-    execFileSync(NPX_BIN, ["tsc", "-p", "tsconfig.mitm.tmp.json"], {
-      cwd: ROOT,
-      stdio: "inherit",
-    });
-    if (existsSync(mitmServerSrc)) {
-      cpSync(mitmServerSrc, join(mitmDest, "server.cjs"));
-    }
-    console.log("  ✅ MITM utilities compiled to dist/src/mitm/");
+    execFileSync(
+      NPX_BIN,
+      [
+        "esbuild",
+        "src/mitm/manager.runtime.ts",
+        "--bundle",
+        "--platform=node",
+        "--packages=external",
+        "--format=esm",
+        "--outfile=dist/src/mitm/manager.runtime.js",
+      ],
+      { cwd: ROOT, stdio: "inherit" }
+    );
+    console.log("  ✅ MITM manager pre-compiled to dist/src/mitm/manager.runtime.js");
   } catch (err: any) {
-    // tsc may exit non-zero if there are type errors in transitively-imported
-    // files (pre-existing in the codebase). With noEmitOnError:false the JS
-    // files ARE emitted despite type errors. Check whether output was produced.
-    const testFile = join(mitmDest, "manager.js");
-    if (existsSync(testFile)) {
-      // JS was emitted — type warnings are non-fatal for our purposes.
-      if (existsSync(mitmServerSrc)) {
-        cpSync(mitmServerSrc, join(mitmDest, "server.cjs"));
-      }
-      console.log("  ✅ MITM utilities compiled (with type warnings)");
-    } else {
-      console.warn("  ⚠️  MITM tsc failed to produce output:", err.message);
-      // Fallback: copy source files so at least they are present
-      cpSync(mitmSrc, mitmDest, { recursive: true });
-    }
-  } finally {
-    // Cleanup temp tsconfig
-    try {
-      rmSync(tmpTsconfigPath);
-    } catch {}
+    console.warn(
+      "  ⚠️  MITM pre-compile skipped (non-fatal; .ts sources already staged):",
+      err.message
+    );
   }
 }
 
