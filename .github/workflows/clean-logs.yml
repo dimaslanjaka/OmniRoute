@@ -1,6 +1,4 @@
 name: Clean GitHub Actions Logs
-env:
-  PUPPETEER_SKIP_DOWNLOAD: "true"
 
 on:
   workflow_dispatch:
@@ -62,7 +60,8 @@ concurrency:
 
 jobs:
   del_runs:
-    if: false
+    env:
+      PUPPETEER_SKIP_DOWNLOAD: "true"
     runs-on: ubuntu-latest
 
     steps:
