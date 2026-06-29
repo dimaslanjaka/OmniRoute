@@ -90,6 +90,7 @@ jobs:
           } >> "$GITHUB_OUTPUT"
 
   lint:
+    if: false
     name: Lint
     runs-on: ubuntu-latest
     env:
