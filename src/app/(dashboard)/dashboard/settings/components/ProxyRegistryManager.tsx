@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Button, Card, Modal } from "@/shared/components";
 import { parseBulkImportText } from "./parseBulkProxyImport.ts";
@@ -90,6 +90,10 @@ export default function ProxyRegistryManager() {
   const [healthById, setHealthById] = useState<Record<string, HealthInfo>>({});
   const [testById, setTestById] = useState<Record<string, TestResult | null>>({});
   const [testingId, setTestingId] = useState<string | null>(null);
+  const [checkingAll, setCheckingAll] = useState(false);
+  const [checkAllProgress, setCheckAllProgress] = useState({ current: 0, total: 0 });
+  const [checkAllStopped, setCheckAllStopped] = useState(false);
+  const checkAllStoppedRef = useRef(false);
   const [migrating, setMigrating] = useState(false);
   const [bulkOpen, setBulkOpen] = useState(false);
   const [bulkSaving, setBulkSaving] = useState(false);
@@ -273,6 +277,65 @@ export default function ProxyRegistryManager() {
     } finally {
       setTestingId(null);
     }
+  };
+
+  const handleCheckAllProxies = async () => {
+    if (checkingAll || items.length === 0) return;
+    if (testingId) {
+      setError(t("errorCheckAllBusy"));
+      return;
+    }
+    setCheckingAll(true);
+    setCheckAllStopped(false);
+    setCheckAllProgress({ current: 0, total: items.length });
+    setError(null);
+    try {
+      for (let i = 0; i < items.length; i++) {
+        if (checkAllStoppedRef.current) break;
+        const item = items[i];
+        setCheckAllProgress({ current: i + 1, total: items.length });
+        setTestingId(item.id);
+        setTestById((prev) => ({ ...prev, [item.id]: null }));
+        try {
+          const res = await fetch("/api/settings/proxy/test", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              proxyId: item.id,
+              proxy: {
+                type: item.type || "http",
+                host: item.host,
+                port: String(item.port || 8080),
+              },
+            }),
+          });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) {
+            setTestById((prev) => ({
+              ...prev,
+              [item.id]: { success: false, error: data?.error?.message || t("failed") },
+            }));
+          } else {
+            setTestById((prev) => ({ ...prev, [item.id]: { success: true, ...data } }));
+          }
+        } catch (e: any) {
+          setTestById((prev) => ({
+            ...prev,
+            [item.id]: { success: false, error: e?.message || t("failed") },
+          }));
+        }
+      }
+    } finally {
+      setTestingId(null);
+      setCheckingAll(false);
+      setCheckAllProgress({ current: 0, total: 0 });
+      setCheckAllStopped(false);
+    }
+  };
+
+  const handleStopCheckAll = () => {
+    setCheckAllStopped(true);
+    checkAllStoppedRef.current = true;
   };
 
   const handleSave = async () => {
@@ -503,6 +566,36 @@ export default function ProxyRegistryManager() {
             <p className="text-sm text-text-muted">{t("description")}</p>
           </div>
           <div className="flex items-center gap-2">
+            {checkingAll ? (
+              <>
+                <span className="text-xs text-text-muted">
+                  {t("checkAllProgress", {
+                    current: checkAllProgress.current,
+                    total: checkAllProgress.total,
+                  })}
+                </span>
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  icon="stop"
+                  onClick={handleStopCheckAll}
+                  data-testid="proxy-registry-stop-check-all"
+                >
+                  {t("stop")}
+                </Button>
+              </>
+            ) : (
+              <Button
+                size="sm"
+                variant="secondary"
+                icon="network_check"
+                onClick={() => void handleCheckAllProxies()}
+                disabled={items.length === 0 || testingId !== null}
+                data-testid="proxy-registry-check-all"
+              >
+                {t("checkAll")}
+              </Button>
+            )}
             <Button
               size="sm"
               variant="secondary"
