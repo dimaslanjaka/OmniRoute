@@ -125,3 +125,4 @@ coverage/
 
 # custom
 bin/sync-fork*
+bin/git-log*
