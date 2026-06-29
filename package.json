@@ -12,6 +12,7 @@
     "dist/",
     "@omniroute/",
     "open-sse/",
+    "prebuilds/",
     "src/domain/",
     "src/lib/",
     "src/models/",

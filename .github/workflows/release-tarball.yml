@@ -3,9 +3,6 @@ name: Build Release Tarball
 on:
   push:
     branches: [main]
-  # schedule:
-  # Rebuild the raw install tarball once per day at 01:00 UTC.
-  # - cron: "0 1 * * *"
   workflow_dispatch:
 
 # Least-privilege default: read-only; this workflow only writes releases,
@@ -19,8 +16,72 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # ------------------------------------------------------------------
+  # 1. Build the better-sqlite3 native binary on each target platform.
+  # ------------------------------------------------------------------
+  prebuild-native:
+    name: Prebuild better-sqlite3 (${{ matrix.os }})
+    strategy:
+      # Keep going if one OS fails so we still get the other prebuild.
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            platform: linux
+            arch: x64
+          - os: windows-latest
+            platform: win32
+            arch: x64
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      # Force a from-source compile so the binary matches THIS runner's OS/arch.
+      - name: Rebuild better-sqlite3 from source
+        run: npm rebuild better-sqlite3 --build-from-source
+        env:
+          npm_config_build_from_source: "true"
+
+      # Locate the compiled .node file and stage it with a predictable name.
+      - name: Stage native binary
+        shell: bash
+        run: |
+          mkdir -p prebuilds/${{ matrix.platform }}-${{ matrix.arch }}
+          NODE_FILE="node_modules/better-sqlite3/build/Release/better_sqlite3.node"
+          if [ ! -f "$NODE_FILE" ]; then
+            # Fallback: search anywhere under the package (prebuildify paths, etc.)
+            NODE_FILE=$(find node_modules/better-sqlite3 -name "better_sqlite3.node" -type f | head -n 1)
+          fi
+          if [ -z "$NODE_FILE" ] || [ ! -f "$NODE_FILE" ]; then
+            echo "::error::Could not find better_sqlite3.node after rebuild"
+            exit 1
+          fi
+          echo "Native binary: $NODE_FILE"
+          cp "$NODE_FILE" "prebuilds/${{ matrix.platform }}-${{ matrix.arch }}/better_sqlite3.node"
+          ls -lh "prebuilds/${{ matrix.platform }}-${{ matrix.arch }}/"
+
+      - name: Upload native prebuild artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: better_sqlite3-${{ matrix.platform }}-${{ matrix.arch }}
+          path: prebuilds/${{ matrix.platform }}-${{ matrix.arch }}/better_sqlite3.node
+          if-no-files-found: error
+
+  # ------------------------------------------------------------------
+  # 2. Main release job (your existing logic, extended).
+  # ------------------------------------------------------------------
   build-tarball:
     name: Build and publish release tarball
+    needs: prebuild-native
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -32,6 +93,7 @@ jobs:
         tmp/
         .build/
         dist/
+      CACHE_KEY: nextjs-${{ runner.os }}-${{ hashFiles('package-lock.json', 'src/**/*.{js,ts,tsx,mjs,cjs}', 'open-sse/**/*.{js,ts,mjs,cjs}', 'scripts/**/*.{js,ts,mjs,cjs}', 'db/**/*', 'next.config.mjs', 'tsconfig*.json', 'postcss.config.*', 'tailwind.config.*') }}
       EVENT_NAME: ${{ github.event_name }}
       BASE_SHA: ${{ github.event.pull_request.base.sha }}
       HEAD_SHA: ${{ github.event.pull_request.head.sha }}
@@ -39,7 +101,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          # Full history so npm can compute the package version
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -48,90 +109,126 @@ jobs:
         with:
           node-version: "24"
 
-      # Mirror of dimaslanjaka/nodejs-package-types build-release cache pattern
-      # (lines ~190-210): restore cached build/install folders before install,
-      # then save them after build/pack for subsequent runs.
       - name: "💾 Restore cache"
         uses: actions/cache/restore@v4
         id: cache
+        continue-on-error: true
         with:
           path: ${{ env.CACHE_PATHS }}
-          key: nextjs-${{ runner.os }}-${{ hashFiles('package-lock.json', 'src/**/*.{js,ts,tsx,mjs,cjs}', 'open-sse/**/*.{js,ts,mjs,cjs}', 'scripts/**/*.{js,ts,mjs,cjs}', 'db/**/*', 'next.config.mjs', 'tsconfig*.json', 'postcss.config.*', 'tailwind.config.*') }}
+          key: ${{ env.CACHE_KEY }}
           restore-keys: |
             nextjs-${{ runner.os }}-
 
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
 
+      # ================================================================
+      # NEW: Pull in the cross-platform prebuilds so they can be shipped
+      # both inside the tarball and as standalone release assets.
+      # ================================================================
+      - name: Download prebuilt native artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: prebuilds/
+          merge-multiple: true
+
+      - name: Verify prebuilds
+        run: |
+          echo "Prebuilds staged for release:"
+          ls -R prebuilds/
+
       - name: Generate CI .env
-        # Writes a CI-only .env based on .env.example + CI overrides.
-        # In GitHub Actions this creates .env in the workspace; locally it
-        # just prints the would-be contents to stdout.
         run: node scripts/build-env-ci.mjs
 
       - name: Build CLI payload
-        # Builds dist/ + assembles the standalone bundle expected by the
-        # `files` whitelist in package.json (bin/, dist/, @omniroute/, ...).
         run: npm run build:release
         env:
-          # Keep logs in CI to a minimum
           CI: "true"
 
       - name: Pack tarball
-        # The tarball is written to a local temp folder; it is NOT committed.
         run: |
           mkdir -p release
-          # `npm pack` writes <name>-<version>.tgz to cwd by default.
-          # We rename it to a stable, predictable name so consumers can
-          # pin it without having to know the version in advance.
           npm pack --silent --pack-destination ./release
           mv "release/omniroute-$(node -p "require('./package.json').version").tgz" release/omniroute.tgz
           sha256sum release/omniroute.tgz > release/checksum.txt
           ls -lh release/
           cat release/checksum.txt
 
-      - name: "🧹 Leave last github cache entry"
-        continue-on-error: true
-        if: ${{ !cancelled() && steps.cache.outputs.cache-hit != 'true' }}
-        run: npx --legacy-peer-deps -y
-          binary-collections@https://github.com/dimaslanjaka/bin/raw/9688287aecab1a125de2d63fdd30651017a9862e/releases/bin.tgz
-          --repo "${{ github.repository }}" --sha "${{ github.sha }}"
-
       - name: "💾 Save cache"
-        if: ${{ !cancelled() && steps.cache.outputs.cache-hit != 'true' }}
+        if: ${{ !cancelled() }}
+        continue-on-error: true
         uses: actions/cache/save@v4
         with:
           path: ${{ env.CACHE_PATHS }}
-          key: ${{ steps.cache.outputs.cache-primary-key }}
+          key: ${{ env.CACHE_KEY }}
+
+      - name: "🧹 Remove last github cache entry"
+        continue-on-error: true
+        if: ${{ !cancelled() }}
+        run: npx --legacy-peer-deps -y
+          binary-collections@https://github.com/dimaslanjaka/bin/raw/9688287aecab1a125de2d63fdd30651017a9862e/releases/bin.tgz clean-github-actions-cache
+          --repo "${{ github.repository }}" --sha "${{ github.sha }}"
+
+      - name: "🧹 Daily cleanup (dist/ .build/ — once per 24h)"
+        if: ${{ !cancelled() }}
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          mkdir -p tmp
+          NOW=$(date +%s)
+          LAST=0
+          if [ -f tmp/last-clean.txt ]; then
+            LAST=$(cat tmp/last-clean.txt 2>/dev/null || echo 0)
+          fi
+          ELAPSED=$((NOW - LAST))
+          THRESHOLD=86400
+          echo "[clean] last=$(date -u -d "@${LAST}" +%Y-%m-%dT%H:%M:%SZ 2>/dev/null || echo never) elapsed=${ELAPSED}s threshold=${THRESHOLD}s"
+          if [ "${ELAPSED}" -lt "${THRESHOLD}" ]; then
+            echo "[clean] skipped (within 24h of last clean)"
+            exit 0
+          fi
+          echo "[clean] running — purging dist/, .build/, node_modules/.cache, release/"
+          rm -rf dist/ .build/ node_modules/.cache release/ 2>/dev/null || true
+          rm -rf open-sse/dist open-sse/.build 2>/dev/null || true
+          echo "${NOW}" > tmp/last-clean.txt
+          echo "[clean] done — next eligible clean in 24h"
 
       - name: Verify tarball install and CLI
         run: |
           set -euo pipefail
-          # This is the local-file equivalent of:
-          # npx -y omniroute@https://github.com/dimaslanjaka/OmniRoute/releases/download/ci-build/omniroute.tgz
           npm exec --yes --package ./release/omniroute.tgz -- omniroute --help 2>&1 | tee /tmp/omniroute-help.txt
           grep -qi "usage" /tmp/omniroute-help.txt
 
+      # ================================================================
+      # NEW: Create release with tarball + prebuilt native binaries.
+      # ================================================================
       - name: Create or update GitHub Release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           TAG="ci-build"
 
-          # Delete the previous release and its associated tag.
-          # This is safe because the release is purely a CI artifact.
-          # (ignore errors on first run when the release does not yet exist)
+          # Delete previous release/tag (safe; this is a CI artifact).
           gh release delete "$TAG" --cleanup-tag --yes 2>/dev/null || true
-          # Extra safety: ensure the tag is gone even if it existed without a release
           git push origin ":refs/tags/$TAG" 2>/dev/null || true
 
-          # Recreate the release at the current commit with the new tarball.
-          # The download URL never changes:
-          # https://github.com/OWNER/REPO/releases/download/ci-build/omniroute.tgz
+          # Build the file list for the release.
+          # Always ship the tarball and checksum.
+          RELEASE_FILES="./release/omniroute.tgz ./release/checksum.txt"
+
+          # Attach the prebuilt .node files if they exist.
+          for f in prebuilds/*/*.node; do
+            if [ -f "$f" ]; then
+              # Flatten to a clear filename, e.g. better_sqlite3-linux-x64.node
+              PLATFORM_DIR=$(basename "$(dirname "$f")")
+              cp "$f" "./release/better_sqlite3-${PLATFORM_DIR}.node"
+              RELEASE_FILES="$RELEASE_FILES ./release/better_sqlite3-${PLATFORM_DIR}.node"
+            fi
+          done
+
           gh release create "$TAG" \
             --target ${{ github.sha }} \
             --title "CI Build ($(date +%Y-%m-%d))" \
-             --notes "Automated build from commit [${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})\
-             Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}." \
-             ./release/omniroute.tgz \
-             ./release/checksum.txt
+            --notes "Automated build from commit [${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})
+          Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}." \
+            $RELEASE_FILES
