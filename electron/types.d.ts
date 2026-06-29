@@ -22,6 +22,8 @@ export interface ServerStatus {
 }
 
 export interface ElectronAPI {
+  [key: string]: any;
+
   // ── Invoke (async) ─────────────────────────────────────
   getAppInfo(): Promise<AppInfo>;
   openExternal(url: string): Promise<void>;
@@ -44,6 +46,7 @@ export interface ElectronAPI {
 
 declare global {
   interface Window {
+    [key: string]: any;
     electronAPI: ElectronAPI;
   }
 }
