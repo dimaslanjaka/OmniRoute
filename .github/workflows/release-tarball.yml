@@ -32,6 +32,9 @@ jobs:
         tmp/
         .build/
         dist/
+      EVENT_NAME: ${{ github.event_name }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      HEAD_SHA: ${{ github.event.pull_request.head.sha }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -43,7 +46,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "22"
+          node-version: "24"
 
       # Mirror of dimaslanjaka/nodejs-package-types build-release cache pattern
       # (lines ~190-210): restore cached build/install folders before install,
