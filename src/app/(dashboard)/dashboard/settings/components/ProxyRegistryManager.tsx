@@ -397,7 +397,24 @@ export default function ProxyRegistryManager() {
       });
 
       if (res.ok) {
-        await load();
+        // Optimistic removal — avoids full load() which flashes a loading
+        // spinner and resets scroll position (#5359).
+        setItems((prev) => prev.filter((p) => p.id !== id));
+        setUsageById((prev) => {
+          const next = { ...prev };
+          delete next[id];
+          return next;
+        });
+        setHealthById((prev) => {
+          const next = { ...prev };
+          delete next[id];
+          return next;
+        });
+        setTestById((prev) => {
+          const next = { ...prev };
+          delete next[id];
+          return next;
+        });
         return;
       }
 
@@ -417,7 +434,23 @@ export default function ProxyRegistryManager() {
           return;
         }
 
-        await load();
+        // Optimistic removal — same as the normal path above
+        setItems((prev) => prev.filter((p) => p.id !== id));
+        setUsageById((prev) => {
+          const next = { ...prev };
+          delete next[id];
+          return next;
+        });
+        setHealthById((prev) => {
+          const next = { ...prev };
+          delete next[id];
+          return next;
+        });
+        setTestById((prev) => {
+          const next = { ...prev };
+          delete next[id];
+          return next;
+        });
         return;
       }
 
