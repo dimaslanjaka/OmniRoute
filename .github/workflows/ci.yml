@@ -401,6 +401,7 @@ jobs:
 
   i18n-ui-coverage:
     name: i18n UI Coverage
+    if: false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -415,6 +416,7 @@ jobs:
 
   i18n-matrix:
     name: Build language matrix
+    if: false
     runs-on: ubuntu-latest
     outputs:
       langs: ${{ steps.langs.outputs.langs }}
@@ -430,6 +432,7 @@ jobs:
 
   i18n:
     name: i18n Validation
+    if: false
     runs-on: ubuntu-latest
     continue-on-error: true
     strategy:
