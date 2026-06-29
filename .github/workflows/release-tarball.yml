@@ -63,6 +63,12 @@ jobs:
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
 
+      - name: Generate CI .env
+        # Writes a CI-only .env based on .env.example + CI overrides.
+        # In GitHub Actions this creates .env in the workspace; locally it
+        # just prints the would-be contents to stdout.
+        run: node scripts/build-env-ci.mjs
+
       - name: Build CLI payload
         # Builds dist/ + assembles the standalone bundle expected by the
         # `files` whitelist in package.json (bin/, dist/, @omniroute/, ...).
