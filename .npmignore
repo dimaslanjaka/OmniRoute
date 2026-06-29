@@ -122,3 +122,6 @@ playwright-report/
 blob-report/
 coverage/
 @omniroute/
+
+# custom
+bin/sync-fork*
