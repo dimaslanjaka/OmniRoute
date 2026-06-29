@@ -271,5 +271,11 @@
     "*.sh": "sh",
     "*.bat": "cmd /c",
     "*.cmd": "cmd /c"
+  },
+  "chat.agentFilesLocations": {
+    ".opencode/agents": true,
+    ".github/agents": true,
+    ".claude/agents": true,
+    "~/.copilot/agents": true
   }
 }
