@@ -18,7 +18,8 @@ env:
 jobs:
   build:
     name: Build and Push Fork Image
-    if: github.repository == 'kang-heewon/OmniRoute'
+    # if: github.repository == 'kang-heewon/OmniRoute'
+    if: false
     runs-on: ubuntu-latest
     permissions:
       contents: read

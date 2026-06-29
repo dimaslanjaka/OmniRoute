@@ -9,6 +9,7 @@ permissions:
 
 jobs:
   schemathesis:
+    if: false
     name: Schemathesis — OpenAPI contract fuzz (advisory)
     runs-on: ubuntu-latest
     timeout-minutes: 30

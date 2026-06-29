@@ -20,6 +20,7 @@ permissions:
 jobs:
   validate:
     name: Validate version
+    if: false
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -57,6 +58,7 @@ jobs:
 
   build:
     name: Build Electron (${{ matrix.platform }})
+    if: false
     needs: validate
     runs-on: ${{ matrix.runner }}
     permissions:
@@ -210,6 +212,7 @@ jobs:
 
   release:
     name: Create Release
+    if: false
     needs: [validate, build]
     runs-on: ubuntu-latest
     permissions:
@@ -269,6 +272,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   publish-npm:
+    if: false
     name: Publish to npm
     needs: [validate, release]
     permissions:

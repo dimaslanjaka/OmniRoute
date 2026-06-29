@@ -48,6 +48,7 @@ env:
 
 jobs:
   publish:
+    if: false
     runs-on: ubuntu-latest
     permissions:
       contents: write # gh release upload (attach SBOM to the GitHub Release)
@@ -196,6 +197,7 @@ jobs:
           echo "✅ Action finished for GitHub Packages"
 
   publish-opencode-plugin:
+    if: false
     runs-on: ubuntu-latest
     permissions:
       contents: read

@@ -62,6 +62,7 @@ concurrency:
 
 jobs:
   del_runs:
+    if: false
     runs-on: ubuntu-latest
 
     steps:

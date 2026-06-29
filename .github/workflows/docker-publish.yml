@@ -32,6 +32,7 @@ permissions:
 
 jobs:
   prepare:
+    if: false
     name: Resolve Docker release metadata
     runs-on: ubuntu-latest
     outputs:

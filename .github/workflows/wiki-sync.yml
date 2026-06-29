@@ -34,6 +34,7 @@ concurrency:
 jobs:
   sync-wiki:
     name: Sync wiki with docs
+    if: false
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo

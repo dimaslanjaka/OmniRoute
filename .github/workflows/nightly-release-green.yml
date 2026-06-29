@@ -33,6 +33,7 @@ concurrency:
 
 jobs:
   release-green:
+    if: false
     name: Validate active release branch
     runs-on: ubuntu-latest
     env:

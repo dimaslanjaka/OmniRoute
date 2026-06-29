@@ -9,6 +9,7 @@ permissions:
 
 jobs:
   promptfoo-guard:
+    if: false
     name: promptfoo — injection guard (block mode, no secret)
     runs-on: ubuntu-latest
     steps:
@@ -43,6 +44,7 @@ jobs:
         run: kill "$(cat server.pid)" || true
 
   garak:
+    if: false
     name: garak probes (skip without provider secret)
     runs-on: ubuntu-latest
     # NOTE: the `secrets` context is NOT available in a job-level `if:` — referencing

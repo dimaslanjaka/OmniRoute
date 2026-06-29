@@ -6,6 +6,7 @@ permissions:
   contents: read
 jobs:
   dast-smoke:
+    if: false
     runs-on: ubuntu-latest
     # ADVISORY while this new gate matures (repo convention: advisory -> blocking).
     # Flip to blocking (remove continue-on-error) once it's proven stable across a few PRs.

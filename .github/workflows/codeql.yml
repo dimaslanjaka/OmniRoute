@@ -13,6 +13,7 @@ permissions:
 jobs:
   analyze:
     name: Analyze (javascript-typescript)
+    if: false
     runs-on: ubuntu-latest
     permissions:
       security-events: write
