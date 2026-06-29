@@ -22,7 +22,7 @@
 import { buildErrorBody, sanitizeErrorMessage } from "@omniroute/open-sse/utils/error.ts";
 import { createHash, timingSafeEqual } from "node:crypto";
 import { randomUUID } from "node:crypto";
-import { InterceptedRequestSchema } from "@/mitm/inspector/types";
+import { InterceptedRequest, InterceptedRequestSchema } from "@/mitm/inspector/types";
 import { globalTrafficBuffer } from "@/mitm/inspector/buffer";
 import { maskSecret } from "@/mitm/maskSecrets";
 import { sanitizeHeaders } from "@/mitm/sanitizeHeaders";
@@ -110,14 +110,12 @@ export async function POST(request: Request): Promise<Response> {
     // stores bearer tokens / API keys (Hard Rule #12).
     const data = parsed.data;
     const req = {
-      requestBody: null,
-      responseBody: null,
       ...data,
       requestHeaders: sanitizeHeaders(data.requestHeaders || {}),
       responseHeaders: sanitizeHeaders(data.responseHeaders || {}),
       requestBody: data.requestBody != null ? maskSecret(data.requestBody) : null,
       responseBody: data.responseBody != null ? maskSecret(data.responseBody) : null,
-    };
+    } as InterceptedRequest;
     globalTrafficBuffer.push(req);
     return Response.json({ ok: true, id: req.id }, { status: 200 });
   } catch (err) {
