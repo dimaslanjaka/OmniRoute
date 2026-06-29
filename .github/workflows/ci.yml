@@ -516,9 +516,9 @@ jobs:
         uses: actions/cache@2c8a9bd7457de244a408f35966fab2fb45fda9c8
         with:
           path: .build/next/cache
-          key: nextjs-${{ runner.os }}-node-${{ env.CI_NODE_VERSION }}-${{ hashFiles('package-lock.json') }}-${{ hashFiles('src/**/*', 'open-sse/**/*', 'db/**/*', 'next.config.mjs', 'tsconfig*.json', 'postcss.config.*', 'tailwind.config.*') }}
+          key: nextjs-${{ runner.os }}-${{ hashFiles('package-lock.json', 'src/**/*.{js,ts,tsx,mjs,cjs}', 'open-sse/**/*.{js,ts,mjs,cjs}', 'scripts/**/*.{js,ts,mjs,cjs}', 'db/**/*', 'next.config.mjs', 'tsconfig*.json', 'postcss.config.*', 'tailwind.config.*') }}
           restore-keys: |
-            nextjs-${{ runner.os }}-node-${{ env.CI_NODE_VERSION }}-${{ hashFiles('package-lock.json') }}-
+            nextjs-${{ runner.os }}-
       - run: npm run build
       - name: Archive Next.js build for downstream jobs
         # Use tar so the archive preserves paths relative to CWD (.build/next/...).
@@ -705,9 +705,9 @@ jobs:
         uses: actions/cache@2c8a9bd7457de244a408f35966fab2fb45fda9c8
         with:
           path: .build/next/cache
-          key: nextjs-${{ runner.os }}-node-${{ env.CI_NODE_26_VERSION }}-${{ hashFiles('package-lock.json') }}-${{ hashFiles('src/**/*', 'open-sse/**/*', 'db/**/*', 'next.config.mjs', 'tsconfig*.json', 'postcss.config.*', 'tailwind.config.*') }}
+          key: nextjs-${{ runner.os }}-${{ hashFiles('package-lock.json', 'src/**/*.{js,ts,tsx,mjs,cjs}', 'open-sse/**/*.{js,ts,mjs,cjs}', 'scripts/**/*.{js,ts,mjs,cjs}', 'db/**/*', 'next.config.mjs', 'tsconfig*.json', 'postcss.config.*', 'tailwind.config.*') }}
           restore-keys: |
-            nextjs-${{ runner.os }}-node-${{ env.CI_NODE_26_VERSION }}-${{ hashFiles('package-lock.json') }}-
+            nextjs-${{ runner.os }}-
       - run: npm run build
 
   node-26-compat:

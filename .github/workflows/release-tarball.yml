@@ -53,7 +53,7 @@ jobs:
         id: cache
         with:
           path: ${{ env.CACHE_PATHS }}
-          key: nextjs-${{ runner.os }}-${{ hashFiles('**/package-lock.json', 'src/**/*.{js,ts,tsx,mjs,cjs}', 'open-sse/**/*.{js,ts,mjs,cjs}', 'scripts/**/*.{js,ts,mjs,cjs}', 'tsconfig*.json') }}
+          key: nextjs-${{ runner.os }}-${{ hashFiles('package-lock.json', 'src/**/*.{js,ts,tsx,mjs,cjs}', 'open-sse/**/*.{js,ts,mjs,cjs}', 'scripts/**/*.{js,ts,mjs,cjs}', 'db/**/*', 'next.config.mjs', 'tsconfig*.json', 'postcss.config.*', 'tailwind.config.*') }}
           restore-keys: |
             nextjs-${{ runner.os }}-
 
