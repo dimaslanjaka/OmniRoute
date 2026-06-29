@@ -3,6 +3,17 @@ name: CI
 on:
   push:
     branches: [main]
+    paths:
+      - ".github/workflows/ci.yml"
+      - "package*.json"
+      - "src/**"
+      - "open-sse/**"
+      - "config/**"
+      - "scripts/**"
+      - "next.config.mjs"
+      - "tsconfig*.json"
+      - "postcss.config.*"
+      - "tailwind.config.*"
   pull_request:
     branches: [main]
     types: [opened, synchronize, reopened, ready_for_review]
