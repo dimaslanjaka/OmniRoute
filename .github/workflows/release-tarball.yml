@@ -3,9 +3,9 @@ name: Build Release Tarball
 on:
   push:
     branches: [main]
-  schedule:
-    # Rebuild the raw install tarball once per day at 01:00 UTC.
-    - cron: "0 1 * * *"
+  # schedule:
+  # Rebuild the raw install tarball once per day at 01:00 UTC.
+  # - cron: "0 1 * * *"
   workflow_dispatch:
 
 # Least-privilege default: read-only; this workflow only writes releases,
