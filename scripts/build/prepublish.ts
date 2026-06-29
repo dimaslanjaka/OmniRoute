@@ -180,10 +180,13 @@ if (existsSync(mitmSrc)) {
   // outside src/mitm/ (e.g. src/lib/db/core.ts, src/lib/build-profile/featureDisabled.ts)
   // are properly included in the compilation without TS6059 errors.
   // moduleResolution: "bundler" avoids TS2835 (needs .js extensions) and
-  // properly resolves the @/* path alias.
+  // properly resolves path aliases.
+  // noEmitOnError: false allows emitting JS even when type errors exist in
+  // transitively-imported files from other parts of the codebase.
   const mitmTsconfig = {
     compilerOptions: {
       target: "ES2022",
+      lib: ["es2024"],
       module: "esnext",
       moduleResolution: "bundler",
       outDir: DIST_DIR,
@@ -191,8 +194,10 @@ if (existsSync(mitmSrc)) {
       strict: false,
       noImplicitAny: false,
       strictNullChecks: false,
-      noEmitOnError: true,
+      noEmitOnError: false,
       allowImportingTsExtensions: true,
+      rewriteRelativeImportExtensions: true,
+      ignoreDeprecations: "6.0",
       resolveJsonModule: true,
       esModuleInterop: true,
       skipLibCheck: true,
@@ -200,6 +205,8 @@ if (existsSync(mitmSrc)) {
       baseUrl: ROOT,
       paths: {
         "@/*": ["src/*"],
+        "@omniroute/open-sse": ["open-sse"],
+        "@omniroute/open-sse/*": ["open-sse/*"],
       },
     },
     include: [mitmSrc + "/**/*"],
@@ -207,20 +214,32 @@ if (existsSync(mitmSrc)) {
   const tmpTsconfigPath = join(ROOT, "tsconfig.mitm.tmp.json");
   writeFileSync(tmpTsconfigPath, JSON.stringify(mitmTsconfig, null, 2));
 
+  const mitmServerSrc = join(mitmSrc, "server.cjs");
   try {
     execFileSync(NPX_BIN, ["tsc", "-p", "tsconfig.mitm.tmp.json"], {
       cwd: ROOT,
       stdio: "inherit",
     });
-    const mitmServerSrc = join(mitmSrc, "server.cjs");
     if (existsSync(mitmServerSrc)) {
       cpSync(mitmServerSrc, join(mitmDest, "server.cjs"));
     }
     console.log("  ✅ MITM utilities compiled to dist/src/mitm/");
   } catch (err: any) {
-    console.warn("  ⚠️  MITM compile warning (non-fatal):", err.message);
-    // Fallback: copy source files so at least they are present
-    cpSync(mitmSrc, mitmDest, { recursive: true });
+    // tsc may exit non-zero if there are type errors in transitively-imported
+    // files (pre-existing in the codebase). With noEmitOnError:false the JS
+    // files ARE emitted despite type errors. Check whether output was produced.
+    const testFile = join(mitmDest, "manager.js");
+    if (existsSync(testFile)) {
+      // JS was emitted — type warnings are non-fatal for our purposes.
+      if (existsSync(mitmServerSrc)) {
+        cpSync(mitmServerSrc, join(mitmDest, "server.cjs"));
+      }
+      console.log("  ✅ MITM utilities compiled (with type warnings)");
+    } else {
+      console.warn("  ⚠️  MITM tsc failed to produce output:", err.message);
+      // Fallback: copy source files so at least they are present
+      cpSync(mitmSrc, mitmDest, { recursive: true });
+    }
   } finally {
     // Cleanup temp tsconfig
     try {
