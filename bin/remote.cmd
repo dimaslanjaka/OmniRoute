@@ -12,35 +12,43 @@ if not exist "%RELEASE_DIR%" mkdir "%RELEASE_DIR%"
 set "NEED_DOWNLOAD=1"
 
 if exist "%TARBALL%" (
-    REM Probe remote size via HEAD (follows redirects; last Content-Length wins)
     set "REMOTE_SIZE="
-    for /f "tokens=2 delims=: " %%a in ('curl -sIL "%REMOTE_URL%" 2^>nul ^| findstr /i "Content-Length:"') do (
+
+    for /f "tokens=2 delims=: " %%a in ('
+        curl -sIL "%REMOTE_URL%" 2^>nul ^| findstr /i "content-length"
+    ') do (
         set "REMOTE_SIZE=%%a"
     )
+
+    REM trim CRLF artifacts
+    for /f %%a in ("!REMOTE_SIZE!") do set "REMOTE_SIZE=%%a"
+
+    for %%f in ("%TARBALL%") do set "LOCAL_SIZE=%%~zf"
+
     if defined REMOTE_SIZE (
-        for %%f in ("%TARBALL%") do set "LOCAL_SIZE=%%~zf"
         if "!REMOTE_SIZE!"=="!LOCAL_SIZE!" (
             set "NEED_DOWNLOAD=0"
-            echo [remote] Tarball up-to-date ^(!LOCAL_SIZE! bytes^), skipping download.
+            echo [remote] up-to-date (!LOCAL_SIZE! bytes)
         ) else (
-            echo [remote] Size changed ^(!LOCAL_SIZE! -^> !REMOTE_SIZE!^), re-downloading...
+            echo [remote] size changed (!LOCAL_SIZE! -> !REMOTE_SIZE!)
         )
     ) else (
-        echo [remote] Could not determine remote size, re-downloading...
+        echo [remote] size unknown, re-downloading...
     )
 ) else (
-    echo [remote] Tarball not found locally, downloading...
+    echo [remote] missing local tarball, downloading...
 )
 
 if "!NEED_DOWNLOAD!"=="1" (
-    curl -sL --fail -o "%TARBALL%.tmp" "%REMOTE_URL%"
+    curl -fL -o "%TARBALL%.tmp" "%REMOTE_URL%"
     if errorlevel 1 (
         del "%TARBALL%.tmp" 2>nul
-        echo [remote] Download failed.
+        echo [remote] download failed
         exit /b 1
     )
+
     move /y "%TARBALL%.tmp" "%TARBALL%" >nul
-    echo [remote] Download complete.
+    echo [remote] download complete
 )
 
 npm exec --legacy-peer-deps --yes --package="%TARBALL%" -- omniroute %*
