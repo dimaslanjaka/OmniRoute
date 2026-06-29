@@ -124,5 +124,4 @@ coverage/
 @omniroute/
 
 # custom
-bin/sync-fork*
-bin/git-log*
+bin/*.cmd

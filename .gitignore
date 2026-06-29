@@ -236,3 +236,6 @@ omniroute.md
 /tmp
 .slim/
 .superpower*/
+*.tmp
+*.diff
+*.version
