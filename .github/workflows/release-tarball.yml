@@ -45,35 +45,67 @@ jobs:
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
 
-      # Force a from-source compile so the binary matches THIS runner's OS/arch.
-      - name: Rebuild better-sqlite3 from source
-        run: npm rebuild better-sqlite3 --build-from-source
-        env:
-          npm_config_build_from_source: "true"
+      # On Windows, better-sqlite3 also ships prebuilt binaries via prebuildify
+      # (node-pre-gyp). If the npm-installed package already has a matching
+      # prebuilt binary we can just use it. Force a from-source rebuild only
+      # if no prebuilt binary matches — this saves ~5 min on Windows.
+      - name: Check if native binary already matches runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          NODE_FILE=""
+          # 1. First try the standard post-install location
+          if [ -f "node_modules/better-sqlite3/build/Release/better_sqlite3.node" ]; then
+            NODE_FILE="node_modules/better-sqlite3/build/Release/better_sqlite3.node"
+          else
+            # 2. Search deeper (prebuildify can nest it)
+            NODE_FILE=$(find node_modules/better-sqlite3 -name "better_sqlite3.node" -type f | head -n 1 || true)
+          fi
+          NEEDS_REBUILD="1"
+          if [ -n "$NODE_FILE" ] && [ -f "$NODE_FILE" ]; then
+            # Try to dlopen it via Node — if it loads, it matches this runner.
+            if node -e "
+              try { process.dlopen({ exports: {} }, '$NODE_FILE'); console.log('OK'); }
+              catch(e) { console.log('MISMATCH:' + e.message); }
+            " 2>/dev/null | grep -q '^OK$'; then
+              NEEDS_REBUILD="0"
+            fi
+          fi
+          echo "NEEDS_REBUILD=$NEEDS_REBUILD" >> "$GITHUB_ENV"
 
-      # Locate the compiled .node file and stage it with a predictable name.
+      - name: Rebuild better-sqlite3 from source
+        if: env.NEEDS_REBUILD == '1'
+        shell: bash
+        run: npm rebuild better-sqlite3 --build-from-source
+
+      # Locate the compiled .node file and stage it inside a dir matching
+      # the <platform>-<arch> layout that postinstall.mjs expects.
       - name: Stage native binary
         shell: bash
         run: |
+          set -euo pipefail
           mkdir -p prebuilds/${{ matrix.platform }}-${{ matrix.arch }}
           NODE_FILE="node_modules/better-sqlite3/build/Release/better_sqlite3.node"
           if [ ! -f "$NODE_FILE" ]; then
-            # Fallback: search anywhere under the package (prebuildify paths, etc.)
             NODE_FILE=$(find node_modules/better-sqlite3 -name "better_sqlite3.node" -type f | head -n 1)
           fi
           if [ -z "$NODE_FILE" ] || [ ! -f "$NODE_FILE" ]; then
-            echo "::error::Could not find better_sqlite3.node after rebuild"
+            echo "::error::Could not find better_sqlite3.node"
             exit 1
           fi
           echo "Native binary: $NODE_FILE"
           cp "$NODE_FILE" "prebuilds/${{ matrix.platform }}-${{ matrix.arch }}/better_sqlite3.node"
+          file "prebuilds/${{ matrix.platform }}-${{ matrix.arch }}/better_sqlite3.node"
           ls -lh "prebuilds/${{ matrix.platform }}-${{ matrix.arch }}/"
 
+      # ⚠️ Upload with per-platform artifact names AND full subtree
+      # (prebuilds/<platform>-<arch>/better_sqlite3.node) so that
+      # download-artifact in build-tarball reconstructs the same tree.
       - name: Upload native prebuild artifact
         uses: actions/upload-artifact@v4
         with:
-          name: better_sqlite3-${{ matrix.platform }}-${{ matrix.arch }}
-          path: prebuilds/${{ matrix.platform }}-${{ matrix.arch }}/better_sqlite3.node
+          name: prebuild-${{ matrix.platform }}-${{ matrix.arch }}
+          path: prebuilds/
           if-no-files-found: error
 
   # ------------------------------------------------------------------
@@ -123,19 +155,32 @@ jobs:
         run: npm ci --no-audit --no-fund
 
       # ================================================================
-      # NEW: Pull in the cross-platform prebuilds so they can be shipped
-      # both inside the tarball and as standalone release assets.
+      # Pull in cross-platform prebuild artifacts. Each artifact was
+      # uploaded with its full prebuilds/<platform>-<arch>/ tree, so we
+      # download them separately and merge into a single prebuilds/ dir
+      # matching what postinstall.mjs scans (lines 90-94).
       # ================================================================
       - name: Download prebuilt native artifacts
         uses: actions/download-artifact@v4
         with:
-          path: prebuilds/
-          merge-multiple: true
+          path: _prebuilds/
 
-      - name: Verify prebuilds
+      - name: Merge prebuild artifacts into prebuilds/
         run: |
-          echo "Prebuilds staged for release:"
+          set -euo pipefail
+          mkdir -p prebuilds
+          # Each subdir under _prebuilds/ is a platform artifact (e.g.
+          # prebuild-linux-x64/), which itself contains prebuilds/<platform>-<arch>/.
+          # Merge by copying each platform's prebuilds subdir into the
+          # top-level prebuilds/ so postinstall.mjs finds them.
+          for ARTIFACT in _prebuilds/*/; do
+            [ -d "$ARTIFACT" ] || continue
+            # Copy the prebuilds/<platform>/ subtree
+            cp -r "${ARTIFACT}prebuilds/"* prebuilds/ 2>/dev/null || true
+          done
+          echo "Prebuilds merged:"
           ls -R prebuilds/
+          rm -rf _prebuilds/
 
       - name: Generate CI .env
         run: node scripts/build-env-ci.mjs
@@ -187,8 +232,8 @@ jobs:
             echo "[clean] skipped (within 24h of last clean)"
             exit 0
           fi
-          echo "[clean] running — purging dist/, .build/, node_modules/.cache, release/"
-          rm -rf dist/ .build/ node_modules/.cache release/ 2>/dev/null || true
+          echo "[clean] running — purging dist/, .build/, node_modules/.cache"
+          rm -rf dist/ .build/ node_modules/.cache 2>/dev/null || true
           rm -rf open-sse/dist open-sse/.build 2>/dev/null || true
           echo "${NOW}" > tmp/last-clean.txt
           echo "[clean] done — next eligible clean in 24h"
@@ -199,36 +244,26 @@ jobs:
           npm exec --yes --package ./release/omniroute.tgz -- omniroute --help 2>&1 | tee /tmp/omniroute-help.txt
           grep -qi "usage" /tmp/omniroute-help.txt
 
-      # ================================================================
-      # NEW: Create release with tarball + prebuilt native binaries.
-      # ================================================================
       - name: Create or update GitHub Release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           TAG="ci-build"
 
-          # Delete previous release/tag (safe; this is a CI artifact).
+          # Delete the previous release and its associated tag.
+          # This is safe because the release is purely a CI artifact.
+          # (ignore errors on first run when the release does not yet exist)
           gh release delete "$TAG" --cleanup-tag --yes 2>/dev/null || true
+          # Extra safety: ensure the tag is gone even if it existed without a release
           git push origin ":refs/tags/$TAG" 2>/dev/null || true
 
-          # Build the file list for the release.
-          # Always ship the tarball and checksum.
-          RELEASE_FILES="./release/omniroute.tgz ./release/checksum.txt"
-
-          # Attach the prebuilt .node files if they exist.
-          for f in prebuilds/*/*.node; do
-            if [ -f "$f" ]; then
-              # Flatten to a clear filename, e.g. better_sqlite3-linux-x64.node
-              PLATFORM_DIR=$(basename "$(dirname "$f")")
-              cp "$f" "./release/better_sqlite3-${PLATFORM_DIR}.node"
-              RELEASE_FILES="$RELEASE_FILES ./release/better_sqlite3-${PLATFORM_DIR}.node"
-            fi
-          done
-
+          # Recreate the release at the current commit with the new tarball.
+          # The download URL never changes:
+          # https://github.com/OWNER/REPO/releases/download/ci-build/omniroute.tgz
           gh release create "$TAG" \
             --target ${{ github.sha }} \
             --title "CI Build ($(date +%Y-%m-%d))" \
-            --notes "Automated build from commit [${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})
-          Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}." \
-            $RELEASE_FILES
+             --notes "Automated build from commit [${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})\
+             Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}." \
+             ./release/omniroute.tgz \
+             ./release/checksum.txt

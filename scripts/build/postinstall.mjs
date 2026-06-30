@@ -26,7 +26,7 @@ import { copyFileSync, cpSync, existsSync, mkdirSync, readdirSync } from "node:f
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { PUBLISHED_BUILD_ARCH, PUBLISHED_BUILD_PLATFORM } from "./native-binary-compat.mjs";
+import { readNativeBinaryTarget } from "./native-binary-compat.mjs";
 import { hasStandaloneAppBundle, isTermux } from "./postinstallSupport.mjs";
 import { colocateLlmlinguaOptionals } from "./colocateOptionals.mjs";
 
@@ -57,20 +57,19 @@ async function fixBetterSqliteBinary() {
     return;
   }
 
-  const platformMatch =
-    process.platform === PUBLISHED_BUILD_PLATFORM && process.arch === PUBLISHED_BUILD_ARCH;
-
-  if (platformMatch) {
+  // If the bundled binary already works, nothing to do.
+  if (existsSync(appBinary)) {
     try {
       process.dlopen({ exports: {} }, appBinary);
       return;
     } catch (err) {
-      console.warn(`  ⚠️  Bundled binary incompatible despite platform match: ${err.message}`);
+      console.warn(`  ⚠️  Bundled binary failed to load: ${err.message}`);
     }
   }
 
   console.log(`\n  🔧 Fixing better-sqlite3 binary for ${process.platform}-${process.arch}...`);
 
+  // Strategy 1: Copy from root node_modules (npm install with correct platform binary)
   if (existsSync(rootBinary)) {
     try {
       mkdirSync(dirname(appBinary), { recursive: true });
@@ -85,6 +84,30 @@ async function fixBetterSqliteBinary() {
       return;
     } catch (err) {
       console.warn(`  ⚠️  Copied binary failed to load: ${err.message}`);
+    }
+  }
+
+  // Strategy 2: Use shipped prebuilds/ directory (tarball / CI install)
+  const prebuildsDir = join(ROOT, "prebuilds");
+  if (existsSync(prebuildsDir)) {
+    for (const entry of readdirSync(prebuildsDir, { withFileTypes: true })) {
+      if (!entry.isDirectory()) continue;
+
+      const candidate = join(prebuildsDir, entry.name, "better_sqlite3.node");
+      if (!existsSync(candidate)) continue;
+
+      const meta = readNativeBinaryTarget(candidate);
+      if (meta && meta.platform === process.platform && meta.architectures.includes(process.arch)) {
+        try {
+          mkdirSync(dirname(appBinary), { recursive: true });
+          copyFileSync(candidate, appBinary);
+          process.dlopen({ exports: {} }, appBinary);
+          console.log(`  ✅ Native module fixed from prebuilds/${entry.name}!\n`);
+          return;
+        } catch (err) {
+          console.warn(`  ⚠️  Prebuilt binary failed to load: ${err.message}`);
+        }
+      }
     }
   }
 

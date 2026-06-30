@@ -1,8 +1,5 @@
 import { existsSync, openSync, readSync, closeSync } from "node:fs";
 
-export const PUBLISHED_BUILD_PLATFORM = "linux";
-export const PUBLISHED_BUILD_ARCH = "x64";
-
 const HEADER_SIZE = 4096;
 const MAX_FAT_ARCH_COUNT = 30;
 
@@ -153,8 +150,6 @@ export function isNativeBinaryCompatible(
     ) {
       return false;
     }
-  } else if (runtimePlatform !== PUBLISHED_BUILD_PLATFORM || runtimeArch !== PUBLISHED_BUILD_ARCH) {
-    return false;
   }
 
   try {
