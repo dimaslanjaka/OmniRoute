@@ -50,6 +50,7 @@ jobs:
       # prebuilt binary we can just use it. Force a from-source rebuild only
       # if no prebuilt binary matches — this saves ~5 min on Windows.
       - name: Check if native binary already matches runner
+        id: check-binary
         shell: bash
         run: |
           set -euo pipefail
@@ -71,10 +72,10 @@ jobs:
               NEEDS_REBUILD="0"
             fi
           fi
-          echo "NEEDS_REBUILD=$NEEDS_REBUILD" >> "$GITHUB_ENV"
+          echo "needs_rebuild=$NEEDS_REBUILD" >> "$GITHUB_OUTPUT"
 
       - name: Rebuild better-sqlite3 from source
-        if: env.NEEDS_REBUILD == '1'
+        if: steps.check-binary.outputs.needs_rebuild == '1'
         shell: bash
         run: npm rebuild better-sqlite3 --build-from-source
 
@@ -125,10 +126,8 @@ jobs:
         tmp/
         .build/
         dist/
-      CACHE_KEY: nextjs-${{ runner.os }}-${{ hashFiles('package-lock.json', 'src/**/*.{js,ts,tsx,mjs,cjs}', 'open-sse/**/*.{js,ts,mjs,cjs}', 'scripts/**/*.{js,ts,mjs,cjs}', 'db/**/*', 'next.config.mjs', 'tsconfig*.json', 'postcss.config.*', 'tailwind.config.*') }}
-      EVENT_NAME: ${{ github.event_name }}
-      BASE_SHA: ${{ github.event.pull_request.base.sha }}
-      HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+      # Cache key cannot live in env — runner.os and hashFiles are not
+      # available in the jobs.env context. Inline in each cache step.
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -147,7 +146,7 @@ jobs:
         continue-on-error: true
         with:
           path: ${{ env.CACHE_PATHS }}
-          key: ${{ env.CACHE_KEY }}
+          key: nextjs-${{ runner.os }}-${{ hashFiles('package-lock.json', 'src/**/*.{js,ts,tsx,mjs,cjs}', 'open-sse/**/*.{js,ts,mjs,cjs}', 'scripts/**/*.{js,ts,mjs,cjs}', 'db/**/*', 'next.config.mjs', 'tsconfig*.json', 'postcss.config.*', 'tailwind.config.*') }}
           restore-keys: |
             nextjs-${{ runner.os }}-
 
@@ -205,7 +204,7 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: ${{ env.CACHE_PATHS }}
-          key: ${{ env.CACHE_KEY }}
+          key: nextjs-${{ runner.os }}-${{ hashFiles('package-lock.json', 'src/**/*.{js,ts,tsx,mjs,cjs}', 'open-sse/**/*.{js,ts,mjs,cjs}', 'scripts/**/*.{js,ts,mjs,cjs}', 'db/**/*', 'next.config.mjs', 'tsconfig*.json', 'postcss.config.*', 'tailwind.config.*') }}
 
       - name: "🧹 Remove last github cache entry"
         continue-on-error: true
