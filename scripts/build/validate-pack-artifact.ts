@@ -18,27 +18,13 @@ const __dirname: string = dirname(__filename);
 const ROOT: string = join(__dirname, "..", "..");
 const npmCommand: string = process.platform === "win32" ? "npm.cmd" : "npm";
 
-/**
- * Resolve the command + args so that `.cmd` batch files on Windows are
- * always invoked via `cmd.exe /c`, avoiding EINVAL from execFileSync
- * (CreateProcess cannot execute batch files directly).
- */
-function resolveNpmCommandAndArgs(args: string[]): [string, string[]] {
-  const npmExecPath = process.env.npm_execpath;
-  if (npmExecPath) {
-    // npm_execpath is set (e.g. by "npm run script") → delegate to node
-    return [process.execPath, [npmExecPath, ...args]];
-  }
-  if (process.platform === "win32") {
-    // execFileSync cannot run .cmd files; route through cmd.exe /c
-    return ["cmd.exe", ["/c", npmCommand, ...args]];
-  }
-  return [npmCommand, args];
-}
-
 function runNpm(args: string[], stdio: "inherit" | "pipe" = "pipe"): string {
-  const [command, cmdArgs] = resolveNpmCommandAndArgs(args);
-  return execFileSync(command, cmdArgs, {
+  const npmExecPath = process.env.npm_execpath;
+  const isBunRuntime = "Bun" in globalThis;
+  const command = npmExecPath && !isBunRuntime ? process.execPath : npmCommand;
+  const commandArgs = npmExecPath && !isBunRuntime ? [npmExecPath, ...args] : args;
+
+  return execFileSync(command, commandArgs, {
     cwd: ROOT,
     encoding: "utf8",
     stdio: stdio === "inherit" ? "inherit" : ["ignore", "pipe", "pipe"],
