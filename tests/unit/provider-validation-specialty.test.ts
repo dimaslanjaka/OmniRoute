@@ -2817,12 +2817,14 @@ test("huggingface validator accepts a token whoami-v2 recognizes", async () => {
 });
 
 test("huggingface validator treats 401/403 as an invalid token", async () => {
-  globalThis.fetch = async () => new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
+  globalThis.fetch = async () =>
+    new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
   const unauthorized = await validateProviderApiKey({ provider: "huggingface", apiKey: "hf_bad" });
   assert.equal(unauthorized.valid, false);
   assert.equal(unauthorized.error, "Invalid API key");
 
-  globalThis.fetch = async () => new Response(JSON.stringify({ error: "Forbidden" }), { status: 403 });
+  globalThis.fetch = async () =>
+    new Response(JSON.stringify({ error: "Forbidden" }), { status: 403 });
   const forbidden = await validateProviderApiKey({ provider: "huggingface", apiKey: "hf_bad" });
   assert.equal(forbidden.valid, false);
   assert.equal(forbidden.error, "Invalid API key");
@@ -2834,7 +2836,10 @@ test("huggingface validator does NOT mark a fine-grained token invalid on a non-
   // non-OK status must surface as a transient error, never "Invalid API key".
   globalThis.fetch = async () => new Response("upstream down", { status: 503 });
 
-  const result = await validateProviderApiKey({ provider: "huggingface", apiKey: "hf_finegrained" });
+  const result = await validateProviderApiKey({
+    provider: "huggingface",
+    apiKey: "hf_finegrained",
+  });
 
   assert.equal(result.valid, false);
   assert.notEqual(result.error, "Invalid API key");

@@ -13,10 +13,7 @@ import { dirname, join } from "node:path";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = join(here, "..", "..");
-const newRoute = join(
-  repoRoot,
-  "src/app/(dashboard)/dashboard/providers/new/page.tsx"
-);
+const newRoute = join(repoRoot, "src/app/(dashboard)/dashboard/providers/new/page.tsx");
 
 test("#5427: new-provider route does NOT redirect (no longer a silent stub)", () => {
   const src = readFileSync(newRoute, "utf8");

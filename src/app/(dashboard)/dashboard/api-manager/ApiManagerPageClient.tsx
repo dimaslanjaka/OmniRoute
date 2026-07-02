@@ -985,9 +985,7 @@ export default function ApiManagerPageClient() {
                   </div>
                   <div className="col-span-3 flex items-center gap-1.5">
                     <code className="text-sm text-text-muted font-mono truncate">
-                      {visibleKeys.has(key.id)
-                        ? (revealedKeys.get(key.id) ?? key.key)
-                        : key.key}
+                      {visibleKeys.has(key.id) ? (revealedKeys.get(key.id) ?? key.key) : key.key}
                     </code>
                     {allowKeyReveal ? (
                       <>

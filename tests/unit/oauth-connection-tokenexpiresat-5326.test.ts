@@ -32,11 +32,7 @@ test("buildOAuthConnectionCreatePayload mirrors expiresAt into tokenExpiresAt (#
 });
 
 test("buildOAuthConnectionCreatePayload keeps tokenExpiresAt null when expiry is unknown", () => {
-  const payload = buildOAuthConnectionCreatePayload(
-    "antigravity",
-    { accessToken: "at-456" },
-    null
-  );
+  const payload = buildOAuthConnectionCreatePayload("antigravity", { accessToken: "at-456" }, null);
 
   assert.equal(payload.expiresAt, null);
   assert.equal(payload.tokenExpiresAt, null);

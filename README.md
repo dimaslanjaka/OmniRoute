@@ -720,16 +720,16 @@ podman compose --profile base up -d
 
 **The $0 Free Stack — combine into one unbreakable combo:**
 
-| Provider          | Prefix      | Free models                                     | Quota             |
-| ----------------- | ----------- | ----------------------------------------------- | ----------------- |
-| **Kiro**          | `kr/`       | Claude Sonnet 4.5, Haiku 4.5, Opus 4.6          | 50 credits/mo     |
-| **Qoder**         | `if/`       | kimi-k2-thinking, qwen3-coder-plus, deepseek-r1 | ♾️ Unlimited      |
-| **Qwen**          | `qw/`       | qwen3-coder-plus/flash/next                     | ♾️ Unlimited      |
-| **Pollinations**  | `pol/`      | GPT-5, Claude, Gemini, DeepSeek, Llama 4        | No key needed     |
+| Provider          | Prefix      | Free models                                     | Quota              |
+| ----------------- | ----------- | ----------------------------------------------- | ------------------ |
+| **Kiro**          | `kr/`       | Claude Sonnet 4.5, Haiku 4.5, Opus 4.6          | 50 credits/mo      |
+| **Qoder**         | `if/`       | kimi-k2-thinking, qwen3-coder-plus, deepseek-r1 | ♾️ Unlimited       |
+| **Qwen**          | `qw/`       | qwen3-coder-plus/flash/next                     | ♾️ Unlimited       |
+| **Pollinations**  | `pol/`      | GPT-5, Claude, Gemini, DeepSeek, Llama 4        | No key needed      |
 | **LongCat**       | `lc/`       | LongCat-2.0                                     | 10M one-time (KYC) |
-| **Cloudflare AI** | `cf/`       | 50+ models                                      | 10K neurons/day   |
-| **NVIDIA NIM**    | `nvidia/`   | 129 models                                      | ~40 RPM           |
-| **Cerebras**      | `cerebras/` | Qwen3 235B, GPT-OSS 120B                        | 1M tok/day        |
+| **Cloudflare AI** | `cf/`       | 50+ models                                      | 10K neurons/day    |
+| **NVIDIA NIM**    | `nvidia/`   | 129 models                                      | ~40 RPM            |
+| **Cerebras**      | `cerebras/` | Qwen3 235B, GPT-OSS 120B                        | 1M tok/day         |
 
 > 💡 The dashboard "cost" is a **savings tracker**, not a bill — OmniRoute never charges you. A "$290 total cost" using free models means **$290 saved**.
 

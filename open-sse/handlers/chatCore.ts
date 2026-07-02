@@ -74,10 +74,7 @@ import {
   withBodyTimeout,
 } from "../utils/stream.ts";
 import { ensureStreamReadiness } from "../utils/streamReadiness.ts";
-import {
-  resolveSuppressThinkClose,
-  THINKING_MARKER_HEADER,
-} from "../utils/thinkCloseMarker.ts";
+import { resolveSuppressThinkClose, THINKING_MARKER_HEADER } from "../utils/thinkCloseMarker.ts";
 import { resolveStreamReadinessTimeout } from "../utils/streamReadinessPolicy.ts";
 import { createStreamController } from "../utils/streamHandler.ts";
 import * as streamFailure from "../utils/streamFailureFinalization.ts";

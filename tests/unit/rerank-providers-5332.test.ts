@@ -1,12 +1,10 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-const { parseRerankModel, getAllRerankModels, getRerankProvider } = await import(
-  "../../open-sse/config/rerankRegistry.ts"
-);
-const { transformResponseFromProvider, transformRequestForProvider } = await import(
-  "../../open-sse/handlers/rerank.ts"
-);
+const { parseRerankModel, getAllRerankModels, getRerankProvider } =
+  await import("../../open-sse/config/rerankRegistry.ts");
+const { transformResponseFromProvider, transformRequestForProvider } =
+  await import("../../open-sse/handlers/rerank.ts");
 
 test("#5332 parseRerankModel resolves siliconflow multi-slash model id", () => {
   assert.deepEqual(parseRerankModel("siliconflow/Qwen/Qwen3-Reranker-8B"), {

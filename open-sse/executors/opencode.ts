@@ -159,7 +159,9 @@ export class OpencodeExecutor extends BaseExecutor {
         log?.info?.(
           "OPENCODE",
           `dispatch via account ${masked} (idx ${attempt + 1}/${this.accounts.length})` +
-            (account.proxy ? ` through proxy ${account.proxy.host}:${account.proxy.port}` : " direct")
+            (account.proxy
+              ? ` through proxy ${account.proxy.host}:${account.proxy.port}`
+              : " direct")
         );
 
         // Pin egress to this account's proxy for the whole BaseExecutor dispatch
@@ -173,10 +175,7 @@ export class OpencodeExecutor extends BaseExecutor {
         const status = result.response.status;
         if (status === 429) {
           this.markCooldown(account);
-          log?.warn?.(
-            "OPENCODE",
-            `Rate limited (429) on account ${masked}, rotating to next…`
-          );
+          log?.warn?.("OPENCODE", `Rate limited (429) on account ${masked}, rotating to next…`);
           continue;
         }
 

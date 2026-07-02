@@ -17,9 +17,8 @@ import assert from "node:assert/strict";
 import http from "node:http";
 import https from "node:https";
 
-const { resolveTlsOptions, createServerListener } = await import(
-  "../../scripts/dev/tls-options.mjs"
-);
+const { resolveTlsOptions, createServerListener } =
+  await import("../../scripts/dev/tls-options.mjs");
 
 function makeReader(map: Record<string, string>) {
   return (p: string) => {
@@ -34,7 +33,10 @@ test("both cert+key provided and readable → returns TLS options", () => {
   const warnings: string[] = [];
   const opts = resolveTlsOptions(
     { OMNIROUTE_TLS_CERT: "/c/server.crt", OMNIROUTE_TLS_KEY: "/c/server.key" },
-    { readFileSync: makeReader({ "/c/server.crt": "CERT", "/c/server.key": "KEY" }), warn: (m) => warnings.push(m) }
+    {
+      readFileSync: makeReader({ "/c/server.crt": "CERT", "/c/server.key": "KEY" }),
+      warn: (m) => warnings.push(m),
+    }
   );
   assert.ok(opts, "expected non-null TLS options");
   assert.equal(opts.cert.toString(), "CERT");
@@ -113,33 +115,41 @@ test("createServerListener: null tlsOptions → http server (unchanged)", () => 
 test("createServerListener: tlsOptions → https server with merged cert/key + listener", () => {
   let httpCalled = false;
   const listener = () => {};
-  const result = createServerListener([listener], { cert: "CERT", key: "KEY" }, {
-    createHttp: () => {
-      httpCalled = true;
-      return "HTTP_SERVER";
-    },
-    createHttps: (opts: { cert: string; key: string }, fn: unknown) => {
-      assert.equal(opts.cert, "CERT");
-      assert.equal(opts.key, "KEY");
-      assert.equal(fn, listener);
-      return "HTTPS_SERVER";
-    },
-  });
+  const result = createServerListener(
+    [listener],
+    { cert: "CERT", key: "KEY" },
+    {
+      createHttp: () => {
+        httpCalled = true;
+        return "HTTP_SERVER";
+      },
+      createHttps: (opts: { cert: string; key: string }, fn: unknown) => {
+        assert.equal(opts.cert, "CERT");
+        assert.equal(opts.key, "KEY");
+        assert.equal(fn, listener);
+        return "HTTPS_SERVER";
+      },
+    }
+  );
   assert.equal(result, "HTTPS_SERVER");
   assert.ok(!httpCalled);
 });
 
 test("createServerListener: merges a leading options object with cert/key", () => {
   const listener = () => {};
-  createServerListener([{ keepAlive: true }, listener], { cert: "C", key: "K" }, {
-    createHttps: (opts: Record<string, unknown>, fn: unknown) => {
-      assert.equal(opts.keepAlive, true);
-      assert.equal(opts.cert, "C");
-      assert.equal(opts.key, "K");
-      assert.equal(fn, listener);
-      return "HTTPS_SERVER";
-    },
-  });
+  createServerListener(
+    [{ keepAlive: true }, listener],
+    { cert: "C", key: "K" },
+    {
+      createHttps: (opts: Record<string, unknown>, fn: unknown) => {
+        assert.equal(opts.keepAlive, true);
+        assert.equal(opts.cert, "C");
+        assert.equal(opts.key, "K");
+        assert.equal(fn, listener);
+        return "HTTPS_SERVER";
+      },
+    }
+  );
 });
 
 test("createServerListener: real default (no TLS) returns an http.Server", () => {

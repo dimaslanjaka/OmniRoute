@@ -18,18 +18,13 @@ import React, { act } from "react";
 import { createRoot } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import {
-  ModelVisibilityToolbar,
-  type ModelVisibilityToolbarProps,
-} from "../components/ModelRow";
+import { ModelVisibilityToolbar, type ModelVisibilityToolbarProps } from "../components/ModelRow";
 
 // Minimal translator stub: no `has`, so providerText() falls back to
 // interpolating the values into the fallback string ("{active}/{total} active").
 const t = ((key: string) => key) as ModelVisibilityToolbarProps["t"];
 
-function buildProps(
-  overrides: Partial<ModelVisibilityToolbarProps>
-): ModelVisibilityToolbarProps {
+function buildProps(overrides: Partial<ModelVisibilityToolbarProps>): ModelVisibilityToolbarProps {
   return {
     t,
     filterValue: "",

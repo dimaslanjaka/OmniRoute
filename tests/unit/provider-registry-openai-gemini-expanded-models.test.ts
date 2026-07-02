@@ -13,24 +13,12 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-const { openaiProvider } = await import(
-  "../../open-sse/config/providers/registry/openai/index.ts"
-);
-const { geminiProvider } = await import(
-  "../../open-sse/config/providers/registry/gemini/index.ts"
-);
+const { openaiProvider } = await import("../../open-sse/config/providers/registry/openai/index.ts");
+const { geminiProvider } = await import("../../open-sse/config/providers/registry/gemini/index.ts");
 
-const OPENAI_ADDED_IDS = [
-  "gpt-4.1-mini",
-  "gpt-4.1-nano",
-  "o3-mini",
-  "o4-mini",
-] as const;
+const OPENAI_ADDED_IDS = ["gpt-4.1-mini", "gpt-4.1-nano", "o3-mini", "o4-mini"] as const;
 
-const GEMINI_ADDED_IDS = [
-  "gemini-3.1-flash-lite",
-  "gemini-2.5-flash-lite",
-] as const;
+const GEMINI_ADDED_IDS = ["gemini-3.1-flash-lite", "gemini-2.5-flash-lite"] as const;
 
 test("openai registry exposes gpt-4.1 mini/nano and o3-mini/o4-mini reasoning variants", () => {
   const ids = new Set(openaiProvider.models.map((m) => m.id));

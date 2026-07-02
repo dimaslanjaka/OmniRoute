@@ -291,8 +291,7 @@ export async function POST(request: Request) {
     const bifrostConfig = getBifrostRoutingConfig();
     let bifrostFallbackReason: string | null = null;
     if (shouldTryBifrost(backend, bifrostConfig)) {
-      const cooldown =
-        backend === "auto" ? getActiveBifrostCooldown(bifrostConfig.baseUrl) : null;
+      const cooldown = backend === "auto" ? getActiveBifrostCooldown(bifrostConfig.baseUrl) : null;
       if (cooldown) {
         bifrostFallbackReason = `bifrost-cooldown; remaining=${cooldown.remainingMs}`;
       } else {

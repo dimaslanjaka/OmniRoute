@@ -43,7 +43,9 @@ export async function GET(request: Request, { params }: { params: Promise<{ prov
     providerAlias = providerEntry.alias || providerId;
   } else {
     // Allow fetching models by connection ID for compatible providers
-    const isCompatibleConnectionId = /^(openai|anthropic)-compatible-chat-[a-f0-9-]+$/.test(rawProvider);
+    const isCompatibleConnectionId = /^(openai|anthropic)-compatible-chat-[a-f0-9-]+$/.test(
+      rawProvider
+    );
     if (!isCompatibleConnectionId) {
       return Response.json(
         {

@@ -13,12 +13,10 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-const { openaiToClaudeRequest } = await import(
-  "../../open-sse/translator/request/openai-to-claude.ts"
-);
-const { DEFAULT_THINKING_CLAUDE_SIGNATURE } = await import(
-  "../../open-sse/config/defaultThinkingSignature.ts"
-);
+const { openaiToClaudeRequest } =
+  await import("../../open-sse/translator/request/openai-to-claude.ts");
+const { DEFAULT_THINKING_CLAUDE_SIGNATURE } =
+  await import("../../open-sse/config/defaultThinkingSignature.ts");
 
 test("#5312 RC-D: signature-less reasoning_content yields no fabricated-signature thinking block", () => {
   const result = openaiToClaudeRequest(

@@ -31,7 +31,10 @@ const MAX_CONNECTION_EXTRA_KEYS = 500;
  */
 export function trackConnectionExtraKeys(connectionId: string, extraKeys: string[]): void {
   const validExtras = extraKeys.filter((k) => typeof k === "string" && k.trim().length > 0);
-  if (!_connectionExtraKeys.has(connectionId) && _connectionExtraKeys.size >= MAX_CONNECTION_EXTRA_KEYS) {
+  if (
+    !_connectionExtraKeys.has(connectionId) &&
+    _connectionExtraKeys.size >= MAX_CONNECTION_EXTRA_KEYS
+  ) {
     const oldest = _connectionExtraKeys.keys().next().value;
     if (oldest !== undefined) _connectionExtraKeys.delete(oldest);
   }

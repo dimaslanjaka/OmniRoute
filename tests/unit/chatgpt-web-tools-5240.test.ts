@@ -8,12 +8,10 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-const { ChatGptWebExecutor, __resetChatGptWebCachesForTesting } = await import(
-  "../../open-sse/executors/chatgpt-web.ts"
-);
-const { __setTlsFetchOverrideForTesting } = await import(
-  "../../open-sse/services/chatgptTlsClient.ts"
-);
+const { ChatGptWebExecutor, __resetChatGptWebCachesForTesting } =
+  await import("../../open-sse/executors/chatgpt-web.ts");
+const { __setTlsFetchOverrideForTesting } =
+  await import("../../open-sse/services/chatgptTlsClient.ts");
 
 // ─── Minimal TLS-fetch mock ──────────────────────────────────────────────────
 // Tailored to the tool-call flow (gpt-5.3-instant, non-thinking): root/DPL,
@@ -68,7 +66,10 @@ function installMockFetch(convEvents: unknown[]) {
       body: null,
     });
 
-    if ((u === "https://chatgpt.com/" || u === "https://chatgpt.com") && (opts.method || "GET") === "GET") {
+    if (
+      (u === "https://chatgpt.com/" || u === "https://chatgpt.com") &&
+      (opts.method || "GET") === "GET"
+    ) {
       return {
         status: 200,
         headers: makeHeaders({ "Content-Type": "text/html" }),

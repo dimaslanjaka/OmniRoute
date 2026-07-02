@@ -10,7 +10,10 @@ import {
 // instead of forcing manual host/port re-entry. The server resolves that id to the
 // live pool record so the executor still receives an inline {type,host,port,...}.
 
-const POOL: Record<string, { type: string; host: string; port: number; username?: string; password?: string }> = {
+const POOL: Record<
+  string,
+  { type: string; host: string; port: number; username?: string; password?: string }
+> = {
   "pool-1": { type: "http", host: "1.2.3.4", port: 8080, username: "u", password: "p" },
   "pool-2": { type: "socks5", host: "9.9.9.9", port: 1080 },
 };
@@ -57,7 +60,13 @@ test("a throwing lookup degrades to direct (null) rather than rejecting", async 
 
 test("proxyId takes precedence over an inline proxy on the same entry", async () => {
   const out = await resolveAccountProxies(
-    [{ fingerprint: "acc-f", proxyId: "pool-2", proxy: { type: "http", host: "0.0.0.0", port: 1 } }],
+    [
+      {
+        fingerprint: "acc-f",
+        proxyId: "pool-2",
+        proxy: { type: "http", host: "0.0.0.0", port: 1 },
+      },
+    ],
     lookup
   );
   assert.equal(out[0].proxy?.host, "9.9.9.9");

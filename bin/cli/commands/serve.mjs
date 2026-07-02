@@ -48,11 +48,13 @@ export function registerServe(program) {
     .option("--no-tray", t("serve.no_tray") || "Disable system tray icon")
     .option(
       "--tls-cert <path>",
-      t("serve.tls_cert") || "Path to a TLS certificate (PEM) to serve HTTPS (also OMNIROUTE_TLS_CERT)"
+      t("serve.tls_cert") ||
+        "Path to a TLS certificate (PEM) to serve HTTPS (also OMNIROUTE_TLS_CERT)"
     )
     .option(
       "--tls-key <path>",
-      t("serve.tls_key") || "Path to the TLS private key (PEM) to serve HTTPS (also OMNIROUTE_TLS_KEY)"
+      t("serve.tls_key") ||
+        "Path to the TLS private key (PEM) to serve HTTPS (also OMNIROUTE_TLS_KEY)"
     )
     .action(async (opts) => {
       await runServe(opts);
@@ -366,9 +368,7 @@ async function maybeStartTray(port, apiPort, supervisor) {
   } catch (err) {
     // tray is optional — do not fail the server, but surface why it failed so
     // "--tray shows nothing" is diagnosable instead of silent (#4605).
-    process.stderr.write(
-      `[omniroute][tray] failed to start: ${err?.message ?? String(err)}\n`
-    );
+    process.stderr.write(`[omniroute][tray] failed to start: ${err?.message ?? String(err)}\n`);
   }
 }
 

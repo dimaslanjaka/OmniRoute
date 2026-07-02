@@ -233,7 +233,10 @@ export function stripStainlessHeadersForOpenAICompat(
   // Normalize User-Agent: SDK-based clients send verbose product strings that some
   // upstreams block. Replace with a clean browser-like UA only when it looks SDK-derived.
   const ua = (headers["User-Agent"] || headers["user-agent"] || "").toLowerCase();
-  if (ua.includes("openai") && (ua.includes("node") || ua.includes("axios") || ua.includes("undici"))) {
+  if (
+    ua.includes("openai") &&
+    (ua.includes("node") || ua.includes("axios") || ua.includes("undici"))
+  ) {
     setUserAgentHeader(headers, "Mozilla/5.0 (compatible; OpenAI Compatible)");
   }
 

@@ -370,7 +370,10 @@ export default function NoAuthAccountCard({
             className="grid max-h-72 grid-cols-1 gap-1.5 overflow-y-auto pr-1 sm:grid-cols-2 lg:grid-cols-3"
           >
             {allAccountIds.map((id, i) => {
-              const proxy = getDisplayProxy(getEntryForFingerprint(accountProxies, id), savedProxies);
+              const proxy = getDisplayProxy(
+                getEntryForFingerprint(accountProxies, id),
+                savedProxies
+              );
               return (
                 <div
                   key={id}

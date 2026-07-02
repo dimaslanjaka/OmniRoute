@@ -352,8 +352,7 @@ export async function checkConnection(conn) {
     //   - connections already in a terminal/specific state (expired/banned/credits_exhausted)
     //   - transient cooldown state (unavailable) owned by the request path
     const refreshCapableNeedsReauth =
-      supportsTokenRefresh(conn.provider) &&
-      (!conn.testStatus || conn.testStatus === "active");
+      supportsTokenRefresh(conn.provider) && (!conn.testStatus || conn.testStatus === "active");
     if (refreshCapableNeedsReauth) {
       const now = new Date().toISOString();
       await updateProviderConnection(conn.id, {

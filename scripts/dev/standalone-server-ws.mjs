@@ -17,9 +17,7 @@ const { wrapRequestListenerWithMethodGuard } = methodGuard;
 // TLS). Absent or misconfigured → null → identical plain-HTTP behavior as before.
 const tlsOptions = resolveTlsOptions(process.env);
 if (tlsOptions) {
-  console.log(
-    `[omniroute][tls] HTTPS enabled — terminating TLS with cert=${tlsOptions.certPath}`
-  );
+  console.log(`[omniroute][tls] HTTPS enabled — terminating TLS with cert=${tlsOptions.certPath}`);
 }
 
 process.env.OMNIROUTE_WS_BRIDGE_SECRET ||= randomUUID();
