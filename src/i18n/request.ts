@@ -26,7 +26,10 @@ export function deepMergeFallback(
       typeof targetValue === "object" &&
       !Array.isArray(targetValue)
     ) {
-      deepMergeFallback(targetValue as Record<string, unknown>, sourceValue as Record<string, unknown>);
+      deepMergeFallback(
+        targetValue as Record<string, unknown>,
+        sourceValue as Record<string, unknown>
+      );
     } else if (targetValue === undefined) {
       target[key] = sourceValue;
     }
@@ -40,7 +43,12 @@ function setNestedValue(target: Record<string, unknown>, dottedKey: string, valu
 
   for (let index = 0; index < segments.length; index += 1) {
     const segment = segments[index];
-    if (!segment || segment === "__proto__" || segment === "constructor" || segment === "prototype") {
+    if (
+      !segment ||
+      segment === "__proto__" ||
+      segment === "constructor" ||
+      segment === "prototype"
+    ) {
       return;
     }
 
@@ -65,7 +73,9 @@ export function normalizeComplianceEventTypes(
   messages: Record<string, unknown>
 ): Record<string, unknown> {
   const compliance =
-    messages.compliance && typeof messages.compliance === "object" && !Array.isArray(messages.compliance)
+    messages.compliance &&
+    typeof messages.compliance === "object" &&
+    !Array.isArray(messages.compliance)
       ? (messages.compliance as Record<string, unknown>)
       : null;
   const eventTypes =

@@ -50,7 +50,7 @@ describe("accumulateRun — live compression run accumulator (F3.3)", () => {
     runs = accumulateRun(runs, payload("r3"));
     assert.deepEqual(
       runs.map((r) => r.requestId),
-      ["r3", "r2", "r1"],
+      ["r3", "r2", "r1"]
     );
   });
 
@@ -63,7 +63,7 @@ describe("accumulateRun — live compression run accumulator (F3.3)", () => {
     assert.deepEqual(
       runs.map((r) => r.requestId),
       ["d", "c"],
-      "keeps the 2 newest, newest-first; oldest (a, b) dropped",
+      "keeps the 2 newest, newest-first; oldest (a, b) dropped"
     );
   });
 

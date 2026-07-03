@@ -153,8 +153,7 @@ export function getRelayTokens(): RelayToken[] {
 export function getRelayToken(id: string): RelayToken | null {
   const db = getDbInstance();
   const row = db.prepare("SELECT * FROM relay_tokens WHERE id = ?").get(id) as
-    | RelayTokenRow
-    | undefined;
+    RelayTokenRow | undefined;
   if (!row) return null;
   return { ...(rowToCamel(row) as unknown as RelayToken), enabled: row.enabled === 1 };
 }
@@ -242,8 +241,7 @@ export function checkRateLimit(tokenId: string): {
 } {
   const db = getDbInstance();
   const token = db.prepare("SELECT * FROM relay_tokens WHERE id = ?").get(tokenId) as
-    | RelayTokenRow
-    | undefined;
+    RelayTokenRow | undefined;
   if (!token) return { allowed: false, remaining: 0, resetIn: 0 };
 
   const now = Math.floor(Date.now() / 1000);

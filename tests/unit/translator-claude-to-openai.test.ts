@@ -54,8 +54,6 @@ test("Claude -> OpenAI maps system blocks, parameters, tool declarations and too
   });
 });
 
-
-
 test("Claude -> OpenAI maps Claude server WebSearch to native Responses web_search", () => {
   const result = claudeToOpenAIRequest(
     "gpt-5.5",

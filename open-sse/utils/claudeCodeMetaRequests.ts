@@ -1,6 +1,15 @@
 // Tools whose meaningful prefix is two words (verb + subcommand).
 const TWO_WORD_TOOLS = new Set([
-  "git", "npm", "docker", "kubectl", "cargo", "go", "pip", "yarn", "pnpm", "bun",
+  "git",
+  "npm",
+  "docker",
+  "kubectl",
+  "cargo",
+  "go",
+  "pip",
+  "yarn",
+  "pnpm",
+  "bun",
 ]);
 
 const ENV_ASSIGNMENT_RE = /^[A-Za-z_][A-Za-z0-9_]*=/;
@@ -19,7 +28,10 @@ function tokenize(command: string): string[] {
     } else if (ch === '"' || ch === "'") {
       quote = ch;
     } else if (/\s/.test(ch)) {
-      if (current) { tokens.push(current); current = ""; }
+      if (current) {
+        tokens.push(current);
+        current = "";
+      }
     } else {
       current += ch;
     }
@@ -73,7 +85,10 @@ export function extractFilepathsFromCommand(command: string, _output = ""): stri
         }
         continue;
       }
-      if (!patternConsumed) { patternConsumed = true; continue; } // first non-flag = pattern
+      if (!patternConsumed) {
+        patternConsumed = true;
+        continue;
+      } // first non-flag = pattern
       files.push(tok);
     }
     return files;

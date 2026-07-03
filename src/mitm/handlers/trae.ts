@@ -17,7 +17,7 @@ export class TraeHandler extends MitmHandlerBase {
     _req: IncomingMessage,
     _res: ServerResponse,
     _body: Buffer,
-    _mappedModel: string,
+    _mappedModel: string
   ): Promise<void> {
     throw new Error("Not yet implemented — Trae viability under investigation. See plan 11 §5.");
   }

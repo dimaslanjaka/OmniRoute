@@ -29,9 +29,6 @@ Plan: 1 to add, 1 to change, 0 to destroy.`;
 });
 
 test("no-changes ⇒ no-op", () => {
-  const r = renderTerraformPlan(
-    "No changes. Your infrastructure matches the configuration.",
-    det,
-  );
+  const r = renderTerraformPlan("No changes. Your infrastructure matches the configuration.", det);
   assert.equal(r.changed, false);
 });

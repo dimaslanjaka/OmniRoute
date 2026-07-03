@@ -173,7 +173,9 @@ export function AgentBridgeMaintenanceCard({
         {certTrusted &&
           (confirmRemoveCa ? (
             <span className="inline-flex items-center gap-1 rounded-lg bg-red-500/5 border border-red-500/30 px-2 py-1 text-xs">
-              <span className="text-red-600 dark:text-red-400">{t("removeCaConfirm") || "Remove CA?"}</span>
+              <span className="text-red-600 dark:text-red-400">
+                {t("removeCaConfirm") || "Remove CA?"}
+              </span>
               <button
                 type="button"
                 onClick={handleRemoveCa}
@@ -210,7 +212,9 @@ export function AgentBridgeMaintenanceCard({
           className="inline-flex items-center gap-1.5 rounded-lg bg-zinc-500/10 text-text-muted px-3 py-1.5 text-xs font-medium hover:bg-zinc-500/20 transition-colors disabled:opacity-50"
         >
           <span className="material-symbols-outlined text-[14px]">download</span>
-          {busy === "export" ? t("exporting") || "Exporting…" : t("exportConfig") || "Export config"}
+          {busy === "export"
+            ? t("exporting") || "Exporting…"
+            : t("exportConfig") || "Export config"}
         </button>
 
         <button
@@ -220,7 +224,9 @@ export function AgentBridgeMaintenanceCard({
           className="inline-flex items-center gap-1.5 rounded-lg bg-zinc-500/10 text-text-muted px-3 py-1.5 text-xs font-medium hover:bg-zinc-500/20 transition-colors disabled:opacity-50"
         >
           <span className="material-symbols-outlined text-[14px]">upload</span>
-          {busy === "import" ? t("importing") || "Importing…" : t("importConfig") || "Import config"}
+          {busy === "import"
+            ? t("importing") || "Importing…"
+            : t("importConfig") || "Import config"}
         </button>
         <input
           ref={fileInputRef}
@@ -251,7 +257,13 @@ export function AgentBridgeMaintenanceCard({
             >
               {report.healthy ? "check_circle" : "error"}
             </span>
-            <span className={report.healthy ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"}>
+            <span
+              className={
+                report.healthy
+                  ? "text-emerald-600 dark:text-emerald-400"
+                  : "text-red-600 dark:text-red-400"
+              }
+            >
               {report.healthy
                 ? t("diagnoseHealthy") || "Capture pipeline is healthy."
                 : t("diagnoseUnhealthy") || "Capture pipeline has problems:"}

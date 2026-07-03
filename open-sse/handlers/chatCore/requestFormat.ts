@@ -44,9 +44,7 @@ function isCopilotClient(
  */
 export function resolveChatCoreRequestFormat(opts: {
   clientRawRequest:
-    | { endpoint?: unknown; headers?: Headers | Record<string, unknown> | null }
-    | null
-    | undefined;
+    { endpoint?: unknown; headers?: Headers | Record<string, unknown> | null } | null | undefined;
   body: unknown;
   provider: string | null | undefined;
   userAgent: string | null | undefined;

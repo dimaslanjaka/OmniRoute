@@ -843,8 +843,7 @@ function mapGrokNativeToolToOpenAI(
   }
 
   const readFile = (card.readFile || card.read_file) as
-    | { args?: Record<string, unknown> }
-    | undefined;
+    { args?: Record<string, unknown> } | undefined;
   if (readFile?.args) {
     const rawPath = readFile.args.filePath || readFile.args.file_path || readFile.args.path;
     const name = pickDeclaredToolForIntent("readFile", toolRegistry);
@@ -891,8 +890,7 @@ function mapGrokNativeToolToOpenAI(
   }
 
   const browsePage = (card.browsePage || card.browse_page) as
-    | { args?: Record<string, unknown> }
-    | undefined;
+    { args?: Record<string, unknown> } | undefined;
   if (browsePage?.args) {
     const url = firstString(browsePage.args.url, browsePage.args.uri);
     const name = pickDeclaredToolForIntent("browsePage", toolRegistry);
@@ -1654,8 +1652,7 @@ export class GrokWebExecutor extends BaseExecutor {
     upstreamExtraHeaders,
   }: ExecuteInput) {
     const messages = (body as Record<string, unknown>).messages as
-      | Array<Record<string, unknown>>
-      | undefined;
+      Array<Record<string, unknown>> | undefined;
     if (!messages || !Array.isArray(messages) || messages.length === 0) {
       const errResp = new Response(
         JSON.stringify({

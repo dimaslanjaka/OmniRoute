@@ -24,10 +24,6 @@ test("#3166 kilocode uses the OpenAI format + default executor (matches kilo-gat
   const gateway = reg["kilo-gateway"];
   if (gateway) {
     assert.equal(kilocode.format, gateway.format, "kilocode format must match kilo-gateway");
-    assert.equal(
-      kilocode.executor,
-      gateway.executor,
-      "kilocode executor must match kilo-gateway"
-    );
+    assert.equal(kilocode.executor, gateway.executor, "kilocode executor must match kilo-gateway");
   }
 });

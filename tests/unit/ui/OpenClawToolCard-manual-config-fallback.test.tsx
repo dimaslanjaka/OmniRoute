@@ -51,13 +51,7 @@ vi.mock("@/shared/components", async () => {
   const React = await import("react");
   return {
     Card: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-    Button: ({
-      children,
-      onClick,
-    }: {
-      children: React.ReactNode;
-      onClick?: () => void;
-    }) => (
+    Button: ({ children, onClick }: { children: React.ReactNode; onClick?: () => void }) => (
       <button type="button" onClick={onClick}>
         {children}
       </button>
@@ -102,9 +96,8 @@ afterEach(() => {
 
 // ── Import under test (after mocks) ───────────────────────────────────────────
 
-const { default: OpenClawToolCard } = await import(
-  "@/app/(dashboard)/dashboard/cli-code/components/OpenClawToolCard"
-);
+const { default: OpenClawToolCard } =
+  await import("@/app/(dashboard)/dashboard/cli-code/components/OpenClawToolCard");
 
 async function renderExpanded() {
   const container = document.createElement("div");

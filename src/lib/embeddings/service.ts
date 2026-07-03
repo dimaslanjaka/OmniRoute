@@ -54,10 +54,7 @@ export async function createEmbeddingResponse(
         // different models are not comparable). The generic combo engine has no
         // notion of embedding families, so reject loudly here before dispatch.
         // See _tasks/features-v3.8.12/01-embeddings-combo-family-guard.plan.md.
-        const dimConflict = findEmbeddingComboDimensionConflict(
-          combo as any,
-          allCombos as any
-        );
+        const dimConflict = findEmbeddingComboDimensionConflict(combo as any, allCombos as any);
         if (dimConflict.conflict) {
           return errorResponse(
             HTTP_STATUS.BAD_REQUEST,
@@ -221,7 +218,8 @@ export async function createEmbeddingResponse(
   );
 
   const result = await handleEmbedding({
-    body: effectiveModel !== resolvedModel ? { ...body, model: `${provider}/${effectiveModel}` } : body,
+    body:
+      effectiveModel !== resolvedModel ? { ...body, model: `${provider}/${effectiveModel}` } : body,
     // getProviderCredentials returns a richer connection object; handleEmbedding
     // only reads apiKey/accessToken, both present at runtime. Bridge the wider
     // selection type to the handler's narrow credential shape.

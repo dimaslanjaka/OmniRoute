@@ -57,6 +57,8 @@ export function updateSkill(id: string, patch: SkillPatch): number {
   setClauses.push("updated_at = datetime('now')");
   params.push(id);
 
-  const result = db.prepare(`UPDATE skills SET ${setClauses.join(", ")} WHERE id = ?`).run(...params);
+  const result = db
+    .prepare(`UPDATE skills SET ${setClauses.join(", ")} WHERE id = ?`)
+    .run(...params);
   return (result as { changes: number }).changes;
 }

@@ -84,9 +84,7 @@ function dropToTarget(tagged: TaggedUnit[], targetTokens: number): Set<number> {
   let tokCount = tagged.reduce((s, x) => s + x.tokens, 0);
 
   // Sort droppable candidates by score ascending (lowest first = drop first)
-  const candidates = tagged
-    .filter((x) => !x.preserve)
-    .sort((a, b) => a.score - b.score);
+  const candidates = tagged.filter((x) => !x.preserve).sort((a, b) => a.score - b.score);
 
   for (const candidate of candidates) {
     if (tokCount <= targetTokens) break;
@@ -145,9 +143,7 @@ export function applyHardBudget(
 
   // targetTokens wins when both are set
   const effectiveTarget =
-    targetTokens != null
-      ? targetTokens
-      : Math.floor(totalTokens * (targetRatio as number));
+    targetTokens != null ? targetTokens : Math.floor(totalTokens * (targetRatio as number));
 
   if (totalTokens <= effectiveTarget) {
     return { body, compressed: false, stats: null };
@@ -165,9 +161,7 @@ export function applyHardBudget(
     return out === m.content ? m : { ...m, content: out };
   });
 
-  const changed = newMessages.some(
-    (m, i) => JSON.stringify(m) !== JSON.stringify(messages[i])
-  );
+  const changed = newMessages.some((m, i) => JSON.stringify(m) !== JSON.stringify(messages[i]));
 
   // Measure the result to detect when preserve-guarded content makes the target
   // unreachable, so callers are not silently left over budget.

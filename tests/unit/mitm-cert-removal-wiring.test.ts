@@ -9,9 +9,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 const certModule = await import("../../src/mitm/cert/install.ts");
-const certRoute = await import(
-  "../../src/app/api/tools/agent-bridge/cert/route.ts"
-);
+const certRoute = await import("../../src/app/api/tools/agent-bridge/cert/route.ts");
 
 test("cert module exports uninstallCert", () => {
   assert.equal(typeof certModule.uninstallCert, "function", "uninstallCert must be exported");

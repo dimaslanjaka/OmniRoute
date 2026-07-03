@@ -23,10 +23,7 @@ export default function CliConceptCard({ currentType }: CliConceptCardProps) {
 
   return (
     <div
-      className={cn(
-        "bg-surface border rounded-lg shadow-sm p-4",
-        "border-primary/30 bg-primary/5"
-      )}
+      className={cn("bg-surface border rounded-lg shadow-sm p-4", "border-primary/30 bg-primary/5")}
     >
       <div className="flex flex-col gap-3">
         {/* Current type — highlighted */}
@@ -35,7 +32,9 @@ export default function CliConceptCard({ currentType }: CliConceptCardProps) {
             {t(`concept.${currentType}.title`)}
           </span>
           <p className="text-sm text-text-muted">{t(`concept.${currentType}.phrase`)}</p>
-          <p className="text-[11px] text-text-muted font-mono">{t(`concept.${currentType}.flow`)}</p>
+          <p className="text-[11px] text-text-muted font-mono">
+            {t(`concept.${currentType}.flow`)}
+          </p>
         </div>
 
         {/* Other types as chips */}

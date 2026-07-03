@@ -72,10 +72,13 @@ function installMock(completionOutcomes = []) {
       });
     }
     if (u.includes("/create_pow_challenge")) {
-      return new Response(JSON.stringify({ code: 0, data: { biz_data: { challenge: POW_CHALLENGE } } }), {
-        status: 200,
-        headers: { "Content-Type": "application/json" },
-      });
+      return new Response(
+        JSON.stringify({ code: 0, data: { biz_data: { challenge: POW_CHALLENGE } } }),
+        {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
     }
     if (u.includes("/chat/completion")) {
       calls.completion += 1;

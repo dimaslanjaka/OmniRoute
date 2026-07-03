@@ -72,7 +72,11 @@ describe("omniroute setup opencode", () => {
     const [modulePath, options] = cfg.plugin[0];
     assert.equal(modulePath, "./plugins/omniroute/dist/index.js");
     assert.equal(options.providerId, "omniroute");
-    assert.equal(options.baseURL, "http://10.0.0.5:20128", "--base-url flag must reach the registered entry");
+    assert.equal(
+      options.baseURL,
+      "http://10.0.0.5:20128",
+      "--base-url flag must reach the registered entry"
+    );
   });
 
   it("is idempotent: re-running updates the entry in place instead of duplicating it", async () => {
@@ -85,10 +89,15 @@ describe("omniroute setup opencode", () => {
 
     const cfg = readConfig();
     const omniEntries = cfg.plugin.filter(
-      (p: unknown) => Array.isArray(p) && (p[1] as { providerId?: string })?.providerId === "omniroute"
+      (p: unknown) =>
+        Array.isArray(p) && (p[1] as { providerId?: string })?.providerId === "omniroute"
     );
     assert.equal(omniEntries.length, 1, "re-run must not duplicate the entry");
-    assert.equal(omniEntries[0][1].baseURL, "http://10.0.0.9:20128", "re-run updates baseURL in place");
+    assert.equal(
+      omniEntries[0][1].baseURL,
+      "http://10.0.0.9:20128",
+      "re-run updates baseURL in place"
+    );
   });
 
   it("removes the legacy opencode-omniroute-auth entry (#3711) and preserves unrelated plugins", async () => {

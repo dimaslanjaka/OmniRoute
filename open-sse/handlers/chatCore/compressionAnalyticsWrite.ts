@@ -121,9 +121,8 @@ export function writeCompressionSkip(opts: WriteOpts, skipReason: string): Promi
 export function writeCompressionAnalytics(opts: WriteOpts): Promise<void> {
   return (async () => {
     try {
-      const { insertCompressionAnalyticsRow, insertCompressionEngineBreakdown } = await import(
-        "@/lib/db/compressionAnalytics"
-      );
+      const { insertCompressionAnalyticsRow, insertCompressionEngineBreakdown } =
+        await import("@/lib/db/compressionAnalytics");
       const { calculateCost } = await import("@/lib/usage/costCalculator");
       const { stats } = opts;
       const tokensSaved = Math.max(0, stats.originalTokens - stats.compressedTokens);
@@ -134,7 +133,9 @@ export function writeCompressionAnalytics(opts: WriteOpts): Promise<void> {
         { input: tokensSaved },
         { serviceTier: opts.effectiveServiceTier }
       );
-      insertCompressionAnalyticsRow(buildAnalyticsRow(opts, tokensSaved, rtkPointers, estimatedUsdSaved));
+      insertCompressionAnalyticsRow(
+        buildAnalyticsRow(opts, tokensSaved, rtkPointers, estimatedUsdSaved)
+      );
       const breakdownRows = buildEngineBreakdownRows(stats, opts.skillRequestId);
       if (breakdownRows.length > 0) {
         insertCompressionEngineBreakdown(breakdownRows);

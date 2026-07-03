@@ -54,11 +54,7 @@ function computeEffectiveWeight(
     0
   );
   const allocCount = poolAllocations.length;
-  return poolTotalWeight > 0
-    ? allocationWeight
-    : allocCount > 0
-      ? 100 / allocCount
-      : 0;
+  return poolTotalWeight > 0 ? allocationWeight : allocCount > 0 ? 100 / allocCount : 0;
 }
 
 // ---------------------------------------------------------------------------
@@ -67,10 +63,7 @@ function computeEffectiveWeight(
 
 test("equal-split: 2 allocs both weight=0, consumed < budget/2 → ALLOWED", () => {
   // Pool: 2 keys, both weight=0 → effectiveWeight = 50 each
-  const poolAllocations = [
-    { weight: 0 },
-    { weight: 0 },
-  ];
+  const poolAllocations = [{ weight: 0 }, { weight: 0 }];
   const effectiveWeight = computeEffectiveWeight(0, poolAllocations); // 50
   assert.equal(effectiveWeight, 50, "effectiveWeight should be 50 for 2 zero-weight allocs");
 

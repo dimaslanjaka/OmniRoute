@@ -12,8 +12,7 @@ import { Card } from "@/shared/components";
 
 /** Result of parsing the textarea value. */
 export type MappingParseResult =
-  | { ok: true; value: Record<string, string> }
-  | { ok: false; error: string };
+  { ok: true; value: Record<string, string> } | { ok: false; error: string };
 
 /**
  * Parse and validate the raw textarea string.

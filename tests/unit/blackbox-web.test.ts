@@ -338,4 +338,3 @@ test("Provider registry: blackbox-web models are exposed", async () => {
   }
   // If not present, skip assertions - provider may have been temporarily removed
 });
-

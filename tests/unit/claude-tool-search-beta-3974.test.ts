@@ -18,9 +18,8 @@ import assert from "node:assert/strict";
 
 import { DefaultExecutor } from "../../open-sse/executors/default.ts";
 const { selectBetaFlags } = await import("../../open-sse/executors/claudeIdentity.ts");
-const { mergeClientAnthropicBeta, FORWARDABLE_CLIENT_BETAS } = await import(
-  "../../open-sse/config/anthropicHeaders.ts"
-);
+const { mergeClientAnthropicBeta, FORWARDABLE_CLIENT_BETAS } =
+  await import("../../open-sse/config/anthropicHeaders.ts");
 
 const TOOL_SEARCH = "tool-search-tool-2025-10-19";
 

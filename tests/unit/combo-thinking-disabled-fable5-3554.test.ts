@@ -1,9 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import {
-  normalizeThinkingForModel,
-  getModelSpec,
-} from "../../src/shared/constants/modelSpecs.ts";
+import { normalizeThinkingForModel, getModelSpec } from "../../src/shared/constants/modelSpecs.ts";
 
 // Regression for #3554: a combo can substitute the upstream model AFTER the client
 // already chose its `thinking` value. Claude Code sends `thinking:{type:"disabled"}` for

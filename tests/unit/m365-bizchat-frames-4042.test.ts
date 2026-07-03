@@ -61,7 +61,13 @@ const FINAL_UPDATE = {
   arguments: [
     {
       messages: [
-        { text: "pong", author: "bot", sourceAttributions: [], references: {}, contentOrigin: "DeepLeo" },
+        {
+          text: "pong",
+          author: "bot",
+          sourceAttributions: [],
+          references: {},
+          contentOrigin: "DeepLeo",
+        },
       ],
       isLastUpdate: true,
       requestId: "trace-id",

@@ -70,7 +70,10 @@ test("ANTHROPIC_PING_FRAME is a real Anthropic ping event (not a comment)", () =
 
 test("slow handler emits the custom keepaliveFrame (Anthropic ping) before the body", async () => {
   const slow = new Promise<Response>((resolve) => {
-    setTimeout(() => resolve(sseResponse("event: message_start\ndata: {}\n\ndata: [DONE]\n\n")), 120);
+    setTimeout(
+      () => resolve(sseResponse("event: message_start\ndata: {}\n\ndata: [DONE]\n\n")),
+      120
+    );
   });
 
   const result = await withEarlyStreamKeepalive(slow, {

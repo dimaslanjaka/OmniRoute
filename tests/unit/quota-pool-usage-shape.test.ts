@@ -31,10 +31,7 @@ test("usage endpoint wraps the snapshot as { usage: snapshot }", () => {
 test("usePoolUsage unwraps data.usage (not the whole response)", () => {
   const src = read(HOOK);
   assert.ok(src.includes("data?.usage"), "hook must unwrap data.usage");
-  assert.ok(
-    !/setUsage\(\s*data\s*\)/.test(src),
-    "hook must NOT store the raw wrapper as usage"
-  );
+  assert.ok(!/setUsage\(\s*data\s*\)/.test(src), "hook must NOT store the raw wrapper as usage");
 });
 
 test("StackedAllocationBar guards usage.dimensions + dim.perKey", () => {

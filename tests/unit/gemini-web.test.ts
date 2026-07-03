@@ -126,7 +126,10 @@ test("#2832/#3516: missing Playwright browser returns an actionable 503 with coo
     assert.match(json.error, /playwright install|not installed/i, "message must be actionable");
     // No raw stack trace / source path leaks into the body.
     assert.ok(!json.error.includes("\n    at "), "must not contain multi-line stack trace");
-    assert.ok(!json.error.includes("node_modules/playwright-core"), "must not contain node_modules source path");
+    assert.ok(
+      !json.error.includes("node_modules/playwright-core"),
+      "must not contain node_modules source path"
+    );
   } finally {
     playwright.chromium.launch = originalLaunch;
   }

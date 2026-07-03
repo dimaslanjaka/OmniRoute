@@ -8,9 +8,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-const { projectCombo, computeComboCapabilities } = await import(
-  "../../src/app/api/v1/combos/projectCombo.ts"
-);
+const { projectCombo, computeComboCapabilities } =
+  await import("../../src/app/api/v1/combos/projectCombo.ts");
 
 // Deterministic, DB-free capability stub.
 const caps: Record<string, { supportsVision: boolean | null; reasoning: boolean }> = {

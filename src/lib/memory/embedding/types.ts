@@ -35,6 +35,7 @@ export interface EmbeddingResult {
 export interface EmbeddingError {
   source: "remote" | "static" | "transformers";
   model: string | null;
-  reason: "no_key" | "model_load_failed" | "request_failed" | "rate_limited" | "timeout" | "unknown";
+  reason:
+    "no_key" | "model_load_failed" | "request_failed" | "rate_limited" | "timeout" | "unknown";
   message: string; // ALWAYS via sanitizeErrorMessage()
 }

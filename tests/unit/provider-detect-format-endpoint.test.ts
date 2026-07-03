@@ -72,32 +72,20 @@ test("detectFormatFromEndpoint: /chat/completions with input: undefined → open
 // ── /completions (non-chat) path ─────────────────────────────────────────────
 
 test("detectFormatFromEndpoint: /completions path with messages → openai", () => {
-  assert.equal(
-    detectFormatFromEndpoint({ messages: [] }, "/v1/completions"),
-    "openai"
-  );
+  assert.equal(detectFormatFromEndpoint({ messages: [] }, "/v1/completions"), "openai");
 });
 
 test("detectFormatFromEndpoint: /completions path with input and no messages → openai-responses", () => {
-  assert.equal(
-    detectFormatFromEndpoint({ input: "hello" }, "/completions"),
-    "openai-responses"
-  );
+  assert.equal(detectFormatFromEndpoint({ input: "hello" }, "/completions"), "openai-responses");
 });
 
 // ── No path / unknown path — falls back to body-based detection ───────────────
 
 test("detectFormatFromEndpoint: no path falls back to body-based detectFormat", () => {
   // Pure messages body → openai
-  assert.equal(
-    detectFormatFromEndpoint({ messages: [{ role: "user", content: "hi" }] }),
-    "openai"
-  );
+  assert.equal(detectFormatFromEndpoint({ messages: [{ role: "user", content: "hi" }] }), "openai");
 });
 
 test("detectFormatFromEndpoint: unknown path falls back to body-based detectFormat", () => {
-  assert.equal(
-    detectFormatFromEndpoint({ messages: [] }, "/v1/custom/endpoint"),
-    "openai"
-  );
+  assert.equal(detectFormatFromEndpoint({ messages: [] }, "/v1/custom/endpoint"), "openai");
 });

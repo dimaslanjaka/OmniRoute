@@ -51,5 +51,8 @@ test("every ACTIVITY_ICONS entry has non-empty icon and i18nKeyVerb", () => {
 });
 
 test("ACTIVITY_ICONS count equals HIGH_LEVEL_ACTIONS count", () => {
-  assert.equal(Object.keys(ACTIVITY_ICONS).length, (HIGH_LEVEL_ACTIONS as readonly string[]).length);
+  assert.equal(
+    Object.keys(ACTIVITY_ICONS).length,
+    (HIGH_LEVEL_ACTIONS as readonly string[]).length
+  );
 });

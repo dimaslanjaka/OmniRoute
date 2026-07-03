@@ -25,7 +25,10 @@ test("allows up to N requests in the window and blocks the (N+1)-th", () => {
 
   const blocked = limiter.tryAcquire("k", win);
   assert.equal(blocked.allowed, false, "the 4th request in a 3/1000ms window is blocked");
-  assert.ok(blocked.retryAfterMs > 0 && blocked.retryAfterMs <= 1000, "retryAfterMs points at the oldest hit expiry");
+  assert.ok(
+    blocked.retryAfterMs > 0 && blocked.retryAfterMs <= 1000,
+    "retryAfterMs points at the oldest hit expiry"
+  );
 });
 
 test("the window slides: a slot frees once the oldest hit ages out", () => {
@@ -39,7 +42,11 @@ test("the window slides: a slot frees once the oldest hit ages out", () => {
   assert.equal(limiter.tryAcquire("k", win).allowed, false, "2/1000ms is saturated at t=400");
 
   clock.advance(601); // t=1001 — the t=0 hit (>1000ms old) ages out
-  assert.equal(limiter.tryAcquire("k", win).allowed, true, "a slot frees once the oldest hit leaves the window");
+  assert.equal(
+    limiter.tryAcquire("k", win).allowed,
+    true,
+    "a slot frees once the oldest hit leaves the window"
+  );
 });
 
 test("retryAfterMs reflects when the oldest in-window hit expires", () => {
@@ -60,7 +67,11 @@ test("keys are isolated from one another", () => {
   const win = { requests: 1, windowMs: 1000 };
 
   assert.equal(limiter.tryAcquire("a", win).allowed, true);
-  assert.equal(limiter.tryAcquire("b", win).allowed, true, "key b is unaffected by key a being saturated");
+  assert.equal(
+    limiter.tryAcquire("b", win).allowed,
+    true,
+    "key b is unaffected by key a being saturated"
+  );
   assert.equal(limiter.tryAcquire("a", win).allowed, false);
 });
 
@@ -78,7 +89,11 @@ test("reset clears a single key's history", () => {
   assert.equal(limiter.tryAcquire("k", win).allowed, true);
   assert.equal(limiter.tryAcquire("k", win).allowed, false);
   limiter.reset("k");
-  assert.equal(limiter.tryAcquire("k", win).allowed, true, "history cleared → slot available again");
+  assert.equal(
+    limiter.tryAcquire("k", win).allowed,
+    true,
+    "history cleared → slot available again"
+  );
 });
 
 test("blocked attempts do not consume a slot (no double counting)", () => {
@@ -92,5 +107,9 @@ test("blocked attempts do not consume a slot (no double counting)", () => {
   limiter.tryAcquire("k", win);
   limiter.tryAcquire("k", win);
   clock.advance(1001);
-  assert.equal(limiter.tryAcquire("k", win).allowed, true, "only the single successful hit aged out");
+  assert.equal(
+    limiter.tryAcquire("k", win).allowed,
+    true,
+    "only the single successful hit aged out"
+  );
 });

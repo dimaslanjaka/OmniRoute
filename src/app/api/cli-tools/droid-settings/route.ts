@@ -125,9 +125,7 @@ export async function POST(request: Request) {
         {
           error: {
             message: "Invalid request",
-            details: [
-              { field: "models", message: "baseUrl and at least one model are required" },
-            ],
+            details: [{ field: "models", message: "baseUrl and at least one model are required" }],
           },
         },
         { status: 400 }

@@ -751,7 +751,10 @@ test("refreshGitHubToken sends the real public github client_id and no client_se
 
   const body = bodyToString(calls[0].options.body);
   assert.equal(calls[0].url, OAUTH_ENDPOINTS.github.token);
-  assert.ok(PROVIDERS.github.clientId, "PROVIDERS.github.clientId must be populated from the public cred");
+  assert.ok(
+    PROVIDERS.github.clientId,
+    "PROVIDERS.github.clientId must be populated from the public cred"
+  );
   assert.match(body, /client_id=Iv1\./, "the real public github client_id must be sent on refresh");
   assert.ok(!body.includes("client_secret="), "no client_secret for the public github client");
 });

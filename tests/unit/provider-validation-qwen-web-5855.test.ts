@@ -39,7 +39,12 @@ test("qwen-web validator probes /api/v1/auths/ (not /api/v2/models) and returns 
     // Authorization header is valid. The id must be >= 8 chars for the
     // tightened top-level user-id check (#5855) to accept it.
     return new Response(
-      JSON.stringify({ id: "u-1234567", email: "tester@example.com", name: "Tester", role: "user" }),
+      JSON.stringify({
+        id: "u-1234567",
+        email: "tester@example.com",
+        name: "Tester",
+        role: "user",
+      }),
       {
         status: 200,
         headers: { "content-type": "application/json" },

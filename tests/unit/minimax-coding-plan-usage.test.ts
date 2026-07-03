@@ -70,7 +70,10 @@ const CODING_PLAN_PAYLOAD = {
 test("getMiniMaxUsage: Coding Plan 'general' surfaces percent-based windows", async () => {
   const restore = mockFetchOnce(CODING_PLAN_PAYLOAD);
   try {
-    const result = (await getMiniMaxUsage("sk-cp-test", "minimax")) as { quotas?: Quotas; message?: string };
+    const result = (await getMiniMaxUsage("sk-cp-test", "minimax")) as {
+      quotas?: Quotas;
+      message?: string;
+    };
     assert.ok(result.quotas, `expected quotas, got message: ${result.message}`);
     const session = result.quotas["session (5h)"];
     const weekly = result.quotas["weekly (7d)"];
@@ -100,7 +103,10 @@ test("getMiniMaxUsage: Token Plan stays count-based (regression guard)", async (
     ],
   });
   try {
-    const result = (await getMiniMaxUsage("sk-test", "minimax")) as { quotas?: Quotas; message?: string };
+    const result = (await getMiniMaxUsage("sk-test", "minimax")) as {
+      quotas?: Quotas;
+      message?: string;
+    };
     assert.ok(result.quotas, `expected quotas, got message: ${result.message}`);
     const session = result.quotas["session (5h)"];
     assert.ok(session, "session window present");
@@ -124,7 +130,14 @@ test("isMiniMaxTextQuotaModel: accepts general + minimax-m, rejects media", () =
 });
 
 test("getMiniMaxRemainingPercent: reads + clamps + handles missing/string", () => {
-  assert.equal(getMiniMaxRemainingPercent({ current_interval_remaining_percent: 99 }, "current_interval_remaining_percent", "x"), 99);
+  assert.equal(
+    getMiniMaxRemainingPercent(
+      { current_interval_remaining_percent: 99 },
+      "current_interval_remaining_percent",
+      "x"
+    ),
+    99
+  );
   assert.equal(getMiniMaxRemainingPercent({ x: "42" }, "x", "y"), 42);
   assert.equal(getMiniMaxRemainingPercent({ x: 150 }, "x", "y"), 100, "clamps above 100");
   assert.equal(getMiniMaxRemainingPercent({ x: -5 }, "x", "y"), 0, "clamps below 0");

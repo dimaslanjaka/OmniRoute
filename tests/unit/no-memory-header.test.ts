@@ -3,9 +3,8 @@ import assert from "node:assert/strict";
 
 // PRD-2026-06-19: per-request opt-out of memory/skills injection via the
 // `x-omniroute-no-memory` header (mirrors `x-omniroute-no-cache`).
-const { isNoMemoryRequested, getHeaderValueCaseInsensitive } = await import(
-  "../../open-sse/handlers/chatCore/headers.ts"
-);
+const { isNoMemoryRequested, getHeaderValueCaseInsensitive } =
+  await import("../../open-sse/handlers/chatCore/headers.ts");
 
 test("isNoMemoryRequested is true for truthy header values (plain object)", () => {
   for (const v of ["true", "1", "yes", "TRUE", "Yes", " true "]) {

@@ -25,7 +25,10 @@ test("extractCommandPrefix detects command injection", () => {
 });
 
 test("extractFilepathsFromCommand returns read files for read commands", () => {
-  assert.deepEqual(extractFilepathsFromCommand("cat src/a.ts src/b.ts", ""), ["src/a.ts", "src/b.ts"]);
+  assert.deepEqual(extractFilepathsFromCommand("cat src/a.ts src/b.ts", ""), [
+    "src/a.ts",
+    "src/b.ts",
+  ]);
   assert.deepEqual(extractFilepathsFromCommand("head -n5 README.md", ""), ["README.md"]);
 });
 

@@ -58,7 +58,13 @@ describe("resolveServerEntry (#3386 — Electron 403 LOCAL_ONLY fix)", () => {
   it("returns a plain filename (no directory component) in both branches", () => {
     const withWs = resolveServerEntry(FAKE_SERVER_DIR, () => true);
     const withoutWs = resolveServerEntry(FAKE_SERVER_DIR, () => false);
-    assert.ok(!withWs.includes("/") && !withWs.includes("\\"), "server-ws.mjs result must be a bare filename");
-    assert.ok(!withoutWs.includes("/") && !withoutWs.includes("\\"), "server.js result must be a bare filename");
+    assert.ok(
+      !withWs.includes("/") && !withWs.includes("\\"),
+      "server-ws.mjs result must be a bare filename"
+    );
+    assert.ok(
+      !withoutWs.includes("/") && !withoutWs.includes("\\"),
+      "server.js result must be a bare filename"
+    );
   });
 });

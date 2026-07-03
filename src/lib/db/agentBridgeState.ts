@@ -38,8 +38,7 @@ export function getAllAgentBridgeStates(): AgentBridgeStateRow[] {
 export function getAgentBridgeState(agentId: string): AgentBridgeStateRow | null {
   const db = getDbInstance();
   const row = db.prepare("SELECT * FROM agent_bridge_state WHERE agent_id = ?").get(agentId) as
-    | AgentBridgeStateDbRow
-    | undefined;
+    AgentBridgeStateDbRow | undefined;
   return row ? mapRow(row) : null;
 }
 

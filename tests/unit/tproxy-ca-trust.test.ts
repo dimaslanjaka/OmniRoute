@@ -33,7 +33,10 @@ function fakeDeps(over: Record<string, unknown> = {}) {
         removed.push(p);
       },
       tmpDir: () => "/tmp",
-      certConfig: () => ({ dir: "/usr/local/share/ca-certificates", cmd: "update-ca-certificates" }),
+      certConfig: () => ({
+        dir: "/usr/local/share/ca-certificates",
+        cmd: "update-ca-certificates",
+      }),
       platform: () => "linux",
       ...over,
     } as never,
@@ -72,7 +75,11 @@ test("installTproxyCa cleans up the staged file even when a privileged command f
     },
   });
   await assert.rejects(() => installTproxyCa("CA-PEM", "", f.deps), /EPERM/);
-  assert.deepEqual(f.removed, [`/tmp/${TPROXY_CA_CERT_NAME}`], "staged file still cleaned up on failure");
+  assert.deepEqual(
+    f.removed,
+    [`/tmp/${TPROXY_CA_CERT_NAME}`],
+    "staged file still cleaned up on failure"
+  );
 });
 
 test("installTproxyCa throws on non-Linux hosts and runs nothing", async () => {

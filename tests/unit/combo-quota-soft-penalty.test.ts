@@ -146,10 +146,13 @@ test("setCandidateQuotaSoftPenalty — marks candidate via internal registry (wh
         setCandidateQuotaSoftPenalty(target.executionKey, target.stepId, true);
       }
     }
-    return new Response(JSON.stringify({ choices: [{ message: { role: "assistant", content: "ok" } }] }), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
+    return new Response(
+      JSON.stringify({ choices: [{ message: { role: "assistant", content: "ok" } }] }),
+      {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
   };
 
   const combo = {

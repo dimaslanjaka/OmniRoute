@@ -55,9 +55,6 @@ test("#5108 Claude thinking block with neither text nor signature is still flagg
 
 // Existing OpenAI / Responses behavior must be unchanged.
 test("#5108 OpenAI chat completion still validated normally", () => {
-  assert.equal(
-    detectMalformedNonStream({ choices: [{ message: { content: "hi" } }] }),
-    null
-  );
+  assert.equal(detectMalformedNonStream({ choices: [{ message: { content: "hi" } }] }), null);
   assert.equal(detectMalformedNonStream({ choices: [] }), "empty_choices");
 });

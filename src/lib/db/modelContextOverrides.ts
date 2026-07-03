@@ -36,7 +36,10 @@ function isPositiveInteger(value: unknown): value is number {
   return typeof value === "number" && Number.isInteger(value) && value > 0;
 }
 
-function normalizeKey(provider: unknown, modelId: unknown): { provider: string; modelId: string } | null {
+function normalizeKey(
+  provider: unknown,
+  modelId: unknown
+): { provider: string; modelId: string } | null {
   const p = typeof provider === "string" ? provider.trim() : "";
   const m = typeof modelId === "string" ? modelId.trim() : "";
   if (!p || !m) return null;

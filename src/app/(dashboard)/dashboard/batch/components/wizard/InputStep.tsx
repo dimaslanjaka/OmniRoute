@@ -45,7 +45,12 @@ export default function InputStep({ input, onChange, destination }: InputStepPro
   const isCsv = input.kind === "csv";
 
   function handleKindChange(kind: "jsonl" | "csv") {
-    onChange({ kind, fileName: null, rawContent: null, csvMapping: kind === "csv" ? {} : undefined });
+    onChange({
+      kind,
+      fileName: null,
+      rawContent: null,
+      csvMapping: kind === "csv" ? {} : undefined,
+    });
     setCsvJsonl(null);
   }
 

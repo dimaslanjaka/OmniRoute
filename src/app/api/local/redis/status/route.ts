@@ -72,12 +72,24 @@ export async function GET() {
   const runtime = await detectRuntime();
   if (!runtime) {
     return NextResponse.json(
-      { exists: false, running: false, reachable: false, error: "No container runtime (podman or docker) found on PATH" },
+      {
+        exists: false,
+        running: false,
+        reachable: false,
+        error: "No container runtime (podman or docker) found on PATH",
+      },
       { status: 503 }
     );
   }
 
   const { exists, running } = await containerState(runtime);
   const reachable = running ? await pingRedis(HOST_PORT) : false;
-  return NextResponse.json({ runtime, name: CONTAINER_NAME, port: HOST_PORT, exists, running, reachable });
+  return NextResponse.json({
+    runtime,
+    name: CONTAINER_NAME,
+    port: HOST_PORT,
+    exists,
+    running,
+    reachable,
+  });
 }

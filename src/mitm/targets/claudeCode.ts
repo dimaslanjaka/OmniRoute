@@ -31,7 +31,6 @@ export const CLAUDE_CODE_TARGET: MitmTarget = {
     ],
     detection: { command: "which claude", platform: "all" },
   },
-  handler: () =>
-    import("../handlers/claudeCode").then((m) => ({ default: m.ClaudeCodeHandler })),
+  handler: () => import("../handlers/claudeCode").then((m) => ({ default: m.ClaudeCodeHandler })),
   riskNoticeKey: "providers.riskNotice.oauth",
 };

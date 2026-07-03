@@ -161,13 +161,7 @@ export default function HomePageClient({ machineId }: HomePageClientProps) {
   // Electron internal auto-updater state and listeners
   const [electronUpdateStatus, setElectronUpdateStatus] = useState<{
     status:
-      | "idle"
-      | "checking"
-      | "available"
-      | "not-available"
-      | "downloading"
-      | "downloaded"
-      | "error";
+      "idle" | "checking" | "available" | "not-available" | "downloading" | "downloaded" | "error";
     version?: string;
     percent?: number;
     message?: string;
@@ -1121,7 +1115,10 @@ export default function HomePageClient({ machineId }: HomePageClientProps) {
                   <p className="text-text-muted mt-0.5">
                     {t.rich("step1Desc", {
                       endpoint: (chunks) => (
-                        <Link href="/dashboard/api-manager" className="text-primary hover:underline">
+                        <Link
+                          href="/dashboard/api-manager"
+                          className="text-primary hover:underline"
+                        >
                           {chunks}
                         </Link>
                       ),

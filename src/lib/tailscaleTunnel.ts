@@ -35,12 +35,7 @@ type JsonRecord = Record<string, unknown>;
 
 export type TailscaleTunnelInstallSource = "managed" | "path" | "env" | "windows-default";
 export type TailscaleTunnelPhase =
-  | "unsupported"
-  | "not_installed"
-  | "needs_login"
-  | "stopped"
-  | "running"
-  | "error";
+  "unsupported" | "not_installed" | "needs_login" | "stopped" | "running" | "error";
 
 type PersistedTailscaleState = {
   binaryPath?: string | null;
@@ -61,8 +56,7 @@ type BinaryResolution = {
 type TailscaleLoginResult = { alreadyLoggedIn: true } | { authUrl: string };
 
 type TailscaleFunnelResult =
-  | { tunnelUrl: string }
-  | { funnelNotEnabled: true; enableUrl: string | null };
+  { tunnelUrl: string } | { funnelNotEnabled: true; enableUrl: string | null };
 
 export type TailscaleCheckStatus = {
   supported: boolean;

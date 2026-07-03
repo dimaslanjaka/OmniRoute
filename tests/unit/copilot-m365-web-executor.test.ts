@@ -53,7 +53,9 @@ class MockM365WebSocket {
             encodeFrame({
               type: 1,
               target: "update",
-              arguments: [{ messages: [{ text: "In progress...", messageType: "Progress", author: "bot" }] }],
+              arguments: [
+                { messages: [{ text: "In progress...", messageType: "Progress", author: "bot" }] },
+              ],
             }) +
               encodeFrame({
                 type: 1,
@@ -126,7 +128,9 @@ test("CopilotM365WebExecutor streams OpenAI SSE chunks from accumulated M365 upd
       .filter((line) => line.startsWith("data: ") && line !== "data: [DONE]");
     const payloads = dataLines.map((line) => JSON.parse(line.slice("data: ".length)));
     const deltas = payloads.map((payload) => payload.choices?.[0]?.delta?.content).filter(Boolean);
-    const finishReasons = payloads.map((payload) => payload.choices?.[0]?.finish_reason).filter(Boolean);
+    const finishReasons = payloads
+      .map((payload) => payload.choices?.[0]?.finish_reason)
+      .filter(Boolean);
 
     assert.deepEqual(deltas, ["po", "ng"]);
     assert.deepEqual(finishReasons, ["stop"]);

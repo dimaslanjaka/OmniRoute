@@ -75,7 +75,11 @@ test("startCaptureMode wires the injected CA installer into the decrypt listener
   );
   assert.equal(status.running, true);
   assert.equal(status.onPort, 8443);
-  assert.equal(rec.options?.decrypt?.installCa, installCa, "installCa is passed through to decrypt");
+  assert.equal(
+    rec.options?.decrypt?.installCa,
+    installCa,
+    "installCa is passed through to decrypt"
+  );
   assert.equal(rec.options?.decrypt?.uninstallCa, uninstallCa, "uninstallCa is passed through");
 });
 

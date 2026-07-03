@@ -3,15 +3,11 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-const { webSessionCredentialKey, parseProviderSpecificData } = await import(
-  "../../src/lib/db/webSessionDedup.ts"
-);
+const { webSessionCredentialKey, parseProviderSpecificData } =
+  await import("../../src/lib/db/webSessionDedup.ts");
 
 test("webSessionCredentialKey prefers the cookie field", () => {
-  assert.equal(
-    webSessionCredentialKey({ cookie: "session=ABC", note: "x" }),
-    "session=ABC"
-  );
+  assert.equal(webSessionCredentialKey({ cookie: "session=ABC", note: "x" }), "session=ABC");
 });
 
 test("webSessionCredentialKey falls back to token-kind keys", () => {

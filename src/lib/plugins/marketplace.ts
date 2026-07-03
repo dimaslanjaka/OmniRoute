@@ -142,7 +142,8 @@ const SEED_REGISTRY: MarketplaceEntry[] = [
 export async function listMarketplacePlugins(): Promise<MarketplaceEntry[]> {
   try {
     const settings = await getSettings();
-    const url = typeof settings.pluginMarketplaceUrl === "string" ? settings.pluginMarketplaceUrl : null;
+    const url =
+      typeof settings.pluginMarketplaceUrl === "string" ? settings.pluginMarketplaceUrl : null;
     if (url) {
       if (!(await isSafeMarketplaceUrl(url))) {
         console.warn("Custom marketplace URL rejected (SSRF guard):", url);
@@ -155,13 +156,23 @@ export async function listMarketplacePlugins(): Promise<MarketplaceEntry[]> {
       }
       const data = await res.json();
       if (Array.isArray(data)) {
-        return data.filter((entry: unknown) =>
-          entry && typeof entry === "object" && typeof (entry as Record<string, unknown>).name === "string"
+        return data.filter(
+          (entry: unknown) =>
+            entry &&
+            typeof entry === "object" &&
+            typeof (entry as Record<string, unknown>).name === "string"
         ) as MarketplaceEntry[];
       }
-      if (data && typeof data === "object" && Array.isArray((data as Record<string, unknown>).plugins)) {
-        return ((data as Record<string, unknown>).plugins as unknown[]).filter((entry: unknown) =>
-          entry && typeof entry === "object" && typeof (entry as Record<string, unknown>).name === "string"
+      if (
+        data &&
+        typeof data === "object" &&
+        Array.isArray((data as Record<string, unknown>).plugins)
+      ) {
+        return ((data as Record<string, unknown>).plugins as unknown[]).filter(
+          (entry: unknown) =>
+            entry &&
+            typeof entry === "object" &&
+            typeof (entry as Record<string, unknown>).name === "string"
         ) as MarketplaceEntry[];
       }
       console.warn("Custom marketplace returned unrecognized format");

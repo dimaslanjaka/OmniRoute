@@ -4,14 +4,15 @@ import { OMNIROUTE_RESPONSE_HEADERS } from "../../src/shared/constants/headers.t
 import { buildOmniRouteResponseMetaHeaders } from "../../src/domain/omnirouteResponseMeta.ts";
 
 test("headers constant exposes the fallback-attempts key", () => {
-  assert.equal(
-    OMNIROUTE_RESPONSE_HEADERS.fallbackAttempts,
-    "X-OmniRoute-Fallback-Attempts"
-  );
+  assert.equal(OMNIROUTE_RESPONSE_HEADERS.fallbackAttempts, "X-OmniRoute-Fallback-Attempts");
 });
 
 test("buildOmniRouteResponseMetaHeaders emits the fallback-attempts count when > 0", () => {
-  const h = buildOmniRouteResponseMetaHeaders({ model: "gpt", provider: "openai", fallbackAttempts: 2 });
+  const h = buildOmniRouteResponseMetaHeaders({
+    model: "gpt",
+    provider: "openai",
+    fallbackAttempts: 2,
+  });
   assert.equal(h["X-OmniRoute-Fallback-Attempts"], "2");
 });
 

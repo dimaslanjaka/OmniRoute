@@ -19,10 +19,7 @@ test("MAX_SESSIONS constant exists and is 200", () => {
 });
 
 test("SESSION_TTL_MS is 15 minutes (15 * 60 * 1000)", () => {
-  assert.ok(
-    src.includes("15 * 60 * 1000"),
-    "SESSION_TTL_MS should be 15 * 60 * 1000"
-  );
+  assert.ok(src.includes("15 * 60 * 1000"), "SESSION_TTL_MS should be 15 * 60 * 1000");
 });
 
 // ── touchSession creates sessions ────────────────────────────────────────────
@@ -272,7 +269,9 @@ test("cleanup timer is unref'd to avoid blocking process exit", () => {
 // ── Source-level: eviction uses lastActive not createdAt ──────────────────────
 
 test("eviction loop sorts by lastActive, not createdAt", () => {
-  const evictBlock = src.match(/while\s*\(sessions\.size\s*>\s*MAX_SESSIONS\)[\s\S]*?sessions\.delete\(oldestKey\)/);
+  const evictBlock = src.match(
+    /while\s*\(sessions\.size\s*>\s*MAX_SESSIONS\)[\s\S]*?sessions\.delete\(oldestKey\)/
+  );
   assert.ok(evictBlock, "hard-cap eviction loop must exist");
   assert.ok(
     evictBlock[0].includes("entry.lastActive"),

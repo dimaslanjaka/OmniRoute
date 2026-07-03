@@ -19,17 +19,14 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
-const source = readFileSync(
-  resolve(process.cwd(), "src/lib/plugins/pluginWorker.ts"),
-  "utf8"
-);
+const source = readFileSync(resolve(process.cwd(), "src/lib/plugins/pluginWorker.ts"), "utf8");
 
 describe("pluginWorker sandbox — exec permission gating", () => {
   it("gates child_process behind OMNIROUTE_PLUGINS_ALLOW_EXEC === '1'", () => {
     assert.ok(
       source.includes('OMNIROUTE_PLUGINS_ALLOW_EXEC !== "1"') ||
         source.includes("OMNIROUTE_PLUGINS_ALLOW_EXEC !== '1'"),
-      "exec block must check process.env.OMNIROUTE_PLUGINS_ALLOW_EXEC !== \"1\""
+      'exec block must check process.env.OMNIROUTE_PLUGINS_ALLOW_EXEC !== "1"'
     );
   });
 
@@ -82,10 +79,7 @@ describe("pluginWorker sandbox — exec permission gating", () => {
 
 describe("pluginWorker sandbox — vm.runInContext timeout", () => {
   it("passes a finite timeout to vm.runInContext", () => {
-    assert.ok(
-      source.includes("vm.runInContext"),
-      "vm.runInContext must be present in the source"
-    );
+    assert.ok(source.includes("vm.runInContext"), "vm.runInContext must be present in the source");
     // The call must include a timeout option
     assert.match(
       source,
@@ -95,11 +89,7 @@ describe("pluginWorker sandbox — vm.runInContext timeout", () => {
   });
 
   it("timeout value is 10000 ms (10 seconds)", () => {
-    assert.match(
-      source,
-      /timeout\s*:\s*10000/,
-      "timeout must be 10000 ms"
-    );
+    assert.match(source, /timeout\s*:\s*10000/, "timeout must be 10000 ms");
   });
 });
 

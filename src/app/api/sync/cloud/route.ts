@@ -52,7 +52,10 @@ export async function GET() {
       return NextResponse.json({ enabled: true, connected: false });
     }
   } catch (error: unknown) {
-    return NextResponse.json({ enabled: false, error: sanitizeErrorMessage(error) }, { status: 500 });
+    return NextResponse.json(
+      { enabled: false, error: sanitizeErrorMessage(error) },
+      { status: 500 }
+    );
   }
 }
 
@@ -66,7 +69,12 @@ export async function POST(request: any) {
     rawBody = await request.json();
   } catch {
     return NextResponse.json(
-      { error: { message: "Invalid request", details: [{ field: "body", message: "Invalid JSON body" }] } },
+      {
+        error: {
+          message: "Invalid request",
+          details: [{ field: "body", message: "Invalid JSON body" }],
+        },
+      },
       { status: 400 }
     );
   }
@@ -91,7 +99,10 @@ export async function POST(request: any) {
         }
         // Sync first — only enable if sync succeeds
         const enableResult = await syncAndVerify(machineId, createdKey?.key, keys);
-        const enableBody = await enableResult.clone().json().catch(() => ({}));
+        const enableBody = await enableResult
+          .clone()
+          .json()
+          .catch(() => ({}));
         // Only persist cloudEnabled if sync succeeded (body.success exists)
         if (enableBody.success) {
           await updateSettings({ cloudEnabled: true });
@@ -124,10 +135,7 @@ async function syncAndVerify(machineId: string, createdKey: any, existingKeys: a
   // Step 1: Sync data to cloud
   const syncResult: any = await syncToCloud(machineId, createdKey);
   if (syncResult.error) {
-    return NextResponse.json(
-      { error: `Cloud sync failed: ${syncResult.error}` },
-      { status: 502 }
-    );
+    return NextResponse.json({ error: `Cloud sync failed: ${syncResult.error}` }, { status: 502 });
   }
 
   // Build the cloud URL for the frontend to use

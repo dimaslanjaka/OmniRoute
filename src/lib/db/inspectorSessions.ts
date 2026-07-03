@@ -35,10 +35,10 @@ function mapSessionRow(row: InspectorSessionDbRow): InspectorSessionRow {
   };
 }
 
-export function createSession(opts?: {
-  name?: string;
-  profile?: "llm" | "custom" | "all";
-}): { id: string; started_at: string } {
+export function createSession(opts?: { name?: string; profile?: "llm" | "custom" | "all" }): {
+  id: string;
+  started_at: string;
+} {
   const db = getDbInstance();
   const id = randomUUID();
   const started_at = new Date().toISOString();
@@ -71,9 +71,8 @@ export function listSessions(): InspectorSessionRow[] {
 
 export function getSession(id: string): InspectorSessionRow | null {
   const db = getDbInstance();
-  const row = db
-    .prepare("SELECT * FROM inspector_sessions WHERE id = ?")
-    .get(id) as InspectorSessionDbRow | undefined;
+  const row = db.prepare("SELECT * FROM inspector_sessions WHERE id = ?").get(id) as
+    InspectorSessionDbRow | undefined;
   return row ? mapSessionRow(row) : null;
 }
 
@@ -95,9 +94,9 @@ export function appendSessionRequest(sessionId: string, payload: string): number
       `INSERT INTO inspector_session_requests (session_id, seq, payload) VALUES (?, ?, ?)`
     ).run(sessionId, nextSeq, payload);
 
-    db.prepare(
-      "UPDATE inspector_sessions SET request_count = request_count + 1 WHERE id = ?"
-    ).run(sessionId);
+    db.prepare("UPDATE inspector_sessions SET request_count = request_count + 1 WHERE id = ?").run(
+      sessionId
+    );
 
     insertedSeq = nextSeq;
   });

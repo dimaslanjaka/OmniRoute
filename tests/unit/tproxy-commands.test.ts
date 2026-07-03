@@ -13,9 +13,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-const { buildTproxyApplyCommands, buildTproxyRevertCommands, validateTproxyConfig } = await import(
-  "../../src/mitm/tproxy/commands.ts"
-);
+const { buildTproxyApplyCommands, buildTproxyRevertCommands, validateTproxyConfig } =
+  await import("../../src/mitm/tproxy/commands.ts");
 
 const CFG = { dport: 443, mark: 9011, onPort: 8443, routeTable: 233 };
 
@@ -23,7 +22,10 @@ test("apply builds the 4 OUTPUT-based commands in order (ip rule, ip route, OUTP
   const cmds = buildTproxyApplyCommands(CFG);
   assert.equal(cmds.length, 4);
 
-  assert.deepEqual(cmds[0], { bin: "ip", args: ["rule", "add", "fwmark", "9011", "lookup", "233"] });
+  assert.deepEqual(cmds[0], {
+    bin: "ip",
+    args: ["rule", "add", "fwmark", "9011", "lookup", "233"],
+  });
   assert.deepEqual(cmds[1], {
     bin: "ip",
     args: ["route", "add", "local", "0.0.0.0/0", "dev", "lo", "table", "233"],
@@ -31,14 +33,43 @@ test("apply builds the 4 OUTPUT-based commands in order (ip rule, ip route, OUTP
   // OUTPUT marks new local outbound connections to the target port
   assert.deepEqual(cmds[2], {
     bin: "iptables",
-    args: ["-t", "mangle", "-A", "OUTPUT", "-p", "tcp", "--dport", "443", "-j", "MARK", "--set-mark", "9011"],
+    args: [
+      "-t",
+      "mangle",
+      "-A",
+      "OUTPUT",
+      "-p",
+      "tcp",
+      "--dport",
+      "443",
+      "-j",
+      "MARK",
+      "--set-mark",
+      "9011",
+    ],
   });
   // PREROUTING TPROXY assigns the rerouted, marked packets to the listener
   assert.deepEqual(cmds[3], {
     bin: "iptables",
     args: [
-      "-t", "mangle", "-A", "PREROUTING", "-p", "tcp", "--dport", "443",
-      "-m", "mark", "--mark", "9011", "-j", "TPROXY", "--on-port", "8443", "--tproxy-mark", "9011",
+      "-t",
+      "mangle",
+      "-A",
+      "PREROUTING",
+      "-p",
+      "tcp",
+      "--dport",
+      "443",
+      "-m",
+      "mark",
+      "--mark",
+      "9011",
+      "-j",
+      "TPROXY",
+      "--on-port",
+      "8443",
+      "--tproxy-mark",
+      "9011",
     ],
   });
 });
@@ -47,8 +78,23 @@ test("bypassMark adds the anti-loop exclusion to the OUTPUT rule", () => {
   const cmds = buildTproxyApplyCommands({ ...CFG, bypassMark: 1337 });
   const output = cmds[2].args;
   assert.deepEqual(output, [
-    "-t", "mangle", "-A", "OUTPUT", "-p", "tcp", "--dport", "443",
-    "-m", "mark", "!", "--mark", "1337", "-j", "MARK", "--set-mark", "9011",
+    "-t",
+    "mangle",
+    "-A",
+    "OUTPUT",
+    "-p",
+    "tcp",
+    "--dport",
+    "443",
+    "-m",
+    "mark",
+    "!",
+    "--mark",
+    "1337",
+    "-j",
+    "MARK",
+    "--set-mark",
+    "9011",
   ]);
 });
 
@@ -76,7 +122,10 @@ test("revert is the exact inverse of apply, in reverse order", () => {
     bin: "ip",
     args: ["route", "del", "local", "0.0.0.0/0", "dev", "lo", "table", "233"],
   });
-  assert.deepEqual(revert[3], { bin: "ip", args: ["rule", "del", "fwmark", "9011", "lookup", "233"] });
+  assert.deepEqual(revert[3], {
+    bin: "ip",
+    args: ["rule", "del", "fwmark", "9011", "lookup", "233"],
+  });
 
   // -A and -D rule specs match exactly except the op flag (so -D removes the exact -A rule)
   assert.deepEqual(

@@ -143,7 +143,7 @@ test("findRawSql: flags a NEW route with raw SQL in a string literal", () => {
   const tmp = path.join(REPO_ROOT, ".tmp-check-db-rules-raw-sql.route.ts");
   fs.writeFileSync(
     tmp,
-    'const rows = db.prepare(`SELECT id FROM users WHERE x = ?`).all();\n',
+    "const rows = db.prepare(`SELECT id FROM users WHERE x = ?`).all();\n",
     "utf8"
   );
   try {
@@ -156,7 +156,11 @@ test("findRawSql: flags a NEW route with raw SQL in a string literal", () => {
 
 test("findRawSql: does NOT flag SQL that only appears in a comment", () => {
   const tmp = path.join(REPO_ROOT, ".tmp-check-db-rules-comment.route.ts");
-  fs.writeFileSync(tmp, "// SELECT id FROM users -- documentation only\nexport const x = 1;\n", "utf8");
+  fs.writeFileSync(
+    tmp,
+    "// SELECT id FROM users -- documentation only\nexport const x = 1;\n",
+    "utf8"
+  );
   try {
     const offenders = findRawSql([tmp], new Set<string>()) as string[];
     assert.deepEqual(offenders, []);
@@ -229,7 +233,10 @@ test("stale-enforcement: live repo INTENTIONALLY_INTERNAL entries are all still 
   // If it was re-exported (moved to localDb.ts), it must be removed from the allowlist.
   const dbModules = collectDbModules() as string[];
   const reexported = extractReexportedModules(
-    fs.readFileSync(path.resolve(fileURLToPath(import.meta.url), "../../../src/lib/localDb.ts"), "utf8")
+    fs.readFileSync(
+      path.resolve(fileURLToPath(import.meta.url), "../../../src/lib/localDb.ts"),
+      "utf8"
+    )
   ) as Set<string>;
   const liveUnexported = dbModules.filter((mod) => !reexported.has(mod));
   const stale = (reportStaleEntries as (a: Set<string>, l: string[], g: string) => string[])(

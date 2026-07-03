@@ -13,11 +13,17 @@ test("quota-share PoolCard guards usage.dimensions", () => {
   const pc = read("src/app/(dashboard)/dashboard/costs/quota-share/components/PoolCard.tsx");
   assert.ok(pc.includes("usage?.dimensions ?? []"), "computeStatus normalizes dimensions to []");
   assert.ok(pc.includes("!!usage?.dimensions?.length"), "hasDimensions guards dimensions");
-  assert.equal(/[^?.]usage\.dimensions\.length/.test(pc), false, "no unguarded usage.dimensions.length");
+  assert.equal(
+    /[^?.]usage\.dimensions\.length/.test(pc),
+    false,
+    "no unguarded usage.dimensions.length"
+  );
 });
 
 test("quota-share aggregate hook guards dimensions/perKey", () => {
-  const agg = read("src/app/(dashboard)/dashboard/costs/quota-share/hooks/usePoolsUsageAggregate.ts");
+  const agg = read(
+    "src/app/(dashboard)/dashboard/costs/quota-share/hooks/usePoolsUsageAggregate.ts"
+  );
   assert.ok(agg.includes("usage.dimensions ?? []"), "iterates dimensions with ?? []");
   assert.ok(agg.includes("dim.perKey ?? []"), "iterates perKey with ?? []");
 });

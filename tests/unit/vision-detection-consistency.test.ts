@@ -38,9 +38,7 @@ function imageBody() {
     messages: [
       {
         role: "user",
-        content: [
-          { type: "image_url", image_url: { url: "data:image/png;base64,iVBOR" } },
-        ],
+        content: [{ type: "image_url", image_url: { url: "data:image/png;base64,iVBOR" } }],
       },
     ],
   };

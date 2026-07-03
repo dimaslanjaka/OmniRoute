@@ -9,9 +9,8 @@ import assert from "node:assert/strict";
 // conversion in openai-responses.ts, hardened under #2893 to also catch
 // empty/missing call ids). These tests just pin that behavior down explicitly so a
 // future edit to that filter trips a red here.
-const { openaiResponsesToOpenAIRequest } = await import(
-  "../../open-sse/translator/request/openai-responses.ts"
-);
+const { openaiResponsesToOpenAIRequest } =
+  await import("../../open-sse/translator/request/openai-responses.ts");
 
 type ChatMsg = { role: string; tool_call_id?: string; content?: unknown };
 

@@ -306,8 +306,7 @@ export async function buildProviderHealthAutopilotReport(
       (connection) => connection.provider === provider
     );
     const breaker = breakers.find((entry) => (entry as JsonRecord).name === provider) as
-      | JsonRecord
-      | undefined;
+      JsonRecord | undefined;
     const providerLockouts = lockouts.filter(
       (lockout) => providerFromLockout(lockout) === provider
     );

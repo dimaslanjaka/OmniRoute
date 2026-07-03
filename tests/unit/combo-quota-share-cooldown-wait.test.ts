@@ -156,7 +156,10 @@ test("quota-share: 403 quota_exhausted → NO wait, error propagated immediately
   // wait — had it fired — would dominate the elapsed time; assert we stayed far
   // below that (loose bound; the first combo dispatch pays DB/import overhead).
   assert.equal(calls, 1, "quota_exhausted must NOT trigger a wait+redispatch");
-  assert.ok(elapsed < 1500, `quota_exhausted must not wait out a cooldown, but ${elapsed}ms elapsed`);
+  assert.ok(
+    elapsed < 1500,
+    `quota_exhausted must not wait out a cooldown, but ${elapsed}ms elapsed`
+  );
 });
 
 test("quota-share: client abort during the wait → 499", async () => {
@@ -206,7 +209,10 @@ test("non quota-share (priority): 429 propagated immediately, NO wait", async ()
 
   assert.equal(res.status, 429, "priority combo must propagate the 429 unchanged");
   assert.equal(calls, 1, "priority combo must NOT wait+redispatch");
-  assert.ok(elapsed < 1500, `priority combo must not wait out a cooldown, but ${elapsed}ms elapsed`);
+  assert.ok(
+    elapsed < 1500,
+    `priority combo must not wait out a cooldown, but ${elapsed}ms elapsed`
+  );
 });
 
 test("quota-share with comboCooldownWait disabled → 429 propagated, NO wait", async () => {

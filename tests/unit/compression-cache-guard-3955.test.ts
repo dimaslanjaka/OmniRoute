@@ -93,7 +93,9 @@ describe("#3955 automatic-cache prefix protection (no explicit cache_control)", 
   });
 
   it("leaves a NON-caching provider unaffected (no prefix protection without cache_control)", () => {
-    const ctx = detectCachingContext(autoCacheBody("google/gemini-2.5-pro"), { provider: "google" });
+    const ctx = detectCachingContext(autoCacheBody("google/gemini-2.5-pro"), {
+      provider: "google",
+    });
     assert.equal(ctx.isCachingProvider, false);
     const result = getCacheAwareStrategy("aggressive", ctx);
     assert.equal(result.skipSystemPrompt, false);

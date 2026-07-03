@@ -23,8 +23,6 @@ const DEFAULTS: ModelLockoutSettings = {
   useExponentialBackoff: true,
 };
 
-
-
 function NumberField({
   label,
   value,
@@ -91,23 +89,17 @@ export default function ModelLockoutCard() {
         if (!mounted) return;
 
         const raw = (json as Record<string, unknown>).modelLockout as
-          | Record<string, unknown>
-          | undefined;
+          Record<string, unknown> | undefined;
 
         const parsed: ModelLockoutSettings = {
-          enabled:
-            typeof raw?.enabled === "boolean" ? raw.enabled : DEFAULTS.enabled,
+          enabled: typeof raw?.enabled === "boolean" ? raw.enabled : DEFAULTS.enabled,
           errorCodes: Array.isArray(raw?.errorCodes)
             ? [...(raw.errorCodes as number[])].sort((a, b) => a - b)
             : [...DEFAULTS.errorCodes].sort((a, b) => a - b),
           baseCooldownMs:
-            typeof raw?.baseCooldownMs === "number"
-              ? raw.baseCooldownMs
-              : DEFAULTS.baseCooldownMs,
+            typeof raw?.baseCooldownMs === "number" ? raw.baseCooldownMs : DEFAULTS.baseCooldownMs,
           maxCooldownMs:
-            typeof raw?.maxCooldownMs === "number"
-              ? raw.maxCooldownMs
-              : DEFAULTS.maxCooldownMs,
+            typeof raw?.maxCooldownMs === "number" ? raw.maxCooldownMs : DEFAULTS.maxCooldownMs,
           maxBackoffSteps:
             typeof raw?.maxBackoffSteps === "number"
               ? raw.maxBackoffSteps
@@ -123,9 +115,7 @@ export default function ModelLockoutCard() {
         setErrorCodesInput("");
       } catch (error) {
         notify.error(
-          error instanceof Error
-            ? error.message
-            : "Failed to load model lockout settings"
+          error instanceof Error ? error.message : "Failed to load model lockout settings"
         );
       } finally {
         if (mounted) setLoading(false);
@@ -152,8 +142,7 @@ export default function ModelLockoutCard() {
       return `Base Cooldown must be between 5,000ms and 600,000ms`;
     if (d.maxCooldownMs < 5000 || d.maxCooldownMs > 3600000)
       return `Max Cooldown must be between 5,000ms and 3,600,000ms`;
-    if (d.maxCooldownMs < d.baseCooldownMs)
-      return `Max Cooldown must be ≥ Base Cooldown`;
+    if (d.maxCooldownMs < d.baseCooldownMs) return `Max Cooldown must be ≥ Base Cooldown`;
     if (d.maxBackoffSteps < 0 || d.maxBackoffSteps > 20)
       return `Max Backoff Steps must be between 0 and 20`;
     return null;
@@ -192,29 +181,21 @@ export default function ModelLockoutCard() {
             .join("\n");
           if (msg) throw new Error(msg);
         }
-        throw new Error(
-          err?.error?.message || `HTTP ${res.status}`
-        );
+        throw new Error(err?.error?.message || `HTTP ${res.status}`);
       }
       const json = await res.json();
       const raw = (json as Record<string, unknown>).modelLockout as
-        | Record<string, unknown>
-        | undefined;
+        Record<string, unknown> | undefined;
       if (raw) {
         setData({
-          enabled:
-            typeof raw.enabled === "boolean" ? raw.enabled : saveDraft.enabled,
+          enabled: typeof raw.enabled === "boolean" ? raw.enabled : saveDraft.enabled,
           errorCodes: Array.isArray(raw.errorCodes)
             ? [...(raw.errorCodes as number[])].sort((a, b) => a - b)
             : [...saveDraft.errorCodes].sort((a, b) => a - b),
           baseCooldownMs:
-            typeof raw.baseCooldownMs === "number"
-              ? raw.baseCooldownMs
-              : saveDraft.baseCooldownMs,
+            typeof raw.baseCooldownMs === "number" ? raw.baseCooldownMs : saveDraft.baseCooldownMs,
           maxCooldownMs:
-            typeof raw.maxCooldownMs === "number"
-              ? raw.maxCooldownMs
-              : saveDraft.maxCooldownMs,
+            typeof raw.maxCooldownMs === "number" ? raw.maxCooldownMs : saveDraft.maxCooldownMs,
           maxBackoffSteps:
             typeof raw.maxBackoffSteps === "number"
               ? raw.maxBackoffSteps
@@ -231,9 +212,7 @@ export default function ModelLockoutCard() {
       notify.success(t("savedSuccessfully") || "Settings saved successfully");
     } catch (error) {
       notify.error(
-        error instanceof Error
-          ? error.message
-          : "Failed to save model lockout settings"
+        error instanceof Error ? error.message : "Failed to save model lockout settings"
       );
     } finally {
       setSaving(false);
@@ -286,16 +265,16 @@ export default function ModelLockoutCard() {
         notifyRef.current.volume = 0.3;
       }
       void notifyRef.current.play();
-    } catch { /* audio not available */ }
+    } catch {
+      /* audio not available */
+    }
   }, []);
 
   if (loading) {
     return (
       <Card className="p-6">
         <div className="flex items-center gap-2 text-sm text-text-muted">
-          <span className="material-symbols-outlined animate-spin">
-            progress_activity
-          </span>
+          <span className="material-symbols-outlined animate-spin">progress_activity</span>
           Loading model lockout settings...
         </div>
       </Card>
@@ -307,38 +286,22 @@ export default function ModelLockoutCard() {
       <div className="mb-4 flex items-start justify-between gap-4">
         <div className="space-y-2">
           <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-xl text-primary">
-              gpp_maybe
-            </span>
-            <h2 className="text-lg font-bold">
-              {t("modelLockout") || "Model Lockout"}
-            </h2>
+            <span className="material-symbols-outlined text-xl text-primary">gpp_maybe</span>
+            <h2 className="text-lg font-bold">{t("modelLockout") || "Model Lockout"}</h2>
           </div>
-          <p className="text-sm text-text-muted">
-            {t("modelLockoutPageDescription")}
-          </p>
+          <p className="text-sm text-text-muted">{t("modelLockoutPageDescription")}</p>
         </div>
         {hasChanges ? (
           <div className="flex flex-wrap gap-2">
             <Button size="sm" variant="secondary" onClick={handleReset}>
               {tc("cancel")}
             </Button>
-            <Button
-              size="sm"
-              variant="primary"
-              icon="save"
-              onClick={handleSave}
-              disabled={saving}
-            >
+            <Button size="sm" variant="primary" icon="save" onClick={handleSave} disabled={saving}>
               {saving ? tc("saving") || "Saving..." : tc("save")}
             </Button>
           </div>
         ) : (
-          <Button
-            size="sm"
-            variant="secondary"
-            onClick={handleResetDefaults}
-          >
+          <Button size="sm" variant="secondary" onClick={handleResetDefaults}>
             Reset defaults
           </Button>
         )}
@@ -448,9 +411,7 @@ export default function ModelLockoutCard() {
               max={600000}
               suffix="ms"
               hint="5,000ms — 600,000ms"
-              onChange={(baseCooldownMs) =>
-                setDraft((prev) => ({ ...prev, baseCooldownMs }))
-              }
+              onChange={(baseCooldownMs) => setDraft((prev) => ({ ...prev, baseCooldownMs }))}
             />
             <p className="mt-1.5 text-xs text-text-muted">
               {t("modelLockoutBaseCooldownDescription")}
@@ -465,9 +426,7 @@ export default function ModelLockoutCard() {
               max={3600000}
               suffix="ms"
               hint="≥ Base Cooldown — 3,600,000ms"
-              onChange={(maxCooldownMs) =>
-                setDraft((prev) => ({ ...prev, maxCooldownMs }))
-              }
+              onChange={(maxCooldownMs) => setDraft((prev) => ({ ...prev, maxCooldownMs }))}
             />
             <p className="mt-1.5 text-xs text-text-muted">
               {t("modelLockoutMaxCooldownDescription")}
@@ -497,9 +456,7 @@ export default function ModelLockoutCard() {
             label={t("modelLockoutMaxBackoffSteps")}
             value={draft.maxBackoffSteps}
             min={0}
-            onChange={(maxBackoffSteps) =>
-              setDraft((prev) => ({ ...prev, maxBackoffSteps }))
-            }
+            onChange={(maxBackoffSteps) => setDraft((prev) => ({ ...prev, maxBackoffSteps }))}
           />
           <p className="mt-1.5 text-xs text-text-muted">
             {t("modelLockoutMaxBackoffStepsDescription")}

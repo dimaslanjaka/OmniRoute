@@ -1,10 +1,7 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 
-import {
-  PermissionSchema,
-  safeValidateManifest,
-} from "../../src/lib/plugins/manifest.ts";
+import { PermissionSchema, safeValidateManifest } from "../../src/lib/plugins/manifest.ts";
 
 describe("Plugin permission enforcement", () => {
   describe("PermissionSchema", () => {

@@ -1,14 +1,38 @@
 import { describe, it, expect } from "vitest";
-import { previewToRunModel, type PreviewResponse } from "@/app/(dashboard)/dashboard/compression/studio/compressionFlowModel";
+import {
+  previewToRunModel,
+  type PreviewResponse,
+} from "@/app/(dashboard)/dashboard/compression/studio/compressionFlowModel";
 const sample: PreviewResponse = {
-  original: "user: hello world foo bar", compressed: "user: hello world",
-  originalTokens: 6, compressedTokens: 3, savingsPct: 50, mode: "stacked", durationMs: 5,
+  original: "user: hello world foo bar",
+  compressed: "user: hello world",
+  originalTokens: 6,
+  compressedTokens: 3,
+  savingsPct: 50,
+  mode: "stacked",
+  durationMs: 5,
   engineBreakdown: [
-    { engine: "rtk", originalTokens: 6, compressedTokens: 4, savingsPercent: 33, techniquesUsed: ["dedup"] },
-    { engine: "caveman", originalTokens: 4, compressedTokens: 3, savingsPercent: 25, techniquesUsed: ["filler"] },
+    {
+      engine: "rtk",
+      originalTokens: 6,
+      compressedTokens: 4,
+      savingsPercent: 33,
+      techniquesUsed: ["dedup"],
+    },
+    {
+      engine: "caveman",
+      originalTokens: 4,
+      compressedTokens: 3,
+      savingsPercent: 25,
+      techniquesUsed: ["filler"],
+    },
   ],
-  diff: [{ type: "same", text: "hello world" }, { type: "removed", text: " foo bar" }],
-  preservedBlocks: [], ruleRemovals: [],
+  diff: [
+    { type: "same", text: "hello world" },
+    { type: "removed", text: " foo bar" },
+  ],
+  preservedBlocks: [],
+  ruleRemovals: [],
 };
 describe("previewToRunModel", () => {
   it("maps engineBreakdown → steps and keeps the diff", () => {

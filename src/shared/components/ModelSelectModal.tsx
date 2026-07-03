@@ -165,8 +165,7 @@ export default function ModelSelectModal({
     const loadCustomProviderModels = async () => {
       const customProviderIds = activeProviders
         .filter(
-          (p) =>
-            isOpenAICompatibleProvider(p.provider) || isAnthropicCompatibleProvider(p.provider)
+          (p) => isOpenAICompatibleProvider(p.provider) || isAnthropicCompatibleProvider(p.provider)
         )
         .map((p) => p.provider);
 

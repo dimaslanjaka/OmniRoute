@@ -10,10 +10,7 @@ import {
   createSSEDataLineNormalizer,
   isKnownNonClaudeStreamPayload,
 } from "../../utils/streamHelpers.ts";
-import {
-  evaluateResponseValidation,
-  type ResponseValidationConfig,
-} from "./responseValidation.ts";
+import { evaluateResponseValidation, type ResponseValidationConfig } from "./responseValidation.ts";
 import { getReasoningTokens } from "../../../src/lib/usage/tokenAccounting.ts";
 import type { ComboRetryAfter } from "./types.ts";
 
@@ -308,7 +305,8 @@ export async function validateResponseQuality(
 
   const choices = json?.choices;
   if (json?.object === "response") {
-    if (!responsesApiOutputHasContent(json.output)) return { valid: false, reason: "empty_choices" };
+    if (!responsesApiOutputHasContent(json.output))
+      return { valid: false, reason: "empty_choices" };
     const status = typeof json.status === "string" ? json.status : "";
     if (status && !["completed", "done"].includes(status)) {
       return { valid: false, reason: "no_terminal" };

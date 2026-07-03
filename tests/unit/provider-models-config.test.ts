@@ -56,8 +56,7 @@ test("provider models helpers resolve provider IDs through aliases", () => {
 test("getProviderModels returns models for both the alias and the raw provider id", () => {
   // Pick a provider whose alias differs from its id (e.g. "github" → "gh").
   const aliased = Object.entries(PROVIDER_ID_TO_ALIAS).find(([id, a]) => id !== a) as
-    | [string, string]
-    | undefined;
+    [string, string] | undefined;
   if (!aliased) return; // no aliased providers → trivially satisfied
 
   const [rawId, alias] = aliased;

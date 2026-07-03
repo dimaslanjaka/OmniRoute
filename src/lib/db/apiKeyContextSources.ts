@@ -93,9 +93,10 @@ export function setApiKeyContextSource(
 
 export function deleteApiKeyContextSource(apiKeyId: string, sourceType: string): void {
   const db = getDbInstance();
-  db.prepare(
-    "DELETE FROM api_key_context_sources WHERE api_key_id = ? AND source_type = ?"
-  ).run(apiKeyId, sourceType);
+  db.prepare("DELETE FROM api_key_context_sources WHERE api_key_id = ? AND source_type = ?").run(
+    apiKeyId,
+    sourceType
+  );
 }
 
 export function listApiKeyContextSources(apiKeyId: string): ApiKeyContextSource[] {

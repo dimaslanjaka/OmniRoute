@@ -69,8 +69,7 @@ export interface UseProviderConnectionsReturn {
   setBatchTestResults: (r: BatchTestResults) => void;
   setConnections: (
     updater:
-      | ConnectionRowConnection[]
-      | ((prev: ConnectionRowConnection[]) => ConnectionRowConnection[])
+      ConnectionRowConnection[] | ((prev: ConnectionRowConnection[]) => ConnectionRowConnection[])
   ) => void;
   setProviderNode: (node: any) => void;
 

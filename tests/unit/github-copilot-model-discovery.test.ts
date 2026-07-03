@@ -17,11 +17,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-const {
-  GITHUB_COPILOT_MODELS_URL,
-  parseGitHubCopilotModels,
-  fetchGitHubCopilotModels,
-} = await import("../../open-sse/services/githubCopilotModels.ts");
+const { GITHUB_COPILOT_MODELS_URL, parseGitHubCopilotModels, fetchGitHubCopilotModels } =
+  await import("../../open-sse/services/githubCopilotModels.ts");
 
 // A representative slice of a real Copilot /models response. Crucially it
 // includes models the account IS entitled to, and OMITS gemini previews to
@@ -103,8 +100,7 @@ test("#3120 fetchGitHubCopilotModels does a live fetch and returns parsed models
 });
 
 test("#3120/#3121 fetch falls back to static catalog when the live fetch fails", async () => {
-  const fakeFetch = (async () =>
-    new Response("nope", { status: 503 })) as unknown as typeof fetch;
+  const fakeFetch = (async () => new Response("nope", { status: 503 })) as unknown as typeof fetch;
   const fallback = [
     { id: "gpt-5.4", name: "GPT-5.4" },
     { id: "gemini-3.1-pro-preview", name: "Gemini 3.1 Pro" },
@@ -139,5 +135,8 @@ test("fetch falls back when no token is provided (unauthed refresh stays safe)",
 
   assert.equal(called, false, "must not fetch without a token");
   assert.equal(result.source, "fallback");
-  assert.deepEqual(result.models.map((m) => m.id), ["gpt-5.4"]);
+  assert.deepEqual(
+    result.models.map((m) => m.id),
+    ["gpt-5.4"]
+  );
 });

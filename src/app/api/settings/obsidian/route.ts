@@ -12,10 +12,12 @@ import {
 } from "@/lib/db/obsidian";
 import { createObsidianClient } from "@/lib/obsidian/api";
 
-const setTokenSchema = z.object({
-  token: z.string().min(1).max(5000),
-  baseUrl: z.string().url().optional(),
-}).strict();
+const setTokenSchema = z
+  .object({
+    token: z.string().min(1).max(5000),
+    baseUrl: z.string().url().optional(),
+  })
+  .strict();
 
 export async function GET(request: NextRequest) {
   if (!(await isAuthenticated(request))) {

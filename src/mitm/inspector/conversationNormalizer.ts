@@ -79,8 +79,7 @@ function blocksFromOpenAiContent(content: unknown): NormalizedBlock[] {
     } else if (type === "tool_result") {
       out.push({
         type: "tool_result",
-        tool_use_id:
-          typeof block.tool_use_id === "string" ? block.tool_use_id : "",
+        tool_use_id: typeof block.tool_use_id === "string" ? block.tool_use_id : "",
         content: block.content ?? null,
       });
     } else if (typeof block.text === "string") {
@@ -94,10 +93,7 @@ function blocksFromOpenAiContent(content: unknown): NormalizedBlock[] {
  * OpenAI assistant messages may declare `tool_calls`. Each becomes a
  * `tool_use` block alongside any text content.
  */
-function appendOpenAiToolCalls(
-  blocks: NormalizedBlock[],
-  toolCalls: unknown
-): NormalizedBlock[] {
+function appendOpenAiToolCalls(blocks: NormalizedBlock[], toolCalls: unknown): NormalizedBlock[] {
   if (!Array.isArray(toolCalls)) return blocks;
   for (const raw of toolCalls) {
     const tc = asRecord(raw);
@@ -374,9 +370,7 @@ function buildResponseTurns(req: InterceptedRequest): NormalizedTurn[] {
  * Normalize an intercepted LLM request + response into a provider-agnostic
  * conversation. Returns `null` for non-LLM requests or unparseable payloads.
  */
-export function normalizeConversation(
-  req: InterceptedRequest
-): NormalizedConversation | null {
+export function normalizeConversation(req: InterceptedRequest): NormalizedConversation | null {
   if (req.detectedKind !== "llm") return null;
 
   const requestBody = tryParseJson(req.requestBody);

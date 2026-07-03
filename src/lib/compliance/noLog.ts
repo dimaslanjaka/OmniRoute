@@ -64,8 +64,7 @@ function readNoLogFromDb(apiKeyId: string): boolean {
 
   try {
     const row = db.prepare("SELECT no_log FROM api_keys WHERE id = ?").get(apiKeyId) as
-      | { no_log?: number }
-      | undefined;
+      { no_log?: number } | undefined;
     const value = Boolean(row && Number(row.no_log) === 1);
     noLogDbCache.set(apiKeyId, { value, timestamp: Date.now() });
     return value;

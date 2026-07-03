@@ -54,9 +54,7 @@ export default function RetrievePreview({ result }: Props) {
 
       {/* Results list */}
       {memories.length === 0 ? (
-        <div className="p-6 text-center text-sm text-text-muted">
-          {t("playground.noResults")}
-        </div>
+        <div className="p-6 text-center text-sm text-text-muted">{t("playground.noResults")}</div>
       ) : (
         <div className="space-y-2">
           {memories.map((m) => (

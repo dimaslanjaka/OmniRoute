@@ -6,7 +6,13 @@
  * Body: AgentBridgeServerActionSchema
  */
 import { AgentBridgeServerActionSchema } from "@/shared/schemas/agentBridge";
-import { startMitm, stopMitm, getMitmStatus, setCachedPassword, getCachedPassword } from "@/mitm/manager";
+import {
+  startMitm,
+  stopMitm,
+  getMitmStatus,
+  setCachedPassword,
+  getCachedPassword,
+} from "@/mitm/manager";
 import { installCertResult, checkCertInstalled } from "@/mitm/cert/install";
 import { generateCert } from "@/mitm/cert/generate";
 import { resolveMitmDataDir } from "@/mitm/dataDir";
@@ -33,7 +39,8 @@ export async function POST(request: Request): Promise<Response> {
 
   const { action } = parsed.data;
   const raw = body as Record<string, unknown>;
-  const sudoPassword = typeof raw.sudoPassword === "string" ? raw.sudoPassword : (getCachedPassword() ?? "");
+  const sudoPassword =
+    typeof raw.sudoPassword === "string" ? raw.sudoPassword : (getCachedPassword() ?? "");
   const apiKey = typeof raw.apiKey === "string" ? raw.apiKey : (process.env.ROUTER_API_KEY ?? "");
 
   try {

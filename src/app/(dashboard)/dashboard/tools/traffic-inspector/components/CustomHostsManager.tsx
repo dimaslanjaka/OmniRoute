@@ -22,7 +22,11 @@ export function CustomHostsManager({ onClose }: CustomHostsManagerProps) {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const HostInputSchema = z.string().min(1).max(253).regex(/^[a-z0-9.-]+$/i, "Invalid hostname");
+  const HostInputSchema = z
+    .string()
+    .min(1)
+    .max(253)
+    .regex(/^[a-z0-9.-]+$/i, "Invalid hostname");
 
   const fetchHosts = async () => {
     setLoading(true);
@@ -89,7 +93,9 @@ export function CustomHostsManager({ onClose }: CustomHostsManagerProps) {
             className="text-text-muted hover:text-text-main focus-ring rounded"
             aria-label="Close"
           >
-            <span className="material-symbols-outlined" aria-hidden="true">close</span>
+            <span className="material-symbols-outlined" aria-hidden="true">
+              close
+            </span>
           </button>
         </div>
 

@@ -59,7 +59,10 @@ test("profile=llm drops non-llm requests", () => {
 });
 
 test("profile=custom keeps only custom-host source", () => {
-  assert.equal(matchesTrafficFilter(mkReq({ source: "agent-bridge" }), { profile: "custom" }), false);
+  assert.equal(
+    matchesTrafficFilter(mkReq({ source: "agent-bridge" }), { profile: "custom" }),
+    false
+  );
   assert.equal(matchesTrafficFilter(mkReq({ source: "custom-host" }), { profile: "custom" }), true);
 });
 
@@ -70,9 +73,15 @@ test("host filter is a substring match", () => {
 
 test("agent, source, sessionId and sameContextKey filters", () => {
   assert.equal(matchesTrafficFilter(mkReq({ agent: "claude-code" }), { agent: "codex" }), false);
-  assert.equal(matchesTrafficFilter(mkReq({ source: "http-proxy" }), { source: "system-proxy" }), false);
+  assert.equal(
+    matchesTrafficFilter(mkReq({ source: "http-proxy" }), { source: "system-proxy" }),
+    false
+  );
   assert.equal(matchesTrafficFilter(mkReq({ sessionId: "a" }), { sessionId: "b" }), false);
-  assert.equal(matchesTrafficFilter(mkReq({ contextKey: "abc" }), { sameContextKey: "xyz" }), false);
+  assert.equal(
+    matchesTrafficFilter(mkReq({ contextKey: "abc" }), { sameContextKey: "xyz" }),
+    false
+  );
   assert.equal(matchesTrafficFilter(mkReq({ contextKey: "abc" }), { sameContextKey: "abc" }), true);
 });
 

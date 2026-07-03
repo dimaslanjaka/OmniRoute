@@ -7,13 +7,8 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 
-const {
-  frameConnectMessage,
-  decodeConnectFrame,
-  extractDelta,
-  isEndOfStream,
-  foldMessages,
-} = await import("../../open-sse/executors/kimi-web.ts");
+const { frameConnectMessage, decodeConnectFrame, extractDelta, isEndOfStream, foldMessages } =
+  await import("../../open-sse/executors/kimi-web.ts");
 
 describe("frameConnectMessage + decodeConnectMessage round-trip", () => {
   it("round-trips a JSON payload through frame and decode", () => {

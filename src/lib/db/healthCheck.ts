@@ -5,10 +5,7 @@ type SqliteDatabase = SqliteAdapter;
 type JsonRecord = Record<string, unknown>;
 
 export type DbHealthIssueType =
-  | "integrity_check_failed"
-  | "broken_reference"
-  | "stale_snapshot"
-  | "invalid_state";
+  "integrity_check_failed" | "broken_reference" | "stale_snapshot" | "invalid_state";
 
 export interface DbHealthIssue {
   type: DbHealthIssueType;
@@ -383,8 +380,7 @@ function repairInvalidJsonRows(
 function getSchemaVersionIssueCount(db: SqliteDatabase, expectedSchemaVersion: string): number {
   if (!hasRows(db, "db_meta")) return 0;
   const row = db.prepare("SELECT value FROM db_meta WHERE key = 'schema_version'").get() as
-    | { value?: string | null }
-    | undefined;
+    { value?: string | null } | undefined;
   const current = typeof row?.value === "string" ? row.value : null;
   return current === expectedSchemaVersion ? 0 : 1;
 }

@@ -107,7 +107,6 @@ export function describeFetchCause(err: unknown): string {
   return parts.join(" | ") || String(err);
 }
 
-
 function isStreamLikeBody(body: unknown): boolean {
   return (
     body !== null &&

@@ -26,13 +26,17 @@ test("notion tools — wildcard read:* covers read:notion", () => {
 });
 
 test("notion tools — write:notion denied for read-only caller", () => {
-  const result = evaluateToolScopes("notion_append_blocks", ["read:notion"], true, ["write:notion"]);
+  const result = evaluateToolScopes("notion_append_blocks", ["read:notion"], true, [
+    "write:notion",
+  ]);
   assert.equal(result.allowed, false);
   assert.ok(result.missing.includes("write:notion"));
 });
 
 test("notion tools — write:notion allowed with correct scope", () => {
-  const result = evaluateToolScopes("notion_append_blocks", ["write:notion"], true, ["write:notion"]);
+  const result = evaluateToolScopes("notion_append_blocks", ["write:notion"], true, [
+    "write:notion",
+  ]);
   assert.equal(result.allowed, true);
 });
 
@@ -49,13 +53,21 @@ test("notion tools — inline scopes parameter missing scope denied", () => {
 });
 
 test("notion tools — each read tool validates independently", () => {
-  for (const name of ["notion_search", "notion_get_page", "notion_list_block_children", "notion_query_database", "notion_get_database"]) {
+  for (const name of [
+    "notion_search",
+    "notion_get_page",
+    "notion_list_block_children",
+    "notion_query_database",
+    "notion_get_database",
+  ]) {
     const result = evaluateToolScopes(name, ["read:notion"], true, ["read:notion"]);
     assert.equal(result.allowed, true, `${name} should be allowed with read:notion`);
   }
 });
 
 test("notion tools — append_blocks requires write scope", () => {
-  const result = evaluateToolScopes("notion_append_blocks", ["read:notion"], true, ["write:notion"]);
+  const result = evaluateToolScopes("notion_append_blocks", ["read:notion"], true, [
+    "write:notion",
+  ]);
   assert.equal(result.allowed, false);
 });

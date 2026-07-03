@@ -17,11 +17,7 @@ test("extractMemoryTextFromResponse reads OpenAI choices[0].message.content (tri
 test("extractMemoryTextFromResponse joins Claude content text blocks and skips non-text", () => {
   assert.equal(
     extractMemoryTextFromResponse({
-      content: [
-        { type: "text", text: " a " },
-        { type: "image" },
-        { type: "text", text: "b" },
-      ],
+      content: [{ type: "text", text: " a " }, { type: "image" }, { type: "text", text: "b" }],
     }),
     "a\nb"
   );
@@ -65,11 +61,7 @@ test("extractMemoryTextFromRequestBody joins array content parts of the last use
     messages: [
       {
         role: "user",
-        content: [
-          { type: "input_text", text: " a " },
-          { text: "b" },
-          { type: "image_url" },
-        ],
+        content: [{ type: "input_text", text: " a " }, { text: "b" }, { type: "image_url" }],
       },
     ],
   };

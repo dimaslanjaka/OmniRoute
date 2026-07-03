@@ -20,8 +20,7 @@ type CompositeTierValidationSuccess = {
 };
 
 export type CompositeTierValidationResult =
-  | CompositeTierValidationFailure
-  | CompositeTierValidationSuccess;
+  CompositeTierValidationFailure | CompositeTierValidationSuccess;
 
 function isRecord(value: unknown): value is JsonRecord {
   return !!value && typeof value === "object" && !Array.isArray(value);

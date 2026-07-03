@@ -19,11 +19,13 @@ import {
 // Helpers — synthetic allowlists for testing classifyLicense in isolation
 // ---------------------------------------------------------------------------
 
-function makeAllowlist(overrides: Partial<{
-  allowed: string[];
-  allowedExpressions: string[];
-  exceptions: Record<string, { license: string; justification: string; risk: string }>;
-}> = {}) {
+function makeAllowlist(
+  overrides: Partial<{
+    allowed: string[];
+    allowedExpressions: string[];
+    exceptions: Record<string, { license: string; justification: string; risk: string }>;
+  }> = {}
+) {
   return {
     allowed: ["MIT", "Apache-2.0", "BSD-3-Clause", "ISC", "0BSD"],
     allowedExpressions: ["(MIT OR Apache-2.0)", "MIT AND ISC", "MIT*"],
@@ -53,7 +55,10 @@ test("stripVersion: handles scoped package without version", () => {
 });
 
 test("stripVersion: handles nested scope-like name with version", () => {
-  assert.equal(stripVersion("@aws-sdk/client-bedrock-runtime@3.1063.0"), "@aws-sdk/client-bedrock-runtime");
+  assert.equal(
+    stripVersion("@aws-sdk/client-bedrock-runtime@3.1063.0"),
+    "@aws-sdk/client-bedrock-runtime"
+  );
 });
 
 // ---------------------------------------------------------------------------
@@ -150,7 +155,10 @@ test("classifyLicense: LGPL package with registered exception returns 'exception
   });
   const result = classifyLicense("lgpl-native-pkg@1.2.3", "LGPL-3.0-or-later", allowlist);
   assert.equal(result.status, "exception");
-  assert.ok(result.reason.includes("exception"), `reason should mention exception: ${result.reason}`);
+  assert.ok(
+    result.reason.includes("exception"),
+    `reason should mention exception: ${result.reason}`
+  );
 });
 
 test("classifyLicense: scoped package with exception: version is stripped for lookup", () => {

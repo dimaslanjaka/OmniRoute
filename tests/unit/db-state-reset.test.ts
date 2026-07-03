@@ -1,10 +1,7 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 
-import {
-  registerDbStateResetter,
-  resetAllDbModuleState,
-} from "../../src/lib/db/stateReset.ts";
+import { registerDbStateResetter, resetAllDbModuleState } from "../../src/lib/db/stateReset.ts";
 
 describe("stateReset", () => {
   it("registerDbStateResetter adds a resetter that gets called on resetAllDbModuleState", () => {

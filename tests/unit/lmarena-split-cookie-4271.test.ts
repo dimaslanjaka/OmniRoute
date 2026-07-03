@@ -17,10 +17,7 @@
 
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import {
-  LMArenaExecutor,
-  reconstructLMArenaCookie,
-} from "../../open-sse/executors/lmarena.ts";
+import { LMArenaExecutor, reconstructLMArenaCookie } from "../../open-sse/executors/lmarena.ts";
 import { getWebSessionCredentialRequirement } from "../../src/shared/providers/webSessionCredentials.ts";
 
 function cookieHeaderFor(credentials: unknown): string | undefined {

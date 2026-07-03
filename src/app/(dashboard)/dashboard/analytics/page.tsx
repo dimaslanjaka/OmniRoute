@@ -13,12 +13,7 @@ import SearchAnalyticsTab from "./SearchAnalyticsTab";
 import DiversityScoreCard from "./components/DiversityScoreCard";
 
 type AnalyticsTab =
-  | "overview"
-  | "evals"
-  | "search"
-  | "utilization"
-  | "combo-health"
-  | "route-trace";
+  "overview" | "evals" | "search" | "utilization" | "combo-health" | "route-trace";
 
 const ANALYTICS_TABS: Array<{
   id: AnalyticsTab;

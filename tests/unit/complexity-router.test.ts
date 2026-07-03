@@ -58,7 +58,10 @@ test("classifyRequestComplexity — a hard, multi-step coding+reasoning prompt s
       },
     ],
   });
-  assert.ok(hard.score > trivial.score, `hard (${hard.score}) must exceed trivial (${trivial.score})`);
+  assert.ok(
+    hard.score > trivial.score,
+    `hard (${hard.score}) must exceed trivial (${trivial.score})`
+  );
 });
 
 test("classifyRequestComplexity — tool schemas escalate the tier above free", () => {
@@ -83,7 +86,9 @@ test("buildComplexityRoutingHint — a tool-using request floors the hint tier a
     modelTargets(),
     {
       messages: [{ role: "user", content: "weather?" }],
-      tools: [{ function: { name: "get_weather", description: "Get the weather", parameters: {} } }],
+      tools: [
+        { function: { name: "get_weather", description: "Get the weather", parameters: {} } },
+      ],
     },
     NOOP_LOG
   );

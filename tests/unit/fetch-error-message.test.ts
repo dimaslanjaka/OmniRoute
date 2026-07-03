@@ -17,7 +17,9 @@ function jsonResponse(body: unknown, status = 500) {
 // sanitized server-side) message instead.
 
 test("reads the OpenAI-style { error: { message } } shape from buildErrorBody", async () => {
-  const res = jsonResponse({ error: { message: "Failed to compute analytics", type: "api_error" } });
+  const res = jsonResponse({
+    error: { message: "Failed to compute analytics", type: "api_error" },
+  });
   assert.equal(await readFetchErrorMessage(res, FALLBACK), "Failed to compute analytics");
 });
 

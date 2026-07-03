@@ -1,9 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-const { __structuredLoggerInternals } = await import(
-  "../../src/shared/utils/structuredLogger.ts"
-);
+const { __structuredLoggerInternals } = await import("../../src/shared/utils/structuredLogger.ts");
 
 test("pruneRecentErrors enforces a hard cap during a unique-message burst", () => {
   const { recentErrors, pruneRecentErrors, MAX_TRACKED_ERRORS } = __structuredLoggerInternals;

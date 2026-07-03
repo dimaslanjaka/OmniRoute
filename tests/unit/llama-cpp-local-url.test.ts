@@ -34,10 +34,6 @@ test("llama-cpp buildUrl falls back to the local default when no baseUrl is set"
   const url = executor.buildUrl("some-model", true, 0, {});
 
   assert.equal(url, "http://127.0.0.1:8080/v1/chat/completions");
-  assert.equal(
-    new URL(url).hostname,
-    "127.0.0.1",
-    `expected local default host, got ${url}`
-  );
+  assert.equal(new URL(url).hostname, "127.0.0.1", `expected local default host, got ${url}`);
   assert.notEqual(new URL(url).hostname, "api.openai.com");
 });

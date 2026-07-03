@@ -63,7 +63,9 @@ test("processAntigravitySSEPayload accumulates top-level markdown into textConte
 test("processAntigravitySSEPayload uses candidate parts text when no markdown is present", () => {
   const collected = emptyCollected();
   processAntigravitySSEPayload(
-    JSON.stringify({ response: { candidates: [{ content: { parts: [{ text: "from parts" }] } }] } }),
+    JSON.stringify({
+      response: { candidates: [{ content: { parts: [{ text: "from parts" }] } }] },
+    }),
     collected
   );
   assert.equal(collected.textContent, "from parts");

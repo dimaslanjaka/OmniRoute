@@ -25,10 +25,7 @@ import {
   createPreparedRequestLogger,
   type ProviderRequestPrepared,
 } from "../../open-sse/utils/providerRequestLogging.ts";
-import {
-  cloakAntigravityToolPayload,
-  AG_TOOL_SUFFIX,
-} from "../../open-sse/config/toolCloaking.ts";
+import { cloakAntigravityToolPayload, AG_TOOL_SUFFIX } from "../../open-sse/config/toolCloaking.ts";
 
 function makeCapture() {
   const logged: unknown[] = [];
@@ -73,8 +70,16 @@ function makeCloakedAntigravityBody(): Record<string, unknown> {
       tools: [
         {
           functionDeclarations: [
-            { name: CUSTOM_TOOL, description: "Read a file", parameters: { type: "OBJECT", properties: {} } },
-            { name: NATIVE_TOOL, description: "Run a shell command", parameters: { type: "OBJECT", properties: {} } },
+            {
+              name: CUSTOM_TOOL,
+              description: "Read a file",
+              parameters: { type: "OBJECT", properties: {} },
+            },
+            {
+              name: NATIVE_TOOL,
+              description: "Run a shell command",
+              parameters: { type: "OBJECT", properties: {} },
+            },
           ],
         },
       ],
@@ -166,7 +171,11 @@ test("#4181 body() leaves non-cloaked Antigravity traffic untouched (no spurious
       tools: [
         {
           functionDeclarations: [
-            { name: NATIVE_TOOL, description: "Run a shell command", parameters: { type: "OBJECT", properties: {} } },
+            {
+              name: NATIVE_TOOL,
+              description: "Run a shell command",
+              parameters: { type: "OBJECT", properties: {} },
+            },
           ],
         },
       ],

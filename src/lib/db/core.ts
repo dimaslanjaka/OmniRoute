@@ -996,8 +996,7 @@ export function getDbInstance(): SqliteDatabase {
         let hasData = false;
         try {
           const count = probe.prepare("SELECT COUNT(*) as c FROM provider_connections").get() as
-            | { c: number }
-            | undefined;
+            { c: number } | undefined;
           hasData = Boolean(count && count.c > 0);
         } catch {
           // Table might not exist at all — truly incompatible

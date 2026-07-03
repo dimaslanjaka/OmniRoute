@@ -32,10 +32,7 @@ test("LOSSLESS: every original value appears in the tail", () => {
 });
 
 test("POSITIONAL: placeholders are ⟦Q0⟧, ⟦Q1⟧ in match order", () => {
-  const out = applyQuantumLock(
-    sys("a 550e8400-e29b-41d4-a716-446655440000 b 1718900000 c"),
-    ON
-  );
+  const out = applyQuantumLock(sys("a 550e8400-e29b-41d4-a716-446655440000 b 1718900000 c"), ON);
   const body = sysText(out.body);
   assert.ok(prefixOf(body).includes("⟦Q0⟧"));
   assert.ok(prefixOf(body).includes("⟦Q1⟧"));
@@ -54,12 +51,31 @@ test("only the system message is touched", () => {
 });
 
 test("no-op paths: no system msg / empty / no spans / non-string content", () => {
-  assert.equal(applyQuantumLock({ messages: [{ role: "user", content: "550e8400-e29b-41d4-a716-446655440000" }] }, ON).stats.fragments, 0);
+  assert.equal(
+    applyQuantumLock(
+      { messages: [{ role: "user", content: "550e8400-e29b-41d4-a716-446655440000" }] },
+      ON
+    ).stats.fragments,
+    0
+  );
   assert.equal(applyQuantumLock(sys(""), ON).stats.fragments, 0);
   assert.equal(applyQuantumLock(sys("plain prose only"), ON).stats.fragments, 0);
   assert.equal(applyQuantumLock(sys("x"), ON).body.messages !== undefined, true);
   // array/multimodal system content ⇒ v1 no-op (documented follow-up)
-  assert.equal(applyQuantumLock({ messages: [{ role: "system", content: [{ type: "text", text: "550e8400-e29b-41d4-a716-446655440000" }] }] }, ON).stats.fragments, 0);
+  assert.equal(
+    applyQuantumLock(
+      {
+        messages: [
+          {
+            role: "system",
+            content: [{ type: "text", text: "550e8400-e29b-41d4-a716-446655440000" }],
+          },
+        ],
+      },
+      ON
+    ).stats.fragments,
+    0
+  );
 });
 
 test("input body is not mutated (pure)", () => {
@@ -77,10 +93,17 @@ import {
 
 const CACHING = { isCachingProvider: true };
 const NOT_CACHING = { isCachingProvider: false };
-const runEcho = (b: Record<string, unknown>) => ({ body: b, compressed: false, stats: { techniquesUsed: [] } as Record<string, unknown> });
+const runEcho = (b: Record<string, unknown>) => ({
+  body: b,
+  compressed: false,
+  stats: { techniquesUsed: [] } as Record<string, unknown>,
+});
 
 test("resolveQuantumLock returns the config only when enabled", () => {
-  assert.equal(resolveQuantumLock({ config: { quantumLock: { enabled: false } } as never }), undefined);
+  assert.equal(
+    resolveQuantumLock({ config: { quantumLock: { enabled: false } } as never }),
+    undefined
+  );
   assert.ok(resolveQuantumLock({ config: { quantumLock: { enabled: true } } as never }));
   assert.equal(resolveQuantumLock(undefined), undefined);
 });

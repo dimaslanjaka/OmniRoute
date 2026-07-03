@@ -25,8 +25,7 @@ export const TRAE_TARGET: MitmTarget = {
     ],
     detection: { command: "which trae", platform: "all" },
   },
-  handler: () =>
-    import("../handlers/trae").then((m) => ({ default: m.TraeHandler })),
+  handler: () => import("../handlers/trae").then((m) => ({ default: m.TraeHandler })),
   riskNoticeKey: "providers.riskNotice.investigating",
   viability: "investigating",
 };

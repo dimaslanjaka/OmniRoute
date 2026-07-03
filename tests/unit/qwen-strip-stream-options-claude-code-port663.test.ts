@@ -47,12 +47,10 @@ test("port#663 qwen: body.thinking truthy → no stream_options injection", () =
     messages: [{ role: "user", content: "hi" }],
     thinking: { type: "enabled" },
   };
-  const result = executor.transformRequest(
-    "qwen3-coder-plus",
-    body,
-    true,
-    {}
-  ) as Record<string, unknown>;
+  const result = executor.transformRequest("qwen3-coder-plus", body, true, {}) as Record<
+    string,
+    unknown
+  >;
   assert.equal(
     result.stream_options,
     undefined,
@@ -67,12 +65,10 @@ test("port#663 qwen: body.enable_thinking truthy → no stream_options injection
     messages: [{ role: "user", content: "hi" }],
     enable_thinking: true,
   };
-  const result = executor.transformRequest(
-    "qwen3-coder-plus",
-    body,
-    true,
-    {}
-  ) as Record<string, unknown>;
+  const result = executor.transformRequest("qwen3-coder-plus", body, true, {}) as Record<
+    string,
+    unknown
+  >;
   assert.equal(
     result.stream_options,
     undefined,
@@ -86,12 +82,10 @@ test("port#663 qwen: normal streaming request still injects stream_options.inclu
     model: "qwen3-coder-plus",
     messages: [{ role: "user", content: "hi" }],
   };
-  const result = executor.transformRequest(
-    "qwen3-coder-plus",
-    body,
-    true,
-    {}
-  ) as Record<string, unknown>;
+  const result = executor.transformRequest("qwen3-coder-plus", body, true, {}) as Record<
+    string,
+    unknown
+  >;
   assert.deepEqual(
     result.stream_options,
     { include_usage: true },

@@ -10,11 +10,7 @@ import crypto from "crypto";
  * filters by fingerprint, so a discover response cannot be replayed to import
  * a token that no longer exists. See docs/security/SOCKET_DEV_FINDINGS.md §2.
  */
-export function fingerprintZedCredential(
-  service: string,
-  account: string,
-  token: string
-): string {
+export function fingerprintZedCredential(service: string, account: string, token: string): string {
   return crypto
     .createHash("sha256")
     .update(`${service}|${account}|${token}`)

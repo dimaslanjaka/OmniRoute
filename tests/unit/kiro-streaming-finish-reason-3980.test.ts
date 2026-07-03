@@ -7,9 +7,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-const { convertKiroToOpenAI } = await import(
-  "../../open-sse/translator/response/kiro-to-openai.ts"
-);
+const { convertKiroToOpenAI } =
+  await import("../../open-sse/translator/response/kiro-to-openai.ts");
 
 test("#3980 streaming tool call → terminal finish_reason is 'tool_calls'", () => {
   const state: Record<string, unknown> = {};

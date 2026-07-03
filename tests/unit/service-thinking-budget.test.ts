@@ -110,7 +110,10 @@ describe("thinkingBudget", () => {
     });
 
     it("does not override existing thinking config", () => {
-      const body = { model: "claude-3-opus-thinking", thinking: { type: "enabled", budget_tokens: 999 } };
+      const body = {
+        model: "claude-3-opus-thinking",
+        thinking: { type: "enabled", budget_tokens: 999 },
+      };
       const result = mod.ensureThinkingConfig(body);
       assert.equal(result.thinking.budget_tokens, 999);
     });

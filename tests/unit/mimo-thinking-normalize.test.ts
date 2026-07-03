@@ -38,7 +38,11 @@ test("reasoning_effort is removed (MiMo does not understand it) and no thinking 
   const result = normalizeMimoThinking(body) as Record<string, unknown>;
   assert.equal(result.reasoning_effort, undefined, "reasoning_effort must be dropped");
   // Deliberately NOT synthesized — mimo-v2-omni is non-thinking; forcing it on could 400.
-  assert.equal(result.thinking, undefined, "no thinking object is invented from a bare effort hint");
+  assert.equal(
+    result.thinking,
+    undefined,
+    "no thinking object is invented from a bare effort hint"
+  );
 });
 
 test("nested `reasoning` object is removed", () => {

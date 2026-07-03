@@ -36,8 +36,16 @@ test("#2929 route-restriction 403 on /models falls through to the chat probe (va
       apiKey: "fpk_test",
       providerSpecificData: {},
     });
-    assert.equal(result.valid, true, "Fire Pass key valid for chat must validate via the chat probe");
-    assert.equal(callCount, 2, "the chat probe must run after the route-restriction 403 on /models");
+    assert.equal(
+      result.valid,
+      true,
+      "Fire Pass key valid for chat must validate via the chat probe"
+    );
+    assert.equal(
+      callCount,
+      2,
+      "the chat probe must run after the route-restriction 403 on /models"
+    );
   } finally {
     globalThis.fetch = originalFetch;
   }
@@ -59,7 +67,11 @@ test("#2929 a generic 403 on /models is still 'Invalid API key' (no chat probe)"
     });
     assert.equal(result.valid, false);
     assert.equal(result.error, "Invalid API key");
-    assert.equal(callCount, 1, "a non-route-restriction 403 must short-circuit without a chat probe");
+    assert.equal(
+      callCount,
+      1,
+      "a non-route-restriction 403 must short-circuit without a chat probe"
+    );
   } finally {
     globalThis.fetch = originalFetch;
   }

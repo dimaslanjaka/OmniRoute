@@ -11,9 +11,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-const { opencode_goProvider } = await import(
-  "../../open-sse/config/providers/registry/opencode/go/index.ts"
-);
+const { opencode_goProvider } =
+  await import("../../open-sse/config/providers/registry/opencode/go/index.ts");
 
 function modelIds(): string[] {
   return (opencode_goProvider.models ?? []).map((m) => m.id);

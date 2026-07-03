@@ -21,7 +21,9 @@ test("redactSecrets removes x-api-key values", () => {
 });
 
 test("redactSecrets removes a Telegram bot token in a URL", () => {
-  const out = redactSecrets("posting to https://api.telegram.org/bot123456789:AAExampleTokenValue_abcdEFGH/send");
+  const out = redactSecrets(
+    "posting to https://api.telegram.org/bot123456789:AAExampleTokenValue_abcdEFGH/send"
+  );
   assert.match(out, /api\.telegram\.org\/bot\[REDACTED\]/);
   assert.doesNotMatch(out, /AAExampleTokenValue/);
 });

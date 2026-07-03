@@ -13,9 +13,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-const { openaiToClaudeRequest } = await import(
-  "../../open-sse/translator/request/openai-to-claude.ts"
-);
+const { openaiToClaudeRequest } =
+  await import("../../open-sse/translator/request/openai-to-claude.ts");
 
 const baseBody = () => ({
   messages: [{ role: "user", content: "hi" }],

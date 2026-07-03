@@ -97,9 +97,7 @@ test("runMemoryAdd envia POST com content e type", async () => {
   globalThis.fetch = ((url: string, init: any) => {
     capturedUrl = url;
     capturedInit = init;
-    return Promise.resolve(
-      makeResp({ id: "mem_new", type: "factual", content: "test content" })
-    );
+    return Promise.resolve(makeResp({ id: "mem_new", type: "factual", content: "test content" }));
   }) as any;
 
   const { runMemoryAdd } = await import("../../bin/cli/commands/memory.mjs");

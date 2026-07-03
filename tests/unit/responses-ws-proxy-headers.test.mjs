@@ -51,7 +51,10 @@ test("writeHttpError strips chunked transfer-encoding + leaked pipeline headers 
 
   // The single most important invariant: never both framing headers.
   assert.ok(lower.includes("content-length:"), "must emit Content-Length");
-  assert.ok(!lower.includes("transfer-encoding"), "must NOT emit Transfer-Encoding alongside Content-Length");
+  assert.ok(
+    !lower.includes("transfer-encoding"),
+    "must NOT emit Transfer-Encoding alongside Content-Length"
+  );
   assert.ok(!lower.includes("keep-alive"), "must not forward the upstream keep-alive Connection");
   // Exactly one Content-Type (no duplicate from a case-mismatched spread).
   assert.equal((lower.match(/content-type:/g) || []).length, 1, "exactly one Content-Type header");

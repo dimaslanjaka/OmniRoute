@@ -77,11 +77,9 @@ export async function getQuotaStore(): Promise<QuotaStore> {
   // Read settings
   const dbSettings = await readDbSettings();
 
-  const driver =
-    dbSettings.driver ?? process.env.QUOTA_STORE_DRIVER ?? "sqlite";
+  const driver = dbSettings.driver ?? process.env.QUOTA_STORE_DRIVER ?? "sqlite";
 
-  const redisUrl =
-    dbSettings.redisUrl ?? process.env.QUOTA_STORE_REDIS_URL ?? "";
+  const redisUrl = dbSettings.redisUrl ?? process.env.QUOTA_STORE_REDIS_URL ?? "";
 
   if (driver === "redis") {
     if (!redisUrl) {
@@ -93,7 +91,10 @@ export async function getQuotaStore(): Promise<QuotaStore> {
         // The actual connection is lazy; we just need the class to instantiate.
         const store = getRedisQuotaStore(redisUrl);
         _store = store;
-        log.info({ redisUrl: redisUrl.replace(/:[^:@]*@/, ":***@") }, "QuotaStore: using Redis driver");
+        log.info(
+          { redisUrl: redisUrl.replace(/:[^:@]*@/, ":***@") },
+          "QuotaStore: using Redis driver"
+        );
         return _store;
       } catch (err) {
         log.warn(

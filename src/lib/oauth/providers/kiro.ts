@@ -8,9 +8,7 @@ export const kiro = {
     const candidateRegion = regionMatch?.[1] || "us-east-1";
     // Region is sourced from KIRO_CONFIG.tokenUrl (trusted constant) but defensively
     // re-validate before letting it influence later fetches (GHSA-6mwv-4mrm-5p3m).
-    const resolvedRegion = AWS_REGION_PATTERN.test(candidateRegion)
-      ? candidateRegion
-      : "us-east-1";
+    const resolvedRegion = AWS_REGION_PATTERN.test(candidateRegion) ? candidateRegion : "us-east-1";
     const registerPayload: {
       clientName: string;
       clientType: string;

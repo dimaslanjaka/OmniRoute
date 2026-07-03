@@ -22,7 +22,7 @@ import { registerBuiltinCompressionEngines } from "../../../open-sse/services/co
 registerBuiltinCompressionEngines();
 
 const PEM = "-----BEGIN PRIVATE KEY-----\nMIIBVQ0123456789abcdefBODY\n-----END PRIVATE KEY-----";
-const longProse = ("The quick brown fox jumps over the lazy dog. ".repeat(20)).trim();
+const longProse = "The quick brown fox jumps over the lazy dog. ".repeat(20).trim();
 
 function body() {
   return { messages: [{ role: "user", content: `${longProse}\n${PEM}\n${longProse}` }] };
@@ -58,9 +58,7 @@ describe("preview route — riskGate", () => {
     // Dynamic import so the DATA_DIR env above is in effect before the route's DB-path
     // module resolves — guaranteeing the fresh temp DB (setupComplete=false), which means
     // the loopback request below needs no management auth. (Mirrors previewRouteFidelity.)
-    const { POST: previewPOST } = await import(
-      "../../../src/app/api/compression/preview/route.ts"
-    );
+    const { POST: previewPOST } = await import("../../../src/app/api/compression/preview/route.ts");
     const req = new Request("http://localhost/api/compression/preview", {
       method: "POST",
       headers: { "content-type": "application/json" },
@@ -71,7 +69,10 @@ describe("preview route — riskGate", () => {
       }),
     });
     const res = await previewPOST(req as never);
-    const json = (await res.json()) as { riskGate?: { spansProtected: number }; compressed: string };
+    const json = (await res.json()) as {
+      riskGate?: { spansProtected: number };
+      compressed: string;
+    };
     assert.equal(json.riskGate?.spansProtected, 1);
     assert.ok(json.compressed.includes(PEM), "secret preserved in preview output");
   });

@@ -287,7 +287,10 @@ test("transformRequest honors CURSOR_TOOL_DIRECTIVE=0 opt-out", () => {
       {}
     ) as Uint8Array;
     const text = Buffer.from(body).toString("utf8");
-    assert.ok(!text.includes("you MUST issue the actual tool call"), "directive suppressed by opt-out");
+    assert.ok(
+      !text.includes("you MUST issue the actual tool call"),
+      "directive suppressed by opt-out"
+    );
   } finally {
     if (prev === undefined) delete process.env.CURSOR_TOOL_DIRECTIVE;
     else process.env.CURSOR_TOOL_DIRECTIVE = prev;
@@ -308,7 +311,10 @@ test("tool_choice:'none' drops tools and the directive", () => {
     tools: [weatherTool],
     tool_choice: "none",
   });
-  assert.ok(!text.includes("you MUST issue the actual tool call"), "no directive when tool_choice none");
+  assert.ok(
+    !text.includes("you MUST issue the actual tool call"),
+    "no directive when tool_choice none"
+  );
   assert.ok(!text.includes("web_search"), "tool not advertised when tool_choice none");
 });
 

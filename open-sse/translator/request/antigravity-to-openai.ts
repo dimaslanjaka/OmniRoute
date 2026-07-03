@@ -189,12 +189,15 @@ function preserveRequired(obj: unknown): void {
     return;
   }
   const record = obj as JsonRecord;
-  if (Array.isArray(record.required) && record.properties && typeof record.properties === "object") {
+  if (
+    Array.isArray(record.required) &&
+    record.properties &&
+    typeof record.properties === "object"
+  ) {
     const properties = record.properties as JsonRecord;
     const valid = (record.required as unknown[]).filter(
       (field) =>
-        typeof field === "string" &&
-        Object.prototype.hasOwnProperty.call(properties, field)
+        typeof field === "string" && Object.prototype.hasOwnProperty.call(properties, field)
     );
     if (valid.length === 0) {
       delete record.required;

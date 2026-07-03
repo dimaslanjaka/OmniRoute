@@ -15,11 +15,7 @@ test("bare model name resolves to the connection defaultModel", () => {
 });
 
 test('"/"-qualified model name is left untouched even when a defaultModel exists', () => {
-  const effective = resolveBareModelToConnectionDefault(
-    "openai/gpt-4o",
-    "gpt-4o",
-    "gpt-4o-mini"
-  );
+  const effective = resolveBareModelToConnectionDefault("openai/gpt-4o", "gpt-4o", "gpt-4o-mini");
   assert.equal(effective, "gpt-4o");
 });
 

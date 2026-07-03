@@ -85,7 +85,10 @@ describe("quotaPoolSlug", () => {
 
 describe("quotaModelName", () => {
   it("produces the new canonical format with group name", () => {
-    assert.equal(quotaModelName("Pool Principal", "codex", "gpt-5.5"), "qtSd/poolprincipal/codex/gpt-5.5");
+    assert.equal(
+      quotaModelName("Pool Principal", "codex", "gpt-5.5"),
+      "qtSd/poolprincipal/codex/gpt-5.5"
+    );
   });
 
   it("uses the prefix constant", () => {

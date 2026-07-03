@@ -28,9 +28,7 @@ test("convertOpenAIContentToParts: passes https image_url through as fileData fi
 });
 
 test("convertOpenAIContentToParts: passes http image_url through as fileData fileUri (port #344)", () => {
-  const content = [
-    { type: "image_url", image_url: { url: "http://example.com/dog.jpg" } },
-  ];
+  const content = [{ type: "image_url", image_url: { url: "http://example.com/dog.jpg" } }];
 
   const parts = gemini.convertOpenAIContentToParts(content);
 

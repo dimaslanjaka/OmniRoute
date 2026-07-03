@@ -570,8 +570,7 @@ test("chatCore integration: combo requests run proactive compression before Kiro
 
     // Ensure request was translated to Kiro shape (messages are not sent directly upstream).
     const conversationState = capturedTranslatedBody?.conversationState as
-      | Record<string, unknown>
-      | undefined;
+      Record<string, unknown> | undefined;
     assert.ok(conversationState, "Kiro translated request should include conversationState");
 
     const history = Array.isArray(conversationState?.history)
@@ -584,8 +583,7 @@ test("chatCore integration: combo requests run proactive compression before Kiro
 
     const currentMessage = conversationState?.currentMessage as Record<string, unknown> | undefined;
     const userInputMessage = currentMessage?.userInputMessage as
-      | Record<string, unknown>
-      | undefined;
+      Record<string, unknown> | undefined;
     const currentContent =
       typeof userInputMessage?.content === "string" ? userInputMessage.content : "";
     assert.match(currentContent, /Please summarize everything\./);

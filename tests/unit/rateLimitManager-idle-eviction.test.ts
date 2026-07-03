@@ -41,11 +41,21 @@ test("disableRateLimitProtection cleans up limiters and limiterLastUsed", async 
 
 test("limiterLastUsed is populated on each withRateLimit call", async () => {
   enableRateLimitProtection("test-conn-3");
-  const result = await withRateLimit("anthropic", "test-conn-3", "claude-3", async () => "response");
+  const result = await withRateLimit(
+    "anthropic",
+    "test-conn-3",
+    "claude-3",
+    async () => "response"
+  );
   assert.equal(result, "response");
 
   // Second call should also work (limiterLastUsed prevents eviction)
-  const result2 = await withRateLimit("anthropic", "test-conn-3", "claude-3", async () => "response2");
+  const result2 = await withRateLimit(
+    "anthropic",
+    "test-conn-3",
+    "claude-3",
+    async () => "response2"
+  );
   assert.equal(result2, "response2");
 });
 

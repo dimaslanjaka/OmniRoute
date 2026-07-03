@@ -30,7 +30,10 @@ test("applyTproxy runs the 4 OUTPUT-based apply commands in order via the inject
   const r = recorder();
   await applyTproxy(CFG, r.run);
   assert.equal(r.calls.length, 4);
-  assert.deepEqual(r.calls[0], { bin: "ip", args: ["rule", "add", "fwmark", "1", "lookup", "100"] });
+  assert.deepEqual(r.calls[0], {
+    bin: "ip",
+    args: ["rule", "add", "fwmark", "1", "lookup", "100"],
+  });
   assert.equal(r.calls[1].args[0], "route");
   assert.deepEqual(r.calls[2].args.slice(0, 4), ["-t", "mangle", "-A", "OUTPUT"]);
   assert.deepEqual(r.calls[3].args.slice(0, 4), ["-t", "mangle", "-A", "PREROUTING"]);
@@ -50,7 +53,10 @@ test("applyTproxy runs a best-effort full revert when a command fails mid-way", 
   // first revert command tears down the PREROUTING rule (reverse order)
   assert.deepEqual(r.calls[2].args.slice(0, 4), ["-t", "mangle", "-D", "PREROUTING"]);
   // last revert command removes the ip rule
-  assert.deepEqual(r.calls[5], { bin: "ip", args: ["rule", "del", "fwmark", "1", "lookup", "100"] });
+  assert.deepEqual(r.calls[5], {
+    bin: "ip",
+    args: ["rule", "del", "fwmark", "1", "lookup", "100"],
+  });
 });
 
 test("revertTproxy runs all 4 reverts best-effort even if one fails (idempotent)", async () => {

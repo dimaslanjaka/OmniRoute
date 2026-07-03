@@ -99,7 +99,7 @@ test("computes costEstimateUsd for gpt-4o with token counts", () => {
   assert.equal(meta.tokensIn, 1_000_000);
   assert.equal(meta.tokensOut, 100_000);
   // 1M*2.50/1M + 100k*10.00/1M = 2.50 + 1.00 = 3.50
-  assert.equal(meta.costEstimateUsd, 3.50);
+  assert.equal(meta.costEstimateUsd, 3.5);
 });
 
 test("computes costEstimateUsd for claude-3-5-sonnet with token counts", () => {
@@ -114,7 +114,7 @@ test("computes costEstimateUsd for claude-3-5-sonnet with token counts", () => {
   const meta = extractLlmMetadata(req);
   assert.ok(meta);
   // 500k*3.00/1M + 200k*15.00/1M = 1.50 + 3.00 = 4.50
-  assert.equal(meta.costEstimateUsd, 4.50);
+  assert.equal(meta.costEstimateUsd, 4.5);
 });
 
 test("costEstimateUsd is null for unknown model", () => {

@@ -1,6 +1,10 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { resolveAiderTarget, buildAiderConfig, buildAiderRecipe } from "../../../bin/cli/commands/setup-aider.mjs";
+import {
+  resolveAiderTarget,
+  buildAiderConfig,
+  buildAiderRecipe,
+} from "../../../bin/cli/commands/setup-aider.mjs";
 
 test("resolveAiderTarget strips /v1 (LiteLLM appends it)", () => {
   assert.equal(resolveAiderTarget({ remote: "http://vps:20128/v1/" }).apiBase, "http://vps:20128");
@@ -10,7 +14,10 @@ test("resolveAiderTarget: explicit --api-key wins", () => {
   assert.equal(resolveAiderTarget({ remote: "http://x:20128", apiKey: "sk-x" }).apiKey, "sk-x");
 });
 test("buildAiderConfig sets openai-api-base + openai/<model>, preserves rest", () => {
-  const c = buildAiderConfig({ "auto-commits": false }, { apiBase: "http://vps:20128", model: "glm/glm-5.2" });
+  const c = buildAiderConfig(
+    { "auto-commits": false },
+    { apiBase: "http://vps:20128", model: "glm/glm-5.2" }
+  );
   assert.equal(c["openai-api-base"], "http://vps:20128");
   assert.equal(c.model, "openai/glm/glm-5.2");
   assert.equal(c["auto-commits"], false);

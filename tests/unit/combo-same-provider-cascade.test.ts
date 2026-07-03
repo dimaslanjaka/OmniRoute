@@ -81,10 +81,7 @@ test("combo hits a failing provider only once before falling back across same-pr
       });
     }
 
-    if (
-      apiKeyHeader === "sk-claude-cascade" ||
-      authHeader === "Bearer sk-claude-cascade"
-    ) {
+    if (apiKeyHeader === "sk-claude-cascade" || authHeader === "Bearer sk-claude-cascade") {
       claudeCalls += 1;
       return buildClaudeResponse("claude handled the fallback");
     }

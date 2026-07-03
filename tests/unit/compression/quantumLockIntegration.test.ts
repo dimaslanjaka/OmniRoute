@@ -12,7 +12,8 @@ const sysBody = () => ({
     { role: "user", content: "hi" },
   ],
 });
-const sysText = (b: Record<string, unknown>) => (b.messages as Array<{ content: string }>)[0].content;
+const sysText = (b: Record<string, unknown>) =>
+  (b.messages as Array<{ content: string }>)[0].content;
 
 const QL_ON = { quantumLock: { enabled: true } };
 const ANTHROPIC = { cachingContext: { provider: "anthropic" } };

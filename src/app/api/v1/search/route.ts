@@ -180,7 +180,9 @@ async function postHandler(request: Request, context: unknown) {
       // Sort by cost to find cheapest with credentials (fallback-only providers
       // are reached via the last-resort step below, never the primary pick).
       const sortedIds = Object.values(SEARCH_PROVIDERS)
-        .filter((provider) => !provider.fallbackOnly && supportsSearchType(provider, body.search_type))
+        .filter(
+          (provider) => !provider.fallbackOnly && supportsSearchType(provider, body.search_type)
+        )
         .sort((a, b) => a.costPerQuery - b.costPerQuery)
         .map((p) => p.id);
 
@@ -216,7 +218,9 @@ async function postHandler(request: Request, context: unknown) {
     // Find alternate for failover — must bind credentials to the matched provider.
     // Exclude fallback-only providers; they are only used by the last-resort step.
     const otherIds = Object.values(SEARCH_PROVIDERS)
-      .filter((provider) => !provider.fallbackOnly && supportsSearchType(provider, body.search_type))
+      .filter(
+        (provider) => !provider.fallbackOnly && supportsSearchType(provider, body.search_type)
+      )
       .sort((a, b) => a.costPerQuery - b.costPerQuery)
       .map((p) => p.id)
       .filter((id) => id !== providerConfig.id);

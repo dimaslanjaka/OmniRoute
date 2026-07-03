@@ -37,13 +37,10 @@ test("ModelScope policy parses per-model and total rate-limit headers", () => {
 });
 
 test("ModelScope policy keeps temporary 429 headers retryable", () => {
-  const decision = classifyModelScope429(
-    "Throttling: current batch requests reached the limit",
-    {
-      "modelscope-ratelimit-model-requests-remaining": "0",
-      "modelscope-ratelimit-model-requests-limit": "10",
-    }
-  );
+  const decision = classifyModelScope429("Throttling: current batch requests reached the limit", {
+    "modelscope-ratelimit-model-requests-remaining": "0",
+    "modelscope-ratelimit-model-requests-limit": "10",
+  });
 
   assert.equal(decision.kind, "rate_limited");
   assert.equal(decision.retryable, true);

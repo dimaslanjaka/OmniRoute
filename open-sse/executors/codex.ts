@@ -1159,9 +1159,7 @@ export class CodexExecutor extends BaseExecutor {
       headers["chatgpt-account-id"] = workspaceId;
     }
     const clientIdentity = credentials?.providerSpecificData?.codexClientIdentity as
-      | CodexClientIdentity
-      | null
-      | undefined;
+      CodexClientIdentity | null | undefined;
 
     // Originator header — identifies the client type to the Codex backend.
     // Ref: openai/codex login/src/auth/default_client.rs DEFAULT_ORIGINATOR = "codex_cli_rs"
@@ -1481,9 +1479,7 @@ export class CodexExecutor extends BaseExecutor {
       applyCodexClientMetadata(
         body,
         credentials?.providerSpecificData?.codexClientIdentity as
-          | CodexClientIdentity
-          | null
-          | undefined
+          CodexClientIdentity | null | undefined
       );
     }
 

@@ -96,7 +96,11 @@ test("buildWsUrl targets the substrate Chathub with the individual-tier query", 
 });
 
 test("redactWsUrl strips the access_token so the URL is safe to log", () => {
-  const url = buildWsUrl({ host: "substrate.office.com", chathubPath: "u@t", accessToken: "SECRET" });
+  const url = buildWsUrl({
+    host: "substrate.office.com",
+    chathubPath: "u@t",
+    accessToken: "SECRET",
+  });
   const redacted = redactWsUrl(url);
   assert.ok(!redacted.includes("SECRET"), "token must not survive redaction");
   assert.match(redacted, /access_token=REDACTED/);

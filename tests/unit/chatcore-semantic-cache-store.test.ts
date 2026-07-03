@@ -6,9 +6,8 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 
-const { storeSemanticCacheResponse } = await import(
-  "../../open-sse/handlers/chatCore/semanticCacheStore.ts"
-);
+const { storeSemanticCacheResponse } =
+  await import("../../open-sse/handlers/chatCore/semanticCacheStore.ts");
 
 type Stored = { sig: unknown; model: string; response: unknown; tokens: number };
 

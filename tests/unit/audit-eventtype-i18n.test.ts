@@ -23,9 +23,20 @@ test("audit: compliance.eventTypes exists with en/pt-BR parity and key coverage"
   const rawPtKeys = Object.keys(rawPt.compliance?.eventTypes ?? {});
   assert.ok(rawEnKeys.length >= 30, `expected >=30 event-type labels, got ${rawEnKeys.length}`);
   assert.deepEqual(rawEnKeys.sort(), rawPtKeys.sort(), "en/pt-BR eventTypes keys must match");
-  for (const k of ["provider.credentials.created", "auth.login.success", "quota.pool.created", "sync.token.revoked"]) {
-    assert.ok(getNestedValue(en.compliance.eventTypes as Record<string, unknown>, k), `en missing eventTypes.${k}`);
-    assert.ok(getNestedValue(pt.compliance.eventTypes as Record<string, unknown>, k), `pt-BR missing eventTypes.${k}`);
+  for (const k of [
+    "provider.credentials.created",
+    "auth.login.success",
+    "quota.pool.created",
+    "sync.token.revoked",
+  ]) {
+    assert.ok(
+      getNestedValue(en.compliance.eventTypes as Record<string, unknown>, k),
+      `en missing eventTypes.${k}`
+    );
+    assert.ok(
+      getNestedValue(pt.compliance.eventTypes as Record<string, unknown>, k),
+      `pt-BR missing eventTypes.${k}`
+    );
   }
 });
 

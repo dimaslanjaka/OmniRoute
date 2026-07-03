@@ -39,10 +39,7 @@ test("unparseable baseUrl falls back to third-party (Bearer emitted)", () => {
 
 test("source no longer uses substring .includes for the official-host check", () => {
   const here = path.dirname(fileURLToPath(import.meta.url));
-  const src = fs.readFileSync(
-    path.join(here, "../../open-sse/executors/default.ts"),
-    "utf8"
-  );
+  const src = fs.readFileSync(path.join(here, "../../open-sse/executors/default.ts"), "utf8");
   assert.equal(
     src.includes('.includes("api.anthropic.com")'),
     false,

@@ -17,13 +17,7 @@
 // ── Types ───────────────────────────────────────────────────────────────────
 
 export type TaskType =
-  | "coding"
-  | "creative"
-  | "analysis"
-  | "vision"
-  | "summarization"
-  | "background"
-  | "chat";
+  "coding" | "creative" | "analysis" | "vision" | "summarization" | "background" | "chat";
 
 interface TaskPattern {
   patterns: string[];

@@ -162,8 +162,7 @@ export async function healthCheck(
   const db = (await import("../db/core")).getDbInstance();
 
   const server = db.prepare("SELECT url FROM community_servers WHERE id = ?").get(serverId) as
-    | { url: string }
-    | undefined;
+    { url: string } | undefined;
 
   if (!server) return { healthy: false, latencyMs: 0 };
 

@@ -9,7 +9,13 @@ export type {
   PlaygroundState,
 } from "./codeExport";
 
-export { PlaygroundStateSchema, API_KEY_PLACEHOLDER, exportCode, exportAllLanguages, endpointToPath } from "./codeExport";
+export {
+  PlaygroundStateSchema,
+  API_KEY_PLACEHOLDER,
+  exportCode,
+  exportAllLanguages,
+  endpointToPath,
+} from "./codeExport";
 
 export type { ImprovePromptRequest, ImprovePromptResult } from "./promptImprover";
 
@@ -106,7 +112,7 @@ export function getModelPricing(model: string): ProviderPricing | null {
  * Required by §3 contract: `getProviderPricing(model): { inUsdPer1k, outUsdPer1k, estimated: true } | null`.
  */
 export function getProviderPricing(
-  model: string,
+  model: string
 ): { inUsdPer1k: number; outUsdPer1k: number; estimated: true } | null {
   const entry = MODEL_PRICING_TABLE[model];
   if (!entry) return null;

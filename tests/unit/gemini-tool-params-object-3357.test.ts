@@ -49,9 +49,7 @@ describe("buildGeminiTools — function parameters must be an OBJECT schema (#33
   });
 
   it("defaults missing parameters to a type:object schema", () => {
-    const tools = buildGeminiTools([
-      { type: "function", function: { name: "bare" } },
-    ]);
+    const tools = buildGeminiTools([{ type: "function", function: { name: "bare" } }]);
     assert.equal(paramsOf(tools).type, "object");
   });
 

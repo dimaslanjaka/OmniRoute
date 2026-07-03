@@ -28,7 +28,12 @@ test("standard mode compresses even when cavemanConfig.enabled is false (B-MODE-
   };
   const res = applyCompression(body, "standard", {
     config: {
-      cavemanConfig: { enabled: false, compressRoles: ["user"], intensity: "full", minMessageLength: 0 },
+      cavemanConfig: {
+        enabled: false,
+        compressRoles: ["user"],
+        intensity: "full",
+        minMessageLength: 0,
+      },
     },
   } as Record<string, unknown>);
   assert.ok(res.compressed, "standard mode must run caveman regardless of cavemanConfig.enabled");

@@ -36,7 +36,9 @@ describe("normalizeMemorySettings — plan 21 D9 new fields", () => {
   });
 
   it("reads embeddingProviderModel", () => {
-    const s = normalizeMemorySettings({ memoryEmbeddingProviderModel: "openai/text-embedding-3-small" });
+    const s = normalizeMemorySettings({
+      memoryEmbeddingProviderModel: "openai/text-embedding-3-small",
+    });
     assert.equal(s.embeddingProviderModel, "openai/text-embedding-3-small");
   });
 

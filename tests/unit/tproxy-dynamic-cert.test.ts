@@ -10,9 +10,8 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { X509Certificate } from "node:crypto";
 
-const { generateMitmCa, issueLeafCert, DynamicCertStore } = await import(
-  "../../src/mitm/tproxy/dynamicCert.ts"
-);
+const { generateMitmCa, issueLeafCert, DynamicCertStore } =
+  await import("../../src/mitm/tproxy/dynamicCert.ts");
 
 test("generateMitmCa produces a CA certificate (basicConstraints CA, key+cert PEM)", async () => {
   const ca = await generateMitmCa("OmniRoute MITM CA (test)");

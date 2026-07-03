@@ -243,3 +243,4 @@ mise.toml
 *.diff
 *.version
 .eslintcache
+*.bak

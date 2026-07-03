@@ -21,7 +21,10 @@ export default function ActivityFeed({ entries, referenceNowMs }: ActivityFeedPr
         role="status"
         aria-live="polite"
       >
-        <span className="material-symbols-outlined text-[48px] text-[var(--color-text-muted)] mb-4" aria-hidden="true">
+        <span
+          className="material-symbols-outlined text-[48px] text-[var(--color-text-muted)] mb-4"
+          aria-hidden="true"
+        >
           timeline
         </span>
         <h3 className="text-base font-semibold text-[var(--color-text-main)] mb-1">

@@ -140,7 +140,7 @@ test("shiftsInRange: range spanning one full cycle returns all 4 members", () =>
   assert.equal(shifts.length, 4);
   assert.deepEqual(
     shifts.map((s) => s.member),
-    ["alice", "bob", "carol", "dave"],
+    ["alice", "bob", "carol", "dave"]
   );
 });
 
@@ -153,14 +153,14 @@ test("shiftsInRange: empty range returns empty array", () => {
 test("shiftsInRange: reversed range throws", () => {
   assert.throws(
     () => shiftsInRange("2026-06-15T00:00:00Z", "2026-06-01T00:00:00Z", ROTATION),
-    /empty or reversed/,
+    /empty or reversed/
   );
 });
 
 test("shiftsInRange: invalid datetime throws", () => {
   assert.throws(
     () => shiftsInRange("not-a-date", "2026-06-15T00:00:00Z", ROTATION),
-    /invalid date/,
+    /invalid date/
   );
 });
 

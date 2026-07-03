@@ -50,8 +50,7 @@ export function getCursorVersion(): string {
     const db = new Database(getCursorDbPath(), { readonly: true, fileMustExist: true });
     try {
       const row = db.prepare("SELECT value FROM itemTable WHERE key = ?").get(DB_KEY) as
-        | { value: string }
-        | undefined;
+        { value: string } | undefined;
       if (row?.value) {
         cachedVersion = row.value;
         cachedAt = now;

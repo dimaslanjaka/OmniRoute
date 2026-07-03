@@ -7,14 +7,20 @@ import {
 } from "../../../bin/cli/commands/setup-kilo.mjs";
 
 test("buildKiloAuth sets the openai-compatible provider (baseUrl WITH /v1, model)", () => {
-  const auth = buildKiloAuth({}, { apiKey: "sk-x", baseUrl: "http://vps:20128/v1", model: "glm/glm-5.2" });
+  const auth = buildKiloAuth(
+    {},
+    { apiKey: "sk-x", baseUrl: "http://vps:20128/v1", model: "glm/glm-5.2" }
+  );
   assert.equal(auth["openai-compatible"].apiKey, "sk-x");
   assert.equal(auth["openai-compatible"].baseUrl, "http://vps:20128/v1");
   assert.equal(auth["openai-compatible"].model, "glm/glm-5.2");
 });
 
 test("buildKiloAuth merges (preserves other providers/keys)", () => {
-  const auth = buildKiloAuth({ anthropic: { apiKey: "keep" } }, { apiKey: "k", baseUrl: "http://x/v1", model: "m" });
+  const auth = buildKiloAuth(
+    { anthropic: { apiKey: "keep" } },
+    { apiKey: "k", baseUrl: "http://x/v1", model: "m" }
+  );
   assert.equal(auth.anthropic.apiKey, "keep");
   assert.equal(auth["openai-compatible"].model, "m");
 });
@@ -37,9 +43,15 @@ test("buildKiloVscodeSettings sets kilocode.customProvider + defaultModel, prese
 
 test("resolveKiloTarget ensures /v1 on the base URL (Kilo wants it)", () => {
   assert.equal(resolveKiloTarget({ remote: "http://vps:20128" }).baseUrl, "http://vps:20128/v1");
-  assert.equal(resolveKiloTarget({ remote: "http://vps:20128/v1/" }).baseUrl, "http://vps:20128/v1");
+  assert.equal(
+    resolveKiloTarget({ remote: "http://vps:20128/v1/" }).baseUrl,
+    "http://vps:20128/v1"
+  );
 });
 
 test("resolveKiloTarget: explicit --api-key wins", () => {
-  assert.equal(resolveKiloTarget({ remote: "http://x:20128", apiKey: "sk-explicit" }).apiKey, "sk-explicit");
+  assert.equal(
+    resolveKiloTarget({ remote: "http://x:20128", apiKey: "sk-explicit" }).apiKey,
+    "sk-explicit"
+  );
 });

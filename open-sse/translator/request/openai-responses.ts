@@ -623,8 +623,7 @@ export function openaiToOpenAIResponsesRequest(
                 }
                 if (contentItem.type === "image_url") {
                   const imgUrl = contentItem.image_url as
-                    | string
-                    | { url?: string; detail?: string };
+                    string | { url?: string; detail?: string };
                   const imgResult: JsonRecord = {
                     type: "input_image",
                     image_url: typeof imgUrl === "string" ? imgUrl : imgUrl?.url || "",

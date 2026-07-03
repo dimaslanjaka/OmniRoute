@@ -7,9 +7,8 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 
-const { assembleStreamingPipeline } = await import(
-  "../../open-sse/handlers/chatCore/streamingPipeline.ts"
-);
+const { assembleStreamingPipeline } =
+  await import("../../open-sse/handlers/chatCore/streamingPipeline.ts");
 
 // A fake stream: each pipeThrough appends the transform's tag and returns a new fake stream.
 function fakeStream(tag: string, log: string[]) {

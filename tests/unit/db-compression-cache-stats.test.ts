@@ -1,10 +1,7 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 
-import {
-  recordCacheStats,
-  getCacheStatsSummary,
-} from "../../src/lib/db/compressionCacheStats.ts";
+import { recordCacheStats, getCacheStatsSummary } from "../../src/lib/db/compressionCacheStats.ts";
 
 describe("compressionCacheStats", () => {
   it("getCacheStatsSummary returns summary", () => {

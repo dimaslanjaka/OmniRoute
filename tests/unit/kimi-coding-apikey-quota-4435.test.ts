@@ -29,8 +29,7 @@ before(() => {
     return {
       ok: true,
       status: 200,
-      text: async () =>
-        JSON.stringify({ usage: { limit: "100", used: "10", remaining: "90" } }),
+      text: async () => JSON.stringify({ usage: { limit: "100", used: "10", remaining: "90" } }),
     } as unknown as Response;
   }) as typeof fetch;
 });

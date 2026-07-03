@@ -33,7 +33,10 @@ test("appendToolCallArgumentDelta dedups an identical full-snapshot repeat", () 
 
 test("appendToolCallArgumentDelta replaces a growing full snapshot instead of concatenating", () => {
   assert.equal(appendToolCallArgumentDelta('{"a"', '{"a":1}'), '{"a":1}');
-  assert.equal(appendToolCallArgumentDelta('{"command":"ec', '{"command":"echo hi"}'), '{"command":"echo hi"}');
+  assert.equal(
+    appendToolCallArgumentDelta('{"command":"ec', '{"command":"echo hi"}'),
+    '{"command":"echo hi"}'
+  );
 });
 
 test("appendToolCallArgumentDelta handles empty / non-string inputs", () => {

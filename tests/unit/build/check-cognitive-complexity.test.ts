@@ -46,9 +46,7 @@ test("countCognitiveViolations: no cognitive-complexity messages returns 0", () 
 });
 
 test("countCognitiveViolations: single cognitive-complexity violation in one file", () => {
-  const report = [
-    makeResult("src/foo.ts", [makeMsg("sonarjs/cognitive-complexity")]),
-  ];
+  const report = [makeResult("src/foo.ts", [makeMsg("sonarjs/cognitive-complexity")])];
   assert.equal(countCognitiveViolations(report), 1);
 });
 
@@ -58,9 +56,7 @@ test("countCognitiveViolations: multiple cognitive-complexity violations across 
       makeMsg("sonarjs/cognitive-complexity"),
       makeMsg("sonarjs/cognitive-complexity"),
     ]),
-    makeResult("open-sse/bar.ts", [
-      makeMsg("sonarjs/cognitive-complexity"),
-    ]),
+    makeResult("open-sse/bar.ts", [makeMsg("sonarjs/cognitive-complexity")]),
   ];
   assert.equal(countCognitiveViolations(report), 3);
 });

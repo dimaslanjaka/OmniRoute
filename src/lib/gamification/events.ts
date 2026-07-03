@@ -128,8 +128,7 @@ async function checkAndUnlockBadge(apiKeyId: string, badgeId: string): Promise<v
     const badgeRow = getDbInstance()
       .prepare("SELECT name, description, icon, rarity FROM badge_definitions WHERE id = ?")
       .get(badgeId) as
-      | { name: string; description: string | null; icon: string | null; rarity: string }
-      | undefined;
+      { name: string; description: string | null; icon: string | null; rarity: string } | undefined;
 
     // Record notification for SSE toast
     const { recordBadgeUnlock } = await import("./notifications");

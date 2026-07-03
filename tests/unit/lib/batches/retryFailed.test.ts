@@ -94,10 +94,7 @@ test("buildRetryPlan: all input custom_ids in errorJsonl → all lines in newJso
   assert.equal(result.retriableLines, 3);
   assert.equal(result.skippedLines, 0);
   const parsed = parseLines(result.newJsonl);
-  assert.deepEqual(
-    parsed.map((p) => p.custom_id).sort(),
-    ids.sort()
-  );
+  assert.deepEqual(parsed.map((p) => p.custom_id).sort(), ids.sort());
 });
 
 // ── Invalid JSON in input ─────────────────────────────────────────────────────

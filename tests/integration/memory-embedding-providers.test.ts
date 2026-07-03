@@ -22,9 +22,8 @@ const core = await import("../../src/lib/db/core.ts");
 const localDb = await import("../../src/lib/localDb.ts");
 
 // Import route AFTER setting DATA_DIR
-const embeddingProvidersRoute = await import(
-  "../../src/app/api/memory/embedding-providers/route.ts"
-);
+const embeddingProvidersRoute =
+  await import("../../src/app/api/memory/embedding-providers/route.ts");
 const { GET } = embeddingProvidersRoute;
 
 // ── Helpers ──

@@ -68,7 +68,11 @@ test("mid-stream continuation: stitches the suffix after a silent post-commit tr
   const out = await collectText(stream);
   const scan = scanOpenAiSseText(out);
   assert.equal(continueArg, "Hello wor", "continuation is prefilled with the text already sent");
-  assert.equal(scan.text, "Hello world!", "client sees the full answer, overlap trimmed, exactly once");
+  assert.equal(
+    scan.text,
+    "Hello world!",
+    "client sees the full answer, overlap trimmed, exactly once"
+  );
   assert.equal(scan.terminal, true, "the recovered stream ends with a terminal marker");
   assert.equal(finalizeCount, 1, "finalize runs exactly once");
 });
@@ -113,5 +117,9 @@ test("tool-call in flight is never continued (would corrupt tool JSON)", async (
     },
   });
   await collectText(stream);
-  assert.equal(continued, false, "continuation must NOT fire once a tool call has started streaming");
+  assert.equal(
+    continued,
+    false,
+    "continuation must NOT fire once a tool call has started streaming"
+  );
 });

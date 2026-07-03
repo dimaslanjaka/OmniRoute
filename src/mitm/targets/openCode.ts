@@ -28,7 +28,6 @@ export const OPEN_CODE_TARGET: MitmTarget = {
     ],
     detection: { command: "which opencode", platform: "all" },
   },
-  handler: () =>
-    import("../handlers/openCode").then((m) => ({ default: m.OpenCodeHandler })),
+  handler: () => import("../handlers/openCode").then((m) => ({ default: m.OpenCodeHandler })),
   riskNoticeKey: "providers.riskNotice.oauth",
 };

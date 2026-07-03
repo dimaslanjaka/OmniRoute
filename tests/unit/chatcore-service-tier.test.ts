@@ -11,19 +11,31 @@ import {
 } from "../../open-sse/handlers/chatCore/serviceTier.ts";
 
 test("resolveEffectiveServiceTier: non-codex provider is always standard", () => {
-  assert.equal(resolveEffectiveServiceTier("openai", undefined, { service_tier: "flex" }), "standard");
-  assert.equal(resolveEffectiveServiceTier(null, undefined, { service_tier: "priority" }), "standard");
+  assert.equal(
+    resolveEffectiveServiceTier("openai", undefined, { service_tier: "flex" }),
+    "standard"
+  );
+  assert.equal(
+    resolveEffectiveServiceTier(null, undefined, { service_tier: "priority" }),
+    "standard"
+  );
 });
 
 test("resolveEffectiveServiceTier: codex reads a valid request service_tier", () => {
-  assert.equal(resolveEffectiveServiceTier("codex", undefined, { service_tier: "priority" }), "priority");
+  assert.equal(
+    resolveEffectiveServiceTier("codex", undefined, { service_tier: "priority" }),
+    "priority"
+  );
   assert.equal(resolveEffectiveServiceTier("codex", undefined, { service_tier: "flex" }), "flex");
 });
 
 test("resolveEffectiveServiceTier: codex with blank/absent/non-string service_tier falls back to defaults", () => {
   // No providerSpecificData default → "standard"
   assert.equal(resolveEffectiveServiceTier("codex", undefined, {}), "standard");
-  assert.equal(resolveEffectiveServiceTier("codex", undefined, { service_tier: "   " }), "standard");
+  assert.equal(
+    resolveEffectiveServiceTier("codex", undefined, { service_tier: "   " }),
+    "standard"
+  );
   assert.equal(resolveEffectiveServiceTier("codex", undefined, { service_tier: 7 }), "standard");
   assert.equal(resolveEffectiveServiceTier("codex", undefined, undefined), "standard");
   // Non-object body is treated as empty record → defaults
@@ -50,10 +62,7 @@ test("resolveReportedServiceTier: reads a top-level service_tier", () => {
 });
 
 test("resolveReportedServiceTier: descends into nested response payloads", () => {
-  assert.equal(
-    resolveReportedServiceTier("codex", { response: { service_tier: "flex" } }),
-    "flex"
-  );
+  assert.equal(resolveReportedServiceTier("codex", { response: { service_tier: "flex" } }), "flex");
   assert.equal(
     resolveReportedServiceTier("codex", { response: { response: { service_tier: "priority" } } }),
     "priority"

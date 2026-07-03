@@ -124,8 +124,7 @@ describe("legacy type mapping", () => {
     globalThis.fetch = async (_url, opts) => {
       if (opts && opts.body) {
         try {
-          capturedBody =
-            typeof opts.body === "string" ? JSON.parse(opts.body) : opts.body;
+          capturedBody = typeof opts.body === "string" ? JSON.parse(opts.body) : opts.body;
         } catch {}
       }
       return {
@@ -165,8 +164,7 @@ describe("default type", () => {
     globalThis.fetch = async (_url, opts) => {
       if (opts && opts.body) {
         try {
-          capturedBody =
-            typeof opts.body === "string" ? JSON.parse(opts.body) : opts.body;
+          capturedBody = typeof opts.body === "string" ? JSON.parse(opts.body) : opts.body;
         } catch {}
       }
       return {
@@ -212,8 +210,7 @@ describe("valid new types", () => {
       globalThis.fetch = async (_url, opts) => {
         if (opts && opts.body) {
           try {
-            capturedBody =
-              typeof opts.body === "string" ? JSON.parse(opts.body) : opts.body;
+            capturedBody = typeof opts.body === "string" ? JSON.parse(opts.body) : opts.body;
           } catch {}
         }
         return {

@@ -7,9 +7,7 @@ import assert from "node:assert/strict";
 // leaf proves both the re-export path and that the leaf loads without pulling in tools.ts.
 describe("MCP tool-definition leaf + re-export", () => {
   it("toolDefinition.ts (leaf) imports without forming a cycle", async () => {
-    const leaf = await import(
-      "../../../open-sse/mcp-server/schemas/toolDefinition.ts"
-    );
+    const leaf = await import("../../../open-sse/mcp-server/schemas/toolDefinition.ts");
     // It is a type-only module; the runtime namespace is empty but must load cleanly.
     assert.ok(leaf, "leaf module loaded");
   });

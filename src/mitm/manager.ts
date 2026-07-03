@@ -239,9 +239,7 @@ export function buildRepairPlan(): RepairPlan {
  */
 async function revertSystemProxyIfApplied(): Promise<boolean> {
   try {
-    const { getSystemProxyState, clearSystemProxy } = await import(
-      "@/lib/inspector/captureState"
-    );
+    const { getSystemProxyState, clearSystemProxy } = await import("@/lib/inspector/captureState");
     const state = getSystemProxyState();
     if (!state.applied || !state.previousState) return false;
     const { revert } = await import("./inspector/systemProxyConfig.ts");
@@ -577,9 +575,7 @@ export async function startMitm(
   let ingestToken = process.env.INSPECTOR_INTERNAL_INGEST_TOKEN || "";
   if (!ingestToken) {
     try {
-      const ingestMod = await import(
-        "@/app/api/tools/traffic-inspector/internal/ingest/route"
-      );
+      const ingestMod = await import("@/app/api/tools/traffic-inspector/internal/ingest/route");
       if (typeof ingestMod.getIngestTokenForBootstrap === "function") {
         ingestToken = ingestMod.getIngestTokenForBootstrap();
       }

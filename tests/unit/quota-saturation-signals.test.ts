@@ -48,7 +48,10 @@ test("getSaturation: codex without registered creds → returns 0 (fail-open)", 
 
 test("getSaturation: bailian without registered creds → returns 0 (fail-open)", async () => {
   _clearSaturationCache();
-  const val = await getSaturation("conn-bailian-no-creds", "bailian", { unit: "percent", window: "5h" });
+  const val = await getSaturation("conn-bailian-no-creds", "bailian", {
+    unit: "percent",
+    window: "5h",
+  });
   assert.equal(val, 0);
 });
 
@@ -58,10 +61,16 @@ test("getSaturation: second call returns cached value without re-fetching", asyn
   _clearSaturationCache();
 
   // First call for an unknown provider → 0 (fail-open)
-  const first = await getSaturation("conn-cache-test", "unknown_cache", { unit: "tokens", window: "hourly" });
+  const first = await getSaturation("conn-cache-test", "unknown_cache", {
+    unit: "tokens",
+    window: "hourly",
+  });
 
   // Second call — should use cache
-  const second = await getSaturation("conn-cache-test", "unknown_cache", { unit: "tokens", window: "hourly" });
+  const second = await getSaturation("conn-cache-test", "unknown_cache", {
+    unit: "tokens",
+    window: "hourly",
+  });
 
   // Both should be the same value (0 in this case since no real provider)
   assert.equal(first, second);

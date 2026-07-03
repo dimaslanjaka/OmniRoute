@@ -1,11 +1,6 @@
 export type CostExplorerGroupBy = "provider" | "model" | "apiKey" | "account" | "serviceTier";
 export type CostExplorerSortKey =
-  | "name"
-  | "cost"
-  | "requests"
-  | "totalTokens"
-  | "sharePct"
-  | "avgCostPerRequest";
+  "name" | "cost" | "requests" | "totalTokens" | "sharePct" | "avgCostPerRequest";
 export type CostExplorerSortDirection = "asc" | "desc";
 
 export interface CostExplorerUsageSummary {

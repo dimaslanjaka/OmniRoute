@@ -42,11 +42,18 @@ function dim(opts: {
   };
 }
 
-function alloc(weight: number, policy: "hard" | "soft" | "burst", capValue?: number, capUnit?: string) {
+function alloc(
+  weight: number,
+  policy: "hard" | "soft" | "burst",
+  capValue?: number,
+  capUnit?: string
+) {
   return {
     weight,
     policy,
-    ...(capValue !== undefined ? { capValue, capUnit: (capUnit ?? "tokens") as "tokens" | "requests" | "percent" | "usd" } : {}),
+    ...(capValue !== undefined
+      ? { capValue, capUnit: (capUnit ?? "tokens") as "tokens" | "requests" | "percent" | "usd" }
+      : {}),
   };
 }
 

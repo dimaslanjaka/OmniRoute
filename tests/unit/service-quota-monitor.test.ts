@@ -6,7 +6,10 @@ const mod = await import("../../open-sse/services/quotaMonitor.ts");
 describe("quotaMonitor", () => {
   describe("isQuotaMonitorEnabled", () => {
     it("returns true when providerSpecificData.quotaMonitorEnabled is true", () => {
-      assert.equal(mod.isQuotaMonitorEnabled({ providerSpecificData: { quotaMonitorEnabled: true } }), true);
+      assert.equal(
+        mod.isQuotaMonitorEnabled({ providerSpecificData: { quotaMonitorEnabled: true } }),
+        true
+      );
     });
 
     it("returns false when providerSpecificData is missing", () => {
@@ -14,7 +17,10 @@ describe("quotaMonitor", () => {
     });
 
     it("returns false when quotaMonitorEnabled is false", () => {
-      assert.equal(mod.isQuotaMonitorEnabled({ providerSpecificData: { quotaMonitorEnabled: false } }), false);
+      assert.equal(
+        mod.isQuotaMonitorEnabled({ providerSpecificData: { quotaMonitorEnabled: false } }),
+        false
+      );
     });
 
     it("returns false when providerSpecificData is null", () => {

@@ -270,11 +270,7 @@ export type ComboScoringInspectorFactorKey =
   | "resetWindowAffinity";
 
 export type ComboScoringInspectorSource =
-  | "combo_health"
-  | "combo_forecast"
-  | "combo_autopilot"
-  | "runtime"
-  | "default";
+  "combo_health" | "combo_forecast" | "combo_autopilot" | "runtime" | "default";
 
 export interface ComboScoringInspectorFactor {
   key: ComboScoringInspectorFactorKey;

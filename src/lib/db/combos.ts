@@ -93,7 +93,9 @@ function getNextSortOrder() {
 export async function getCombos() {
   const db = getDbInstance();
   const rawCombos = db
-    .prepare("SELECT data, sort_order, context_cache_protection FROM combos ORDER BY sort_order ASC, name COLLATE NOCASE ASC")
+    .prepare(
+      "SELECT data, sort_order, context_cache_protection FROM combos ORDER BY sort_order ASC, name COLLATE NOCASE ASC"
+    )
     .all()
     .map((row) => parseComboRow(row))
     .filter((row): row is JsonRecord => row !== null);
@@ -111,7 +113,9 @@ export async function getCombos() {
 
 export async function getComboById(id: string) {
   const db = getDbInstance();
-  const row = db.prepare("SELECT data, sort_order, context_cache_protection FROM combos WHERE id = ?").get(id);
+  const row = db
+    .prepare("SELECT data, sort_order, context_cache_protection FROM combos WHERE id = ?")
+    .get(id);
   const combo = parseComboRow(row);
   if (!combo) return null;
   return normalizeStoredCombo(combo, db, typeof combo.name === "string" ? [combo.name] : []);
@@ -119,7 +123,9 @@ export async function getComboById(id: string) {
 
 export async function getComboByName(name: string) {
   const db = getDbInstance();
-  const row = db.prepare("SELECT data, sort_order, context_cache_protection FROM combos WHERE name = ?").get(name);
+  const row = db
+    .prepare("SELECT data, sort_order, context_cache_protection FROM combos WHERE name = ?")
+    .get(name);
   const combo = parseComboRow(row);
   if (!combo) return null;
   return normalizeStoredCombo(combo, db, [name]);
@@ -177,7 +183,9 @@ export async function createCombo(data: JsonRecord) {
 
 export async function updateCombo(id: string, data: JsonRecord) {
   const db = getDbInstance();
-  const existing = db.prepare("SELECT data, sort_order, context_cache_protection FROM combos WHERE id = ?").get(id);
+  const existing = db
+    .prepare("SELECT data, sort_order, context_cache_protection FROM combos WHERE id = ?")
+    .get(id);
   if (!existing) return null;
 
   const current = parseComboRow(existing);
@@ -210,7 +218,14 @@ export async function updateCombo(id: string, data: JsonRecord) {
 
   db.prepare(
     "UPDATE combos SET name = ?, data = ?, sort_order = ?, updated_at = ?, context_cache_protection = ? WHERE id = ?"
-  ).run(nextName, JSON.stringify(normalizedMerged), sortOrder, normalizedMerged.updatedAt, contextCacheProtection, id);
+  ).run(
+    nextName,
+    JSON.stringify(normalizedMerged),
+    sortOrder,
+    normalizedMerged.updatedAt,
+    contextCacheProtection,
+    id
+  );
 
   invalidateDbCache("combos");
   backupDbFile("pre-write");

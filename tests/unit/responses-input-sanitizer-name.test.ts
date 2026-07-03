@@ -78,7 +78,9 @@ test("normalizes user image_url content parts to input_image", () => {
     {
       type: "message",
       role: "user",
-      content: [{ type: "image_url", image_url: { url: "https://example.com/u.png", detail: "high" } }],
+      content: [
+        { type: "image_url", image_url: { url: "https://example.com/u.png", detail: "high" } },
+      ],
     },
   ];
   const result = sanitizeResponsesInputItems(items) as Array<Record<string, unknown>>;

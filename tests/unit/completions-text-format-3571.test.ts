@@ -20,7 +20,11 @@ test("#3571 non-stream: chat.completion → text_completion with choices[].text"
     created: 1,
     model: "ds/deepseek-v4-flash",
     choices: [
-      { index: 0, message: { role: "assistant", content: "public class Test {}" }, finish_reason: "stop" },
+      {
+        index: 0,
+        message: { role: "assistant", content: "public class Test {}" },
+        finish_reason: "stop",
+      },
     ],
     usage: { prompt_tokens: 3, completion_tokens: 5, total_tokens: 8 },
   });

@@ -86,11 +86,7 @@ export interface ProviderModelsSectionProps {
   setAutoHideFailed: (v: boolean) => void;
   setVisibilityFilter: (v: "all" | "visible" | "hidden") => void;
   saveModelCompatFlags: (modelId: string, patch: ModelCompatSavePatch) => Promise<void>;
-  handleToggleModelHidden: (
-    providerKey: string,
-    modelId: string,
-    hidden: boolean
-  ) => Promise<void>;
+  handleToggleModelHidden: (providerKey: string, modelId: string, hidden: boolean) => Promise<void>;
   handleBulkToggleModelHidden: (
     providerKey: string,
     modelIds: string[],
@@ -187,8 +183,7 @@ export default function ProviderModelsSection({
     </button>
   );
 
-  const clearAllButton = (modelMeta.customModels.length > 0 ||
-    providerAliasEntries.length > 0) && (
+  const clearAllButton = (modelMeta.customModels.length > 0 || providerAliasEntries.length > 0) && (
     <button
       onClick={handleClearAllModels}
       disabled={clearingModels}
@@ -251,9 +246,7 @@ export default function ProviderModelsSection({
           onModelsChanged={fetchProviderModelMeta}
           allowImport={compatibleSupportsModelImport}
           isModelHidden={effectiveModelHidden}
-          onToggleHidden={(modelId, hidden) =>
-            handleToggleModelHidden(providerId, modelId, hidden)
-          }
+          onToggleHidden={(modelId, hidden) => handleToggleModelHidden(providerId, modelId, hidden)}
           onBulkToggleHidden={(modelIds, hidden) =>
             handleBulkToggleModelHidden(providerId, modelIds, hidden)
           }
@@ -325,9 +318,7 @@ export default function ProviderModelsSection({
           saveModelCompatFlags={saveModelCompatFlags}
           compatSavingModelId={compatSavingModelId}
           isModelHidden={effectiveModelHidden}
-          onToggleHidden={(modelId, hidden) =>
-            handleToggleModelHidden(providerId, modelId, hidden)
-          }
+          onToggleHidden={(modelId, hidden) => handleToggleModelHidden(providerId, modelId, hidden)}
           onBulkToggleHidden={(modelIds, hidden) =>
             handleBulkToggleModelHidden(providerId, modelIds, hidden)
           }
@@ -467,9 +458,7 @@ export default function ProviderModelsSection({
               onCopy={onCopy}
               onSetAlias={(a) => onSetAlias(model.id, a, providerDisplayAlias)}
               onDeleteAlias={
-                aliasByModelId[model.id]
-                  ? () => onDeleteAlias(aliasByModelId[model.id])
-                  : undefined
+                aliasByModelId[model.id] ? () => onDeleteAlias(aliasByModelId[model.id]) : undefined
               }
               t={t}
               showDeveloperToggle

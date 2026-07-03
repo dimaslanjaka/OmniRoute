@@ -9,9 +9,8 @@ import assert from "node:assert/strict";
 // Claude paths), so consecutive `user` turns — or a tool-result turn (role:user)
 // immediately followed by a plain user turn — produced an invalid alternation.
 
-const { openaiToGeminiRequest, mergeConsecutiveSameRoleContents } = await import(
-  "../../open-sse/translator/request/openai-to-gemini.ts"
-);
+const { openaiToGeminiRequest, mergeConsecutiveSameRoleContents } =
+  await import("../../open-sse/translator/request/openai-to-gemini.ts");
 
 type GeminiContent = { role: string; parts: Array<Record<string, unknown>> };
 type GeminiReq = { contents: GeminiContent[] };

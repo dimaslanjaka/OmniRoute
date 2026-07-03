@@ -10,10 +10,7 @@
 
 import test from "node:test";
 import assert from "node:assert/strict";
-import {
-  buildAntigravityAuthRequest,
-  runAntigravityLogin,
-} from "../../bin/cli/commands/login.mjs";
+import { buildAntigravityAuthRequest, runAntigravityLogin } from "../../bin/cli/commands/login.mjs";
 import { decodeCredentialBlob } from "../../src/lib/oauth/credentialBlob.ts";
 
 test("buildAntigravityAuthRequest: loopback redirect on 127.0.0.1 + no PKCE", async () => {

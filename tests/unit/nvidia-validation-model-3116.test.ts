@@ -25,5 +25,8 @@ test("honors a per-connection validationModelId override", () => {
     "nvidia/llama-3.3-nemotron-super-49b"
   );
   // blank/whitespace override falls back to the default
-  assert.equal(resolveNvidiaValidationModel({ validationModelId: "  " }), NVIDIA_DEFAULT_VALIDATION_MODEL);
+  assert.equal(
+    resolveNvidiaValidationModel({ validationModelId: "  " }),
+    NVIDIA_DEFAULT_VALIDATION_MODEL
+  );
 });

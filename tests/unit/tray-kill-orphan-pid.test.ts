@@ -1,10 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import {
-  getSystrayChildPid,
-  killSystrayUnix,
-} from "../../bin/cli/tray/traySystray.mjs";
+import { getSystrayChildPid, killSystrayUnix } from "../../bin/cli/tray/traySystray.mjs";
 
 // Regression guard for the macOS orphan-NSStatusItem bug: systray2.kill(false)
 // only closes the IPC channel and leaves the Go tray binary subprocess running.

@@ -19,8 +19,9 @@ function mount(ui: React.ReactElement): HTMLElement {
 }
 
 beforeEach(() => {
-  (globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT =
-    true;
+  (
+    globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT?: boolean }
+  ).IS_REACT_ACT_ENVIRONMENT = true;
 });
 
 afterEach(async () => {
@@ -53,9 +54,8 @@ describe("CompressionStylesTile", () => {
         { status: 200, headers: { "Content-Type": "application/json" } }
       )
     );
-    const { default: CompressionStylesTile } = await import(
-      "../../../src/app/(dashboard)/dashboard/context/CompressionStylesTile"
-    );
+    const { default: CompressionStylesTile } =
+      await import("../../../src/app/(dashboard)/dashboard/context/CompressionStylesTile");
     let container!: HTMLElement;
     await act(async () => {
       container = mount(<CompressionStylesTile />);

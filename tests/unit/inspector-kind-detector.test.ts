@@ -59,10 +59,7 @@ test("detectKind — body with contents array (Gemini) → llm", () => {
 });
 
 test("detectKind — UA 'antigravity/1.0' → llm", () => {
-  assert.equal(
-    detectKind(makeReq({ requestHeaders: { "user-agent": "antigravity/1.0" } })),
-    "llm",
-  );
+  assert.equal(detectKind(makeReq({ requestHeaders: { "user-agent": "antigravity/1.0" } })), "llm");
 });
 
 test("detectKind — random.example.com with no clues → unknown", () => {

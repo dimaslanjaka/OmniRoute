@@ -41,7 +41,8 @@ export function setMappings(
 
 export function deleteMapping(agentId: string, source: string): void {
   const db = getDbInstance();
-  db.prepare(
-    "DELETE FROM agent_bridge_mappings WHERE agent_id = ? AND source_model = ?"
-  ).run(agentId, source);
+  db.prepare("DELETE FROM agent_bridge_mappings WHERE agent_id = ? AND source_model = ?").run(
+    agentId,
+    source
+  );
 }

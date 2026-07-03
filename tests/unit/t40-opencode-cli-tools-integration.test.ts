@@ -46,10 +46,7 @@ test("T40: OpenCode config path resolves per-platform", () => {
     { APPDATA: "C:\\Users\\dev\\AppData\\Roaming" },
     "C:\\Users\\dev"
   );
-  assert.equal(
-    windowsPath,
-    path.join("C:\\Users\\dev", ".config", "opencode", "opencode.json")
-  );
+  assert.equal(windowsPath, path.join("C:\\Users\\dev", ".config", "opencode", "opencode.json"));
 
   // Windows still honors XDG_CONFIG_HOME when set.
   const windowsXdg = resolveOpencodeConfigPath(

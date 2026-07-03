@@ -7,7 +7,11 @@ const PROXY_URL = process.env.MIMOCODE_SOCKS5_PROXY;
 function parseProxyUrl(url: string): { type: string; host: string; port: number } | null {
   try {
     const parsed = new URL(url);
-    return { type: parsed.protocol.replace(":", ""), host: parsed.hostname, port: parsed.port ? Number(parsed.port) : 1080 };
+    return {
+      type: parsed.protocol.replace(":", ""),
+      host: parsed.hostname,
+      port: parsed.port ? Number(parsed.port) : 1080,
+    };
   } catch {
     return null;
   }
@@ -30,72 +34,100 @@ describe("mimocode per-account proxy — SOCKS5 integration", { timeout: 30_000 
     }
   });
 
-  it("bootstrap returns JWT through configured proxy", { skip: !requireProxy() ? "MIMOCODE_SOCKS5_PROXY not set" : false }, async () => {
-    process.env.ENABLE_SOCKS5_PROXY = "true";
-    const { Socks5ProxyAgent } = await import("undici");
-    const agent = new Socks5ProxyAgent(PROXY_URL!);
+  it(
+    "bootstrap returns JWT through configured proxy",
+    { skip: !requireProxy() ? "MIMOCODE_SOCKS5_PROXY not set" : false },
+    async () => {
+      process.env.ENABLE_SOCKS5_PROXY = "true";
+      const { Socks5ProxyAgent } = await import("undici");
+      const agent = new Socks5ProxyAgent(PROXY_URL!);
 
-    const fp = generateFingerprint("integration-bootstrap-" + Date.now());
-    const resp = await fetch("https://api.xiaomimimo.com/api/free-ai/bootstrap", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ client: fp }),
-      // @ts-expect-error — undici dispatcher
-      dispatcher: agent,
-      signal: AbortSignal.timeout(15_000),
-    });
-    assert.strictEqual(resp.status, 200, `Bootstrap through proxy: expected 200, got ${resp.status}`);
-    const data = await resp.json();
-    assert.ok(data.jwt, "Response should contain JWT");
-    assert.ok(typeof data.jwt === "string" && data.jwt.length > 10, "JWT should be a non-trivial string");
-  });
+      const fp = generateFingerprint("integration-bootstrap-" + Date.now());
+      const resp = await fetch("https://api.xiaomimimo.com/api/free-ai/bootstrap", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ client: fp }),
+        // @ts-expect-error — undici dispatcher
+        dispatcher: agent,
+        signal: AbortSignal.timeout(15_000),
+      });
+      assert.strictEqual(
+        resp.status,
+        200,
+        `Bootstrap through proxy: expected 200, got ${resp.status}`
+      );
+      const data = await resp.json();
+      assert.ok(data.jwt, "Response should contain JWT");
+      assert.ok(
+        typeof data.jwt === "string" && data.jwt.length > 10,
+        "JWT should be a non-trivial string"
+      );
+    }
+  );
 
-  it("chat request succeeds through configured proxy", { skip: !requireProxy() ? "MIMOCODE_SOCKS5_PROXY not set" : false }, async () => {
-    process.env.ENABLE_SOCKS5_PROXY = "true";
-    const { Socks5ProxyAgent } = await import("undici");
-    const agent = new Socks5ProxyAgent(PROXY_URL!);
+  it(
+    "chat request succeeds through configured proxy",
+    { skip: !requireProxy() ? "MIMOCODE_SOCKS5_PROXY not set" : false },
+    async () => {
+      process.env.ENABLE_SOCKS5_PROXY = "true";
+      const { Socks5ProxyAgent } = await import("undici");
+      const agent = new Socks5ProxyAgent(PROXY_URL!);
 
-    const fp = generateFingerprint("integration-chat-" + Date.now());
-    const bootstrapResp = await fetch("https://api.xiaomimimo.com/api/free-ai/bootstrap", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ client: fp }),
-      // @ts-expect-error — undici dispatcher
-      dispatcher: agent,
-      signal: AbortSignal.timeout(15_000),
-    });
-    assert.strictEqual(bootstrapResp.status, 200);
-    const { jwt } = await bootstrapResp.json();
+      const fp = generateFingerprint("integration-chat-" + Date.now());
+      const bootstrapResp = await fetch("https://api.xiaomimimo.com/api/free-ai/bootstrap", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ client: fp }),
+        // @ts-expect-error — undici dispatcher
+        dispatcher: agent,
+        signal: AbortSignal.timeout(15_000),
+      });
+      assert.strictEqual(bootstrapResp.status, 200);
+      const { jwt } = await bootstrapResp.json();
 
-    const chatResp = await fetch("https://api.xiaomimimo.com/api/free-ai/openai/chat", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${jwt}`,
-        "X-Mimo-Source": "mimocode-cli-free",
-      },
-      body: JSON.stringify({
-        model: "mimo-auto",
-        messages: [
-          { role: "system", content: "You are MiMoCode, an interactive CLI tool that helps users with software engineering tasks." },
-          { role: "user", content: "Say exactly: proxy-integration-ok" },
-        ],
-        stream: false,
-      }),
-      // @ts-expect-error — undici dispatcher
-      dispatcher: agent,
-      signal: AbortSignal.timeout(20_000),
-    });
-    assert.ok(chatResp.status === 200 || chatResp.status === 429,
-      `Chat through proxy: expected 200/429, got ${chatResp.status}`);
-  });
+      const chatResp = await fetch("https://api.xiaomimimo.com/api/free-ai/openai/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${jwt}`,
+          "X-Mimo-Source": "mimocode-cli-free",
+        },
+        body: JSON.stringify({
+          model: "mimo-auto",
+          messages: [
+            {
+              role: "system",
+              content:
+                "You are MiMoCode, an interactive CLI tool that helps users with software engineering tasks.",
+            },
+            { role: "user", content: "Say exactly: proxy-integration-ok" },
+          ],
+          stream: false,
+        }),
+        // @ts-expect-error — undici dispatcher
+        dispatcher: agent,
+        signal: AbortSignal.timeout(20_000),
+      });
+      assert.ok(
+        chatResp.status === 200 || chatResp.status === 429,
+        `Chat through proxy: expected 200/429, got ${chatResp.status}`
+      );
+    }
+  );
 
   it("accounts carry proxy config after sync", () => {
     const exec = new MimocodeExecutor();
     const fp = "integration-fp-1";
     const cfg = proxyConfig || { type: "socks5", host: "127.0.0.1", port: 1080 };
     (exec as any).accounts = [
-      { fingerprint: fp, jwt: "", expiresAt: 0, cooldownUntil: 0, consecutiveFails: 0, proxy: null },
+      {
+        fingerprint: fp,
+        jwt: "",
+        expiresAt: 0,
+        cooldownUntil: 0,
+        consecutiveFails: 0,
+        proxy: null,
+      },
     ];
     (exec as any).nextAccountIdx = 0;
 
@@ -118,8 +150,22 @@ describe("mimocode per-account proxy — SOCKS5 integration", { timeout: 30_000 
     const proxy2 = { type: "socks5" as const, host: "proxy-b.example.com", port: 1080 };
 
     (exec as any).accounts = [
-      { fingerprint: fp1, jwt: "", expiresAt: 0, cooldownUntil: 0, consecutiveFails: 0, proxy: null },
-      { fingerprint: fp2, jwt: "", expiresAt: 0, cooldownUntil: 0, consecutiveFails: 0, proxy: null },
+      {
+        fingerprint: fp1,
+        jwt: "",
+        expiresAt: 0,
+        cooldownUntil: 0,
+        consecutiveFails: 0,
+        proxy: null,
+      },
+      {
+        fingerprint: fp2,
+        jwt: "",
+        expiresAt: 0,
+        cooldownUntil: 0,
+        consecutiveFails: 0,
+        proxy: null,
+      },
     ];
     (exec as any).nextAccountIdx = 0;
 

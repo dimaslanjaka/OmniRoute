@@ -542,7 +542,12 @@ test("context_cache_protection: pins body.model to last session model when histo
   const comboName = "cache-pin-combo";
 
   // Pre-record a prior model usage for this session/combo
-  handoffDb.recordSessionModelUsage(sessionId, comboName, "anthropic/claude-3-5-sonnet", "anthropic");
+  handoffDb.recordSessionModelUsage(
+    sessionId,
+    comboName,
+    "anthropic/claude-3-5-sonnet",
+    "anthropic"
+  );
 
   const capturedModels: string[] = [];
 
@@ -609,5 +614,9 @@ test("context_cache_protection: does NOT pin when no session history exists (fir
 
   assert.equal(result.ok, true);
   // No pinning on first request — should use the combo's first model
-  assert.equal(capturedModels[0], "openai/gpt-4o", "first request must use combo model (no pinning)");
+  assert.equal(
+    capturedModels[0],
+    "openai/gpt-4o",
+    "first request must use combo model (no pinning)"
+  );
 });

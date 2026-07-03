@@ -33,9 +33,7 @@ function withEnv(value: string | undefined, fn: () => void | Promise<void>) {
     else process.env[ENV] = prev;
     __resetRefreshSerializerForTest();
   };
-  return Promise.resolve()
-    .then(fn)
-    .finally(restore);
+  return Promise.resolve().then(fn).finally(restore);
 }
 
 test("getRefreshSpacingMs defaults to a protective non-zero gap, honors overrides and explicit opt-out", () => {

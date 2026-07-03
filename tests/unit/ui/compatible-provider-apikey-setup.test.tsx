@@ -23,9 +23,8 @@ vi.mock("next-intl", () => ({
   useTranslations: () => (key: string) => key,
 }));
 
-const { default: AddApiKeyModal } = await import(
-  "../../../src/app/(dashboard)/dashboard/providers/[id]/components/modals/AddApiKeyModal"
-);
+const { default: AddApiKeyModal } =
+  await import("../../../src/app/(dashboard)/dashboard/providers/[id]/components/modals/AddApiKeyModal");
 
 const DEFAULT_MODEL_INPUT_SELECTOR = 'input[data-testid="compat-default-model-input"]';
 
@@ -50,10 +49,7 @@ function render(props: Record<string, unknown>) {
 }
 
 function setInputValue(input: HTMLInputElement, value: string) {
-  const setter = Object.getOwnPropertyDescriptor(
-    window.HTMLInputElement.prototype,
-    "value"
-  )!.set!;
+  const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value")!.set!;
   act(() => {
     setter.call(input, value);
     input.dispatchEvent(new Event("input", { bubbles: true }));

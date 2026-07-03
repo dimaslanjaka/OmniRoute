@@ -1,10 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { TrafficBuffer } from "../../src/mitm/inspector/buffer.ts";
-import type {
-  InterceptedRequest,
-  WsEvent,
-} from "../../src/mitm/inspector/types.ts";
+import type { InterceptedRequest, WsEvent } from "../../src/mitm/inspector/types.ts";
 
 function makeReq(overrides: Partial<InterceptedRequest> = {}): InterceptedRequest {
   return {
@@ -126,10 +123,7 @@ test("list applies filters by source, host, status, profile, agent, sessionId", 
   assert.equal(buf.list({ host: "api.openai.com" }).length, 1);
   assert.equal(buf.list({ status: "5xx" }).length, 1);
   assert.equal(buf.list({ agent: "codex" }).length, 1);
-  assert.equal(
-    buf.list({ sessionId: "00000000-0000-0000-0000-000000000000" }).length,
-    1
-  );
+  assert.equal(buf.list({ sessionId: "00000000-0000-0000-0000-000000000000" }).length, 1);
   assert.equal(buf.list({ profile: "custom" }).length, 1);
   assert.equal(buf.list({ profile: "all" }).length, 3);
 });

@@ -19,7 +19,10 @@ test("reads apiFormat / targetFormat only when present as strings", () => {
 test("apiFormat / targetFormat absent or non-string → undefined", () => {
   assert.equal(resolveChatCoreRequestSetup({}, {}, "m").apiFormat, undefined);
   assert.equal(resolveChatCoreRequestSetup({ apiFormat: 123 }, {}, "m").apiFormat, undefined);
-  assert.equal(resolveChatCoreRequestSetup({ targetFormat: null }, {}, "m").customModelTargetFormat, undefined);
+  assert.equal(
+    resolveChatCoreRequestSetup({ targetFormat: null }, {}, "m").customModelTargetFormat,
+    undefined
+  );
 });
 
 test("modelInfo that is not an object → both markers undefined", () => {
@@ -29,12 +32,21 @@ test("modelInfo that is not an object → both markers undefined", () => {
 });
 
 test("requestedModel uses the client body.model when it is a non-blank string", () => {
-  assert.equal(resolveChatCoreRequestSetup({}, { model: "claude-3" }, "fallback").requestedModel, "claude-3");
+  assert.equal(
+    resolveChatCoreRequestSetup({}, { model: "claude-3" }, "fallback").requestedModel,
+    "claude-3"
+  );
 });
 
 test("requestedModel falls back to the resolved model id when body.model is blank/absent/non-string", () => {
-  assert.equal(resolveChatCoreRequestSetup({}, { model: "   " }, "fallback").requestedModel, "fallback");
+  assert.equal(
+    resolveChatCoreRequestSetup({}, { model: "   " }, "fallback").requestedModel,
+    "fallback"
+  );
   assert.equal(resolveChatCoreRequestSetup({}, {}, "fallback").requestedModel, "fallback");
-  assert.equal(resolveChatCoreRequestSetup({}, { model: 42 }, "fallback").requestedModel, "fallback");
+  assert.equal(
+    resolveChatCoreRequestSetup({}, { model: 42 }, "fallback").requestedModel,
+    "fallback"
+  );
   assert.equal(resolveChatCoreRequestSetup({}, null, "fallback").requestedModel, "fallback");
 });

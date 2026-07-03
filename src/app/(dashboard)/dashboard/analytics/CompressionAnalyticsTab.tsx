@@ -83,7 +83,10 @@ function ModeBar({
           {skipped > 0 && (
             // #4268: attempted-but-no-op runs (e.g. Stacked saved nothing) are
             // recorded now, so this mode is visible even when count is 0.
-            <span className="text-text-muted/70"> · {skipped.toLocaleString()} skipped (no-op)</span>
+            <span className="text-text-muted/70">
+              {" "}
+              · {skipped.toLocaleString()} skipped (no-op)
+            </span>
           )}
         </span>
       </div>

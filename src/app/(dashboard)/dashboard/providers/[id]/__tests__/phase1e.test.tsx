@@ -35,10 +35,7 @@ vi.mock("next/navigation", () => ({
 vi.mock("next-intl", () => ({
   useTranslations: () => (key: string, values?: Record<string, unknown>) => {
     if (values) {
-      return Object.entries(values).reduce(
-        (acc, [k, v]) => acc.replace(`{${k}}`, String(v)),
-        key
-      );
+      return Object.entries(values).reduce((acc, [k, v]) => acc.replace(`{${k}}`, String(v)), key);
     }
     return key;
   },
@@ -115,10 +112,10 @@ describe("providerPageHelpers — model-compat pure functions", () => {
   });
 
   it("formatProviderModelsErrorResponse extracts error.message", async () => {
-    const mockRes = new Response(
-      JSON.stringify({ error: { message: "Model not found" } }),
-      { status: 422, statusText: "Unprocessable Entity" }
-    );
+    const mockRes = new Response(JSON.stringify({ error: { message: "Model not found" } }), {
+      status: 422,
+      statusText: "Unprocessable Entity",
+    });
     const detail = await formatProviderModelsErrorResponse(mockRes);
     expect(detail).toBe("Model not found");
   });
@@ -185,7 +182,9 @@ describe("PassthroughModelRow — render smoke test", () => {
   });
 
   afterEach(() => {
-    act(() => { root.unmount(); });
+    act(() => {
+      root.unmount();
+    });
     container.remove();
   });
 
@@ -222,7 +221,9 @@ describe("ModelVisibilityToolbar — render smoke test", () => {
   });
 
   afterEach(() => {
-    act(() => { root.unmount(); });
+    act(() => {
+      root.unmount();
+    });
     container.remove();
   });
 
@@ -259,7 +260,9 @@ describe("useModelCompatState — hook unit test via component wrapper", () => {
   });
 
   afterEach(() => {
-    act(() => { root.unmount(); });
+    act(() => {
+      root.unmount();
+    });
     container.remove();
   });
 
@@ -267,7 +270,12 @@ describe("useModelCompatState — hook unit test via component wrapper", () => {
     const { useModelCompatState } = await import("../hooks/useModelCompatState");
 
     const customModels = [
-      { id: "gpt-4o", normalizeToolCallId: true, preserveOpenAIDeveloperRole: false, isHidden: true },
+      {
+        id: "gpt-4o",
+        normalizeToolCallId: true,
+        preserveOpenAIDeveloperRole: false,
+        isHidden: true,
+      },
     ];
     const modelCompatOverrides: any[] = [];
 
@@ -281,7 +289,9 @@ describe("useModelCompatState — hook unit test via component wrapper", () => {
         compat.effectiveModelPreserveDeveloper("gpt-4o"),
         compat.anyNormalizeCompatBadge("gpt-4o"),
         compat.anyNoPreserveCompatBadge("gpt-4o"),
-      ].map(String).join(",");
+      ]
+        .map(String)
+        .join(",");
       return <span data-testid="results">{results}</span>;
     }
 
@@ -291,8 +301,9 @@ describe("useModelCompatState — hook unit test via component wrapper", () => {
 
     const span = container.querySelector("[data-testid='results']");
     expect(span).not.toBeNull();
-    const [hidden, notHidden, normalize, preserve, anyNorm, anyNoPreserve] =
-      (span!.textContent ?? "").split(",");
+    const [hidden, notHidden, normalize, preserve, anyNorm, anyNoPreserve] = (
+      span!.textContent ?? ""
+    ).split(",");
 
     expect(hidden).toBe("true");
     expect(notHidden).toBe("false");

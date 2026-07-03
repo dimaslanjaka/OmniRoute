@@ -47,7 +47,8 @@ test("detects a uuid and its inner hex is NOT also claimed by long_hex", () => {
 });
 
 test("a JWT is captured whole, not split into hex/segments", () => {
-  const jwt = "eyJhbGciOiJIUzI1NiwidHlwIjoiSldUIn0.eyJzdWIiOiIxMjM0NTY3ODkwIn0.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
+  const jwt =
+    "eyJhbGciOiJIUzI1NiwidHlwIjoiSldUIn0.eyJzdWIiOiIxMjM0NTY3ODkwIn0.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
   const spans = detectVolatileSpans(`auth ${jwt} end`, ALL);
   assert.equal(spans.length, 1);
   assert.equal(spans[0].category, "jwt");
@@ -64,16 +65,19 @@ test("detects unix_ts (13-digit) and api_key_shape and request_id", () => {
 });
 
 test("category filter restricts what is detected", () => {
-  const spans = detectVolatileSpans(
-    "550e8400-e29b-41d4-a716-446655440000 and 1718900000",
-    { enabled: true, categories: ["unix_ts"] }
-  );
+  const spans = detectVolatileSpans("550e8400-e29b-41d4-a716-446655440000 and 1718900000", {
+    enabled: true,
+    categories: ["unix_ts"],
+  });
   assert.equal(spans.length, 1);
   assert.equal(spans[0].category, "unix_ts");
 });
 
 test("no false-positive on prose / dates / short numbers", () => {
-  assert.equal(detectVolatileSpans("The meeting is on 2026-06-28 at 10am, room 42.", ALL).length, 0);
+  assert.equal(
+    detectVolatileSpans("The meeting is on 2026-06-28 at 10am, room 42.", ALL).length,
+    0
+  );
 });
 
 test("spans are sorted ascending and non-overlapping", () => {

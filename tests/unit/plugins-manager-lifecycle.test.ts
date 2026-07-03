@@ -24,7 +24,9 @@ function makeTmpPlugin(name: string, manifest: Record<string, unknown> = {}) {
 }
 
 function cleanup(name: string) {
-  try { db.deletePlugin(name); } catch {}
+  try {
+    db.deletePlugin(name);
+  } catch {}
 }
 
 describe("pluginManager lifecycle", () => {
@@ -37,7 +39,9 @@ describe("pluginManager lifecycle", () => {
     getDbInstance();
     // Clean up test plugins
     for (const name of testPlugins) {
-      try { db.deletePlugin(name); } catch {}
+      try {
+        db.deletePlugin(name);
+      } catch {}
     }
     testPlugins.length = 0;
   });

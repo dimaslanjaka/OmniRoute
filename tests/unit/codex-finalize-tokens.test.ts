@@ -47,9 +47,7 @@ test("finalizeTokens(codex) prefers a team org when plan_type is free", async ()
       chatgpt_plan_type: "free",
       chatgpt_user_id: "cu-2",
       user_id: "u-2",
-      organizations: [
-        { id: "team-acc", is_default: false, role: "member", title: "Acme Team" },
-      ],
+      organizations: [{ id: "team-acc", is_default: false, role: "member", title: "Acme Team" }],
     },
   });
 

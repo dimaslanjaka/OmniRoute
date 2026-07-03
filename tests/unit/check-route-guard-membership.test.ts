@@ -64,11 +64,7 @@ test("flags a spawn-capable route that is NOT classified local-only (RCE-via-tun
   // this gate guards against.
   const leaky = (path: string): boolean => path.startsWith("/api/mcp/");
   assert.deepEqual(
-    findUnclassifiedSpawnRoutes(
-      ["/api/mcp/tools", "/api/services/cliproxy/install"],
-      leaky,
-      {}
-    ),
+    findUnclassifiedSpawnRoutes(["/api/mcp/tools", "/api/services/cliproxy/install"], leaky, {}),
     ["/api/services/cliproxy/install"]
   );
 });
@@ -76,11 +72,9 @@ test("flags a spawn-capable route that is NOT classified local-only (RCE-via-tun
 test("allowlisted routes are not flagged (frozen pre-existing exceptions)", () => {
   const leaky = (path: string): boolean => path.startsWith("/api/mcp/");
   assert.deepEqual(
-    findUnclassifiedSpawnRoutes(
-      ["/api/mcp/tools", "/api/services/legacy/route"],
-      leaky,
-      { "/api/services/legacy/route": "frozen pre-existing exception" }
-    ),
+    findUnclassifiedSpawnRoutes(["/api/mcp/tools", "/api/services/legacy/route"], leaky, {
+      "/api/services/legacy/route": "frozen pre-existing exception",
+    }),
     []
   );
 });
@@ -128,7 +122,10 @@ test("6A.8 findSpawnCapableRoutes: detects real spawn-capable route.ts files", (
   ];
   const found = findSpawnCapableRoutes(repoRoot);
   for (const r of knownSpawnRoutes) {
-    assert.ok(found.includes(r), `expected ${r} in spawn-capable routes, found: ${found.join(", ")}`);
+    assert.ok(
+      found.includes(r),
+      `expected ${r} in spawn-capable routes, found: ${found.join(", ")}`
+    );
   }
 });
 

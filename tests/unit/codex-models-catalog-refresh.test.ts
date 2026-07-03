@@ -56,7 +56,8 @@ test("codex client (originator: codex_exec) receives a top-level `models` array 
     new Request("http://localhost/v1/models?client_version=0.137.0", {
       headers: {
         originator: "codex_exec",
-        "user-agent": "codex_exec/0.137.0 (Ubuntu 24.4.0; x86_64) vscode/3.7.19 (codex_exec; 0.137.0)",
+        "user-agent":
+          "codex_exec/0.137.0 (Ubuntu 24.4.0; x86_64) vscode/3.7.19 (codex_exec; 0.137.0)",
       },
     })
   );

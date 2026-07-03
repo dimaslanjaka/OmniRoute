@@ -9,11 +9,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-const {
-  evaluateChatBodyAdmission,
-  checkChatAdmission,
-  CHAT_LARGE_BODY_BYTES,
-} = await import("../../src/shared/middleware/chatBodyAdmission.ts");
+const { evaluateChatBodyAdmission, checkChatAdmission, CHAT_LARGE_BODY_BYTES } =
+  await import("../../src/shared/middleware/chatBodyAdmission.ts");
 
 const MB = 1024 * 1024;
 const HEAP_LIMIT = 3072 * MB; // mirror the homelab --max-old-space-size=3072

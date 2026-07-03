@@ -126,8 +126,7 @@ test("retrievePreview: semantic strategy with no vec store → fallbackReason is
 
   // No embedding source configured → fallback
   assert.ok(
-    bundle.resolution.fallbackReason !== null ||
-      bundle.resolution.strategyUsed !== "semantic",
+    bundle.resolution.fallbackReason !== null || bundle.resolution.strategyUsed !== "semantic",
     "semantic preview with no vec store should indicate fallback"
   );
   assert.ok(Array.isArray(bundle.items), "items must be array even in fallback");

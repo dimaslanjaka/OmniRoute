@@ -814,8 +814,7 @@ test("vscode tokenized tags route only exposes usable canonical chat models", as
 
   for (const tagModel of tagsBody.models || []) {
     const catalogModel = (catalogById.get(tagModel.name) || rawCatalogById.get(tagModel.name)) as
-      | CatalogLike
-      | undefined;
+      CatalogLike | undefined;
     assert.ok(catalogModel, `missing catalog model for tag ${tagModel.name}`);
     assert.ok(!catalogModel.parent, `tag ${tagModel.name} should not expose an alias child`);
     assert.ok(

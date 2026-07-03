@@ -148,12 +148,13 @@ test("A2A list-capabilities returns exactly 1 artifact", async () => {
 test("A2A list-capabilities artifact content contains 42 skill IDs as table rows", async () => {
   const result = await executeListCapabilities(stubTask);
   const content = result.artifacts[0].content;
-  const rows = content.split("\n").filter((line) => line.startsWith("| ") && !line.startsWith("| ID") && !line.startsWith("| ---"));
+  const rows = content
+    .split("\n")
+    .filter(
+      (line) => line.startsWith("| ") && !line.startsWith("| ID") && !line.startsWith("| ---")
+    );
   // Each skill row starts with "| <id> |"
-  assert.ok(
-    rows.length >= 42,
-    `Expected at least 42 data rows but got ${rows.length}`,
-  );
+  assert.ok(rows.length >= 42, `Expected at least 42 data rows but got ${rows.length}`);
 });
 
 test("A2A list-capabilities metadata.totalSkills === 43", async () => {

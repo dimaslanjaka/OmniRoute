@@ -47,9 +47,10 @@ test("requestUserCode posts client_id and normalizes interval + verification uri
 
 test("requestUserCode accepts the alternate 'usercode' field", async () => {
   const restore = withFetch(
-    () => new Response(JSON.stringify({ device_auth_id: "d", usercode: "X-1", interval: 0 }), {
-      status: 200,
-    })
+    () =>
+      new Response(JSON.stringify({ device_auth_id: "d", usercode: "X-1", interval: 0 }), {
+        status: 200,
+      })
   );
   try {
     const uc = await requestUserCode();

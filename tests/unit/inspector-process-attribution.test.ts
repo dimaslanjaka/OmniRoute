@@ -41,5 +41,7 @@ test("attributeProcess returns null on non-Linux (stub) without throwing", () =>
   // socket owns must resolve to null rather than throw — exercises the
   // not-found path safely regardless of platform.
   const result = attributeProcess(0);
-  assert.ok(result === null || (typeof result.pid === "number" && typeof result.processName === "string"));
+  assert.ok(
+    result === null || (typeof result.pid === "number" && typeof result.processName === "string")
+  );
 });

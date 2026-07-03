@@ -31,10 +31,7 @@ test("the real browser OAuth callback handler lives at /callback", () => {
 });
 
 test("the Fly.io deployment guide documents the correct /callback redirect URI (#3732)", () => {
-  const guide = readFileSync(
-    resolve(join(cwd, "docs/ops/FLY_IO_DEPLOYMENT_GUIDE.md")),
-    "utf8"
-  );
+  const guide = readFileSync(resolve(join(cwd, "docs/ops/FLY_IO_DEPLOYMENT_GUIDE.md")), "utf8");
   assert.ok(
     !/\/api\/oauth\/[^/\s]+\/callback/.test(guide),
     "the guide must not tell users to register a per-provider /api/oauth/<provider>/callback URI"

@@ -48,7 +48,11 @@ export function CaptureModesToolbar({ customHostCount }: CaptureModesToolbarProp
     fetchTproxyStatus()
       .then((s) => {
         if (alive) {
-          setTproxy({ running: s.running, available: s.available, interceptCount: s.interceptCount });
+          setTproxy({
+            running: s.running,
+            available: s.available,
+            interceptCount: s.interceptCount,
+          });
         }
       })
       .catch(() => {

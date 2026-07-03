@@ -60,8 +60,7 @@ export default function ProviderPlaygroundPanel({ providerId }: { providerId: st
   // For providers without explicit serviceKinds (most LLM providers), we infer
   // "llm" as the default.
   const providerEntry = AI_PROVIDERS[providerId as keyof typeof AI_PROVIDERS] as
-    | (Record<string, unknown> & { serviceKinds?: string[] })
-    | undefined;
+    (Record<string, unknown> & { serviceKinds?: string[] }) | undefined;
 
   const rawKinds: string[] = providerEntry?.serviceKinds ?? [];
 

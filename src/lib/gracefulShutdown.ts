@@ -17,8 +17,7 @@ const SHUTDOWN_TIMEOUT_MS = parseInt(process.env.SHUTDOWN_TIMEOUT_MS || "30000",
 
 declare global {
   var __omnirouteShutdown:
-    | { init: boolean; shuttingDown: boolean; activeRequests: number }
-    | undefined;
+    { init: boolean; shuttingDown: boolean; activeRequests: number } | undefined;
 }
 
 function getShutdownState() {

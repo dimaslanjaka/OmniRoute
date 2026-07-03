@@ -101,17 +101,18 @@ const SANITIZE_SOURCE_EXT = ["ts", "tsx", "js", "jsx", "mjs", "cjs"];
 function looksLikeAbsolutePath(tok) {
   if (tok.length < 4 || tok.length > 2048) return false;
   const isPosix = tok.charCodeAt(0) === 0x2f;
-  const isWindows =
-    tok.length > 2 && tok.charCodeAt(1) === 0x3a && /[A-Za-z]/.test(tok[0]);
+  const isWindows = tok.length > 2 && tok.charCodeAt(1) === 0x3a && /[A-Za-z]/.test(tok[0]);
   if (!isPosix && !isWindows) return false;
   const dot = tok.lastIndexOf(".");
   if (dot <= 0 || dot === tok.length - 1) return false;
-  const ext = tok.slice(dot + 1).split(":", 1)[0].toLowerCase();
+  const ext = tok
+    .slice(dot + 1)
+    .split(":", 1)[0]
+    .toLowerCase();
   return SANITIZE_SOURCE_EXT.includes(ext);
 }
 function sanitizeErrorMessage(message) {
-  let str =
-    typeof message === "string" ? message : String(message == null ? "" : message);
+  let str = typeof message === "string" ? message : String(message == null ? "" : message);
   if (str.length > SANITIZE_MAX_LEN) str = str.slice(0, SANITIZE_MAX_LEN);
   const nl = str.indexOf("\n");
   const firstLine = nl >= 0 ? str.slice(0, nl) : str;
@@ -198,9 +199,7 @@ function routeBypass(hostname) {
 
 const _bypassLoaded = loadUserBypassPatterns();
 if (_bypassLoaded > 0) {
-  console.log(
-    `[MITM] Loaded ${_bypassLoaded} user bypass pattern(s) from bypass.json`
-  );
+  console.log(`[MITM] Loaded ${_bypassLoaded} user bypass pattern(s) from bypass.json`);
 }
 
 let _sqliteDb = null;
@@ -457,7 +456,9 @@ async function intercept(req, res, bodyBuffer, mappedModel, sourceModel) {
   // other inbound clients and to record the originating IDE agent id.
   // Resolve agent id from the Host header against the target map; defensive
   // fallback to "unknown" when the host is somehow not in the map.
-  const reqHost = String(req.headers.host || "").split(":")[0].toLowerCase();
+  const reqHost = String(req.headers.host || "")
+    .split(":")[0]
+    .toLowerCase();
   const agentId = TARGET_HOST_AGENT.get(reqHost) || "unknown";
   const startedAt = Date.now();
   let upstreamStartedAt = startedAt;
@@ -563,10 +564,15 @@ const server = https.createServer(sslOptions, async (req, res) => {
   writeStats();
 
   const bodyBuffer = await collectBodyRaw(req);
-  const host = String(req.headers.host || "").split(":")[0].toLowerCase();
+  const host = String(req.headers.host || "")
+    .split(":")[0]
+    .toLowerCase();
   const model = bodyBuffer.length > 0 ? extractModel(bodyBuffer) : null;
 
-  vlog(1, `[MITM] ${req.method} ${host}${req.url} | body: ${bodyBuffer.length}B | model: ${model || "N/A"}`);
+  vlog(
+    1,
+    `[MITM] ${req.method} ${host}${req.url} | body: ${bodyBuffer.length}B | model: ${model || "N/A"}`
+  );
 
   if (bodyBuffer.length > 0) saveRequestLog(req.url, bodyBuffer);
 
@@ -722,10 +728,7 @@ server.on("connect", (req, clientSocket, head) => {
     // https.createServer request handler can decrypt and route. We write the
     // 200 response ourselves and then `emit("connection")` so the TLS layer
     // picks the socket up.
-    vlog(
-      1,
-      `[MITM] CONNECT ${connectHost}:${connectPort} → TARGET (TLS terminate locally)`
-    );
+    vlog(1, `[MITM] CONNECT ${connectHost}:${connectPort} → TARGET (TLS terminate locally)`);
     clientSocket.write("HTTP/1.1 200 Connection Established\r\n\r\n");
     if (head && head.length > 0) clientSocket.unshift(head);
     server.emit("connection", clientSocket);
@@ -733,10 +736,7 @@ server.on("connect", (req, clientSocket, head) => {
   }
 
   // decision === "passthrough"
-  vlog(
-    1,
-    `[MITM] CONNECT ${connectHost}:${connectPort} → PASSTHROUGH (TCP tunnel)`
-  );
+  vlog(1, `[MITM] CONNECT ${connectHost}:${connectPort} → PASSTHROUGH (TCP tunnel)`);
   rawTcpForward(clientSocket, head, connectHost, connectPort, "passthrough");
 });
 

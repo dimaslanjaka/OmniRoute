@@ -53,8 +53,7 @@ function previewCorruptedValue(value: unknown): string {
 export function loadTierConfigFromDb(): TierConfig | null {
   const db = getDbInstance();
   const row = db.prepare(`SELECT value FROM ${TABLE} WHERE key = 'tier_config'`).get() as
-    | { value: string }
-    | undefined;
+    { value: string } | undefined;
   if (!row) return null;
 
   const raw = row.value;

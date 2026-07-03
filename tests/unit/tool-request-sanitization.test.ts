@@ -9,9 +9,8 @@ const {
   injectEmptyReasoningContentForToolCalls,
 } = await import("../../open-sse/translator/helpers/schemaCoercion.ts");
 const { translateRequest } = await import("../../open-sse/translator/index.ts");
-const { NON_ANTHROPIC_THINKING_PLACEHOLDER } = await import(
-  "../../open-sse/translator/helpers/claudeHelper.ts"
-);
+const { NON_ANTHROPIC_THINKING_PLACEHOLDER } =
+  await import("../../open-sse/translator/helpers/claudeHelper.ts");
 const { FORMATS } = await import("../../open-sse/translator/formats.ts");
 const { clearModelsDevCapabilities, saveModelsDevCapabilities } =
   await import("../../src/lib/modelsDevSync.ts");

@@ -23,7 +23,9 @@ function render(ui: React.ReactElement) {
 
 describe("QuantumLockBadge", () => {
   it("renders count + categories when fragments > 0", () => {
-    const el = render(<QuantumLockBadge stats={{ fragments: 3, categories: { uuid: 2, jwt: 1 } }} />);
+    const el = render(
+      <QuantumLockBadge stats={{ fragments: 3, categories: { uuid: 2, jwt: 1 } }} />
+    );
     const badge = el.querySelector('[data-testid="quantum-badge"]');
     expect(badge?.textContent).toContain("3 volatile fragment");
     expect(badge?.textContent).toContain("uuid ×2");
@@ -31,7 +33,13 @@ describe("QuantumLockBadge", () => {
   });
 
   it("renders nothing when stats are absent or zero", () => {
-    expect(render(<QuantumLockBadge stats={null} />).querySelector('[data-testid="quantum-badge"]')).toBeNull();
-    expect(render(<QuantumLockBadge stats={{ fragments: 0, categories: {} }} />).querySelector('[data-testid="quantum-badge"]')).toBeNull();
+    expect(
+      render(<QuantumLockBadge stats={null} />).querySelector('[data-testid="quantum-badge"]')
+    ).toBeNull();
+    expect(
+      render(<QuantumLockBadge stats={{ fragments: 0, categories: {} }} />).querySelector(
+        '[data-testid="quantum-badge"]'
+      )
+    ).toBeNull();
   });
 });

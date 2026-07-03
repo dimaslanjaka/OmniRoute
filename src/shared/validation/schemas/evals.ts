@@ -14,7 +14,6 @@ import {
 } from "@/shared/constants/upstreamHeaders";
 import { MAX_TIMER_TIMEOUT_MS } from "@/shared/utils/runtimeTimeouts";
 
-
 export const evalTargetSchema = z
   .object({
     type: z.enum(["suite-default", "model", "combo"]),

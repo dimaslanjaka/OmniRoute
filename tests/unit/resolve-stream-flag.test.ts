@@ -15,26 +15,24 @@ describe("resolveStreamFlag — forceStream / providerRequiresStreaming guard (#
       undefined, // sourceFormat
       { providerRequiresStreaming: true }
     );
-    assert.equal(result, true, "stream-only provider must stay streaming even when client prefers JSON");
+    assert.equal(
+      result,
+      true,
+      "stream-only provider must stay streaming even when client prefers JSON"
+    );
   });
 
   it("non-forceStream provider: client prefers JSON + stream:false → non-streaming (unchanged behavior)", () => {
-    const result = resolveStreamFlag(
-      false,
-      "application/json",
-      undefined,
-      { providerRequiresStreaming: false }
-    );
+    const result = resolveStreamFlag(false, "application/json", undefined, {
+      providerRequiresStreaming: false,
+    });
     assert.equal(result, false, "normal provider should respect client JSON preference");
   });
 
   it("forceStream provider: no explicit stream flag → streams by default", () => {
-    const result = resolveStreamFlag(
-      undefined,
-      undefined,
-      undefined,
-      { providerRequiresStreaming: true }
-    );
+    const result = resolveStreamFlag(undefined, undefined, undefined, {
+      providerRequiresStreaming: true,
+    });
     assert.equal(result, true);
   });
 
@@ -44,24 +42,18 @@ describe("resolveStreamFlag — forceStream / providerRequiresStreaming guard (#
   });
 
   it("forceStream provider: client explicitly sends stream:true → stays true", () => {
-    const result = resolveStreamFlag(
-      true,
-      "application/json",
-      undefined,
-      { providerRequiresStreaming: true }
-    );
+    const result = resolveStreamFlag(true, "application/json", undefined, {
+      providerRequiresStreaming: true,
+    });
     assert.equal(result, true);
   });
 
   it("forceStream provider: client sends Accept: text/event-stream + stream:false → stays true", () => {
     // SSE Accept header alone shouldn't be needed for stream-only providers,
     // but providerRequiresStreaming should still force true.
-    const result = resolveStreamFlag(
-      false,
-      "text/event-stream",
-      undefined,
-      { providerRequiresStreaming: true }
-    );
+    const result = resolveStreamFlag(false, "text/event-stream", undefined, {
+      providerRequiresStreaming: true,
+    });
     assert.equal(result, true);
   });
 

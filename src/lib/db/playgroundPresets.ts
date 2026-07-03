@@ -69,9 +69,8 @@ export function listPlaygroundPresets(): PlaygroundPresetListItem[] {
  */
 export function getPlaygroundPreset(id: string): PlaygroundPresetListItem | null {
   const db = getDbInstance();
-  const row = db
-    .prepare("SELECT * FROM playground_presets WHERE id = ? LIMIT 1")
-    .get(id) as PlaygroundPresetRow | undefined;
+  const row = db.prepare("SELECT * FROM playground_presets WHERE id = ? LIMIT 1").get(id) as
+    PlaygroundPresetRow | undefined;
   if (!row) return null;
   return rowToItem(row);
 }

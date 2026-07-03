@@ -33,12 +33,10 @@ const { BaseExecutor, combosDb, handleChat, buildRequest, seedConnection, resetS
 
 // DRR + bucket state seams — import AFTER harness initialises the DB so the
 // module-level in-process singletons are already live.
-const { _clearDrrStateForTest } = await import(
-  "../../../open-sse/services/combo/quotaShareStrategy.ts"
-);
-const { recordUsage, _clearBucketsForTest } = await import(
-  "../../../src/lib/quota/accountBuckets.ts"
-);
+const { _clearDrrStateForTest } =
+  await import("../../../open-sse/services/combo/quotaShareStrategy.ts");
+const { recordUsage, _clearBucketsForTest } =
+  await import("../../../src/lib/quota/accountBuckets.ts");
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 

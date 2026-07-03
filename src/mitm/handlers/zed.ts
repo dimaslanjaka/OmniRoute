@@ -16,7 +16,7 @@ export class ZedHandler extends MitmHandlerBase {
     req: IncomingMessage,
     res: ServerResponse,
     body: Buffer,
-    mappedModel: string,
+    mappedModel: string
   ): Promise<void> {
     const startedAt = this.now();
     const intercepted = await this.hookBufferStart(req, body, mappedModel);

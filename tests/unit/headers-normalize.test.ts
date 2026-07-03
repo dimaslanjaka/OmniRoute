@@ -43,10 +43,11 @@ test("normalizeHeaders survives an object that throws on forEach (cross-undici-i
     forEach: () => {
       throw new TypeError("Cannot read private member #headers");
     },
-    entries: () => [
-      ["X-Survived", "yes"],
-      ["Retry-After", "1"],
-    ][Symbol.iterator](),
+    entries: () =>
+      [
+        ["X-Survived", "yes"],
+        ["Retry-After", "1"],
+      ][Symbol.iterator](),
   };
 
   const plain = normalizeHeaders(throwingForEach as unknown as Headers);
@@ -55,7 +56,7 @@ test("normalizeHeaders survives an object that throws on forEach (cross-undici-i
 });
 
 test("normalizeHeaders falls back to Object.entries when neither forEach nor entries works", () => {
-  const noIterators = { "X-Plain": "ok", "Other": "value" };
+  const noIterators = { "X-Plain": "ok", Other: "value" };
   const plain = normalizeHeaders(noIterators);
   assert.equal(plain["x-plain"], "ok");
   assert.equal(plain["other"], "value");

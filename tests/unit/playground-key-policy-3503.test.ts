@@ -55,7 +55,11 @@ test("#3503 — authenticated session + key-id header resolves the key secret se
   const out = await resolvePlaygroundTestKey(
     req({ [PLAYGROUND_KEY_ID_HEADER]: KEY_ID, cookie: await sessionCookie() })
   );
-  assert.equal(out, KEY_SECRET, "an authenticated session should resolve the selected key's secret by id");
+  assert.equal(
+    out,
+    KEY_SECRET,
+    "an authenticated session should resolve the selected key's secret by id"
+  );
 });
 
 test("#3503 — SECURITY: the key-id header is IGNORED without an authenticated session", async () => {

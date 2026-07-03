@@ -34,7 +34,9 @@ function makeRequest(
 // ── tests ─────────────────────────────────────────────────────────────────────
 
 test("selectActiveRequests: maps pending requests to {provider, model}", () => {
-  const input = [makeRequest({ id: "a", provider: "anthropic", model: "claude-opus-4", status: "pending" })];
+  const input = [
+    makeRequest({ id: "a", provider: "anthropic", model: "claude-opus-4", status: "pending" }),
+  ];
   const result = selectActiveRequests(input);
   assert.deepEqual(result, [{ provider: "anthropic", model: "claude-opus-4" }]);
 });
@@ -62,7 +64,9 @@ test("selectActiveRequests: maps multiple concurrent in-flight requests", () => 
 });
 
 test("selectActiveRequests: only extracts provider and model fields (not id/timestamp/etc)", () => {
-  const input = [makeRequest({ id: "d", provider: "groq", model: "llama3-70b", status: "running" })];
+  const input = [
+    makeRequest({ id: "d", provider: "groq", model: "llama3-70b", status: "running" }),
+  ];
   const result = selectActiveRequests(input);
   assert.equal(Object.keys(result[0]).length, 2);
   assert.ok("provider" in result[0]);

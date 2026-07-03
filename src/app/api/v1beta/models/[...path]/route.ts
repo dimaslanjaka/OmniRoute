@@ -88,9 +88,7 @@ export async function POST(request, { params }) {
       action = modelAction.includes(":streamGenerateContent")
         ? ":streamGenerateContent"
         : ":generateContent";
-      model = modelAction
-        .replace(":streamGenerateContent", "")
-        .replace(":generateContent", "");
+      model = modelAction.replace(":streamGenerateContent", "").replace(":generateContent", "");
     }
 
     const validation = validateBody(v1betaGeminiGenerateSchema, rawBody);

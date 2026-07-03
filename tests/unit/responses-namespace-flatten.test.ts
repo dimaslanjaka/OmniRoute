@@ -7,9 +7,8 @@ import assert from "node:assert/strict";
 // The Responses→Chat translator had no namespace branch, so each namespace
 // collapsed into a single empty-schema function named `mcp__<server>__`, dropping
 // every sub-tool. Any MCP call then failed with `unsupported call: mcp__<server>__`.
-const { openaiResponsesToOpenAIRequest } = await import(
-  "../../open-sse/translator/request/openai-responses.ts"
-);
+const { openaiResponsesToOpenAIRequest } =
+  await import("../../open-sse/translator/request/openai-responses.ts");
 
 test("#1534: namespace MCP tools flatten into one Chat function per sub-tool", () => {
   const body = {

@@ -8,9 +8,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-const { fetchTproxyStatus, startTproxyCaptureMode, stopTproxyCaptureMode } = await import(
-  "../../src/lib/inspector/tproxyCaptureApi.ts"
-);
+const { fetchTproxyStatus, startTproxyCaptureMode, stopTproxyCaptureMode } =
+  await import("../../src/lib/inspector/tproxyCaptureApi.ts");
 
 type FetchCall = { url: string; init?: RequestInit };
 
@@ -65,7 +64,10 @@ test("startTproxyCaptureMode POSTs options and unwraps the resulting status", as
 });
 
 test("stopTproxyCaptureMode DELETEs and unwraps the resulting status", async () => {
-  const f = stubFetch(() => ({ ok: true, body: { ok: true, status: { running: false, available: true } } }));
+  const f = stubFetch(() => ({
+    ok: true,
+    body: { ok: true, status: { running: false, available: true } },
+  }));
   try {
     const result = await stopTproxyCaptureMode();
     assert.equal(result.running, false);

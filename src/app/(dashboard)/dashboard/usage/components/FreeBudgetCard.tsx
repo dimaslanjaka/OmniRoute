@@ -59,8 +59,16 @@ const FREE_TYPE_LABEL: Record<string, string> = {
 
 // Distinct hues for stacked bar segments (cycling)
 const BAR_HUES = [
-  "#6366f1", "#10b981", "#f59e0b", "#3b82f6", "#ec4899",
-  "#14b8a6", "#f97316", "#8b5cf6", "#06b6d4", "#84cc16",
+  "#6366f1",
+  "#10b981",
+  "#f59e0b",
+  "#3b82f6",
+  "#ec4899",
+  "#14b8a6",
+  "#f97316",
+  "#8b5cf6",
+  "#06b6d4",
+  "#84cc16",
 ];
 
 const RECURRING_TYPES = new Set(["recurring-daily", "recurring-monthly", "keyless"]);
@@ -103,7 +111,11 @@ function buildBarSegments(perModel: FreeBudgetPerModel[]): BarSegment[] {
           color: colorFor(m.provider),
         });
       } else if (m.monthlyTokens > existing.tokens) {
-        seenPools.set(m.poolKey, { ...existing, tokens: m.monthlyTokens, label: `${m.displayName} (${m.provider})` });
+        seenPools.set(m.poolKey, {
+          ...existing,
+          tokens: m.monthlyTokens,
+          label: `${m.displayName} (${m.provider})`,
+        });
       }
     } else {
       looseSegments.push({
@@ -130,14 +142,23 @@ function sortRows(rows: FreeBudgetPerModel[], sort: FreeBudgetSort): FreeBudgetP
   const copy = rows.slice();
   if (sort === "name") return copy.sort((a, b) => a.displayName.localeCompare(b.displayName));
   if (sort === "provider")
-    return copy.sort((a, b) => a.provider.localeCompare(b.provider) || b.monthlyTokens - a.monthlyTokens);
+    return copy.sort(
+      (a, b) => a.provider.localeCompare(b.provider) || b.monthlyTokens - a.monthlyTokens
+    );
   return copy.sort((a, b) => b.monthlyTokens - a.monthlyTokens || b.creditTokens - a.creditTokens);
 }
 
 function tosBadge(tos: string): { icon: string; cls: string; title: string } | null {
-  if (tos === "avoid") return { icon: "warning", cls: "text-amber-400", title: "ToS-restricted — review terms" };
-  if (tos === "caution") return { icon: "bolt", cls: "text-text-muted", title: "Caution — personal-use / proxy clauses" };
-  if (tos === "ok") return { icon: "check_circle", cls: "text-emerald-500", title: "Generally permissive" };
+  if (tos === "avoid")
+    return { icon: "warning", cls: "text-amber-400", title: "ToS-restricted — review terms" };
+  if (tos === "caution")
+    return {
+      icon: "bolt",
+      cls: "text-text-muted",
+      title: "Caution — personal-use / proxy clauses",
+    };
+  if (tos === "ok")
+    return { icon: "check_circle", cls: "text-emerald-500", title: "Generally permissive" };
   return null;
 }
 
@@ -149,7 +170,9 @@ function Kpi({ label, value, valueClass }: { label: string; value: string; value
   return (
     <div className="flex flex-col gap-0.5 px-3 py-2 rounded-md border border-border bg-black/[0.015] dark:bg-white/[0.015]">
       <span className="text-[10px] uppercase tracking-wide text-text-muted">{label}</span>
-      <span className={`text-[19px] font-bold tabular-nums ${valueClass ?? "text-text-main"}`}>{value}</span>
+      <span className={`text-[19px] font-bold tabular-nums ${valueClass ?? "text-text-main"}`}>
+        {value}
+      </span>
     </div>
   );
 }
@@ -203,7 +226,11 @@ export function FreeBudgetView({
       {/* KPI tiles */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 px-3 pt-3">
         <Kpi label="Steady / month" value={`~${fmt(steadyRecurringTokens)}`} />
-        <Kpi label="First month (+ credits)" value={`~${fmt(firstMonthRealisticTokens)}`} valueClass="text-emerald-500" />
+        <Kpi
+          label="First month (+ credits)"
+          value={`~${fmt(firstMonthRealisticTokens)}`}
+          valueClass="text-emerald-500"
+        />
         <Kpi label="Used this month" value={fmt(usedThisMonth)} valueClass="text-text-muted" />
       </div>
 
@@ -212,7 +239,8 @@ export function FreeBudgetView({
         <div className="px-3 pt-3">
           <div className="flex h-3 rounded-sm overflow-hidden w-full" data-testid="budget-bar">
             {barSegments.map((seg) => {
-              const width = totalBarTokens > 0 ? ((seg.tokens / totalBarTokens) * 100).toFixed(2) : "0";
+              const width =
+                totalBarTokens > 0 ? ((seg.tokens / totalBarTokens) * 100).toFixed(2) : "0";
               return (
                 <div
                   key={seg.key}
@@ -224,7 +252,8 @@ export function FreeBudgetView({
             })}
           </div>
           <p className="mt-1 text-[10.5px] text-text-muted">
-            Each segment = one free pool · pool-deduped, honest counting (no inflated rate-limit ceilings).
+            Each segment = one free pool · pool-deduped, honest counting (no inflated rate-limit
+            ceilings).
           </p>
         </div>
       )}
@@ -234,14 +263,16 @@ export function FreeBudgetView({
         <div className="mx-3 mt-2 flex items-center gap-2 rounded-md border border-emerald-500/30 bg-emerald-500/10 px-3 py-1.5">
           <span className="material-symbols-outlined text-[14px] text-emerald-500">bolt</span>
           <span className="text-[11px] text-emerald-500">
-            Unlock ~{fmt(boostMonthlyTokens)} more/mo with a one-time $10 OpenRouter top-up (50 → 1000 req/day)
+            Unlock ~{fmt(boostMonthlyTokens)} more/mo with a one-time $10 OpenRouter top-up (50 →
+            1000 req/day)
           </span>
         </div>
       )}
       {uncappedProviders.length > 0 && (
         <div className="mx-3 mt-2 rounded-md border border-border bg-black/[0.015] dark:bg-white/[0.015] px-3 py-2">
           <span className="text-[11px] text-text-muted">
-            Permanently free, no published cap (rate-limited) — real access, not counted in the headline:
+            Permanently free, no published cap (rate-limited) — real access, not counted in the
+            headline:
           </span>
           <div className="mt-1 flex flex-wrap gap-1">
             {uncappedProviders.map((p) => (
@@ -262,7 +293,8 @@ export function FreeBudgetView({
         <div className="mx-3 mt-2 flex items-center gap-2 rounded-md border border-amber-500/30 bg-amber-500/10 px-3 py-1.5">
           <span className="material-symbols-outlined text-[14px] text-text-muted">warning</span>
           <span className="text-[11px] text-amber-400">
-            {avoidModels.length} model{avoidModels.length !== 1 ? "s" : ""} flagged as ToS-restricted — you decide
+            {avoidModels.length} model{avoidModels.length !== 1 ? "s" : ""} flagged as
+            ToS-restricted — you decide
           </span>
         </div>
       )}
@@ -303,10 +335,15 @@ export function FreeBudgetView({
                         <span className="text-text-muted">{m.provider}</span>
                       </span>
                     </td>
-                    <td className="py-1 pr-2 text-text-main truncate max-w-[180px]" title={m.modelId}>
+                    <td
+                      className="py-1 pr-2 text-text-main truncate max-w-[180px]"
+                      title={m.modelId}
+                    >
                       {m.displayName}
                     </td>
-                    <td className="py-1 pr-2 text-text-muted">{FREE_TYPE_LABEL[m.freeType] ?? m.freeType}</td>
+                    <td className="py-1 pr-2 text-text-muted">
+                      {FREE_TYPE_LABEL[m.freeType] ?? m.freeType}
+                    </td>
                     <td className="py-1 pr-2 text-right text-text-main tabular-nums">{amount}</td>
                     <td className="py-1 pr-1 text-center">
                       {badge && (

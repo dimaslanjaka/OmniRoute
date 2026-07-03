@@ -1,9 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-const { VertexExecutor, isExpressApiKey, looksLikeServiceAccountJson } = await import(
-  "../../open-sse/executors/vertex.ts"
-);
+const { VertexExecutor, isExpressApiKey, looksLikeServiceAccountJson } =
+  await import("../../open-sse/executors/vertex.ts");
 
 test("looksLikeServiceAccountJson is true only for a JSON object credential", () => {
   assert.equal(looksLikeServiceAccountJson(JSON.stringify({ project_id: "p" })), true);

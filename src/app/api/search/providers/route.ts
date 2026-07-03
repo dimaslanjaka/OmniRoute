@@ -115,10 +115,7 @@ async function resolveProviderStatus(
 
 export async function GET(request: Request) {
   if (!(await isAuthenticated(request))) {
-    return NextResponse.json(
-      buildErrorBody(401, "Unauthorized"),
-      { status: 401 }
-    );
+    return NextResponse.json(buildErrorBody(401, "Unauthorized"), { status: 401 });
   }
 
   try {
@@ -133,16 +130,18 @@ export async function GET(request: Request) {
       )
     );
 
-    const searchItems: SearchProviderCatalogItem[] = searchProviderStatuses.map(({ p, status }) => ({
-      id: p.id,
-      name: p.name,
-      kind: "search" as const,
-      costPerQuery: p.costPerQuery,
-      freeMonthlyQuota: p.freeMonthlyQuota,
-      searchTypes: p.searchTypes,
-      status,
-      configureHref: "/dashboard/providers",
-    }));
+    const searchItems: SearchProviderCatalogItem[] = searchProviderStatuses.map(
+      ({ p, status }) => ({
+        id: p.id,
+        name: p.name,
+        kind: "search" as const,
+        costPerQuery: p.costPerQuery,
+        freeMonthlyQuota: p.freeMonthlyQuota,
+        searchTypes: p.searchTypes,
+        status,
+        configureHref: "/dashboard/providers",
+      })
+    );
 
     // -----------------------------------------------------------------------
     // 2. Build fetch providers (3 hardcoded)

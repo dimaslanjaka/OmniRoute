@@ -57,11 +57,16 @@ test("a different connection of an exhausted pair is NOT skipped on the connecti
 });
 
 test("no connectionId: only the provider-level check applies", () => {
-  assert.equal(getExhaustedTargetSkipReason(target({ connectionId: null }), new Set(), new Set()), null);
+  assert.equal(
+    getExhaustedTargetSkipReason(target({ connectionId: null }), new Set(), new Set()),
+    null
+  );
   assert.ok(
-    getExhaustedTargetSkipReason(target({ connectionId: null }), new Set(["openai"]), new Set())?.includes(
-      "(#1731)"
-    )
+    getExhaustedTargetSkipReason(
+      target({ connectionId: null }),
+      new Set(["openai"]),
+      new Set()
+    )?.includes("(#1731)")
   );
 });
 

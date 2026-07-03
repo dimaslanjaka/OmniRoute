@@ -42,12 +42,7 @@ const DEFAULT_TIMEOUT_MS = 15 * 60 * 1000;
 const DEFAULT_INTERVAL_SEC = 5;
 
 export type CodexDeviceFlowErrorCode =
-  | "device_disabled"
-  | "usercode_failed"
-  | "exchange_failed"
-  | "timeout"
-  | "aborted"
-  | "network";
+  "device_disabled" | "usercode_failed" | "exchange_failed" | "timeout" | "aborted" | "network";
 
 export class CodexDeviceFlowError extends Error {
   code: CodexDeviceFlowErrorCode;

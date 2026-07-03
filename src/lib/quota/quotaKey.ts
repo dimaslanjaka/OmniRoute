@@ -163,7 +163,7 @@ export async function reconcilePoolExclusivity(
   poolId: string,
   prevApiKeyIds: string[],
   nextApiKeyIds: string[],
-  exclusive: boolean,
+  exclusive: boolean
 ): Promise<void> {
   const affectedIds = new Set([...prevApiKeyIds, ...nextApiKeyIds]);
 
@@ -173,7 +173,7 @@ export async function reconcilePoolExclusivity(
       if (!keyRow) continue;
 
       const currentQuotas: string[] = Array.isArray(
-        (keyRow as Record<string, unknown>).allowedQuotas,
+        (keyRow as Record<string, unknown>).allowedQuotas
       )
         ? ((keyRow as Record<string, unknown>).allowedQuotas as string[])
         : [];

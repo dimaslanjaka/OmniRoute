@@ -22,10 +22,18 @@ function makeTarget(overrides: Partial<ResolvedComboTarget> = {}): ResolvedCombo
 function makeLogger(): ComboLogger {
   const msgs: string[] = [];
   return {
-    info: (...args: unknown[]) => { msgs.push(args.join(" ")); },
-    warn: (...args: unknown[]) => { msgs.push(args.join(" ")); },
-    error: (...args: unknown[]) => { msgs.push(args.join(" ")); },
-    debug: (...args: unknown[]) => { msgs.push(args.join(" ")); },
+    info: (...args: unknown[]) => {
+      msgs.push(args.join(" "));
+    },
+    warn: (...args: unknown[]) => {
+      msgs.push(args.join(" "));
+    },
+    error: (...args: unknown[]) => {
+      msgs.push(args.join(" "));
+    },
+    debug: (...args: unknown[]) => {
+      msgs.push(args.join(" "));
+    },
     _msgs: msgs,
   } as ComboLogger & { _msgs: string[] };
 }

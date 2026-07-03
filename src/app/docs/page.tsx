@@ -54,7 +54,15 @@ const sections = [
     subtitle: "Deep dive into architecture, APIs, and internals",
     icon: "code",
     color: "blue",
-    folders: ["architecture", "reference", "frameworks", "routing", "security", "compression", "ops"],
+    folders: [
+      "architecture",
+      "reference",
+      "frameworks",
+      "routing",
+      "security",
+      "compression",
+      "ops",
+    ],
   },
 ];
 

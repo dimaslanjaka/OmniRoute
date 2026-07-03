@@ -322,7 +322,9 @@ function extractM365CredentialParts(raw: string, providerSpecificData: Record<st
       (typeof providerSpecificData.access_token === "string"
         ? providerSpecificData.access_token
         : "") ||
-      (typeof providerSpecificData.accessToken === "string" ? providerSpecificData.accessToken : ""),
+      (typeof providerSpecificData.accessToken === "string"
+        ? providerSpecificData.accessToken
+        : ""),
     chathubPath:
       parts.chathubPath ||
       parts.userTenant ||
@@ -334,10 +336,7 @@ function extractM365CredentialParts(raw: string, providerSpecificData: Record<st
 }
 
 // ── Microsoft 365 Copilot Web token validator ──
-export async function validateCopilotM365WebProvider({
-  apiKey,
-  providerSpecificData = {},
-}: any) {
+export async function validateCopilotM365WebProvider({ apiKey, providerSpecificData = {} }: any) {
   const { accessToken, chathubPath } = extractM365CredentialParts(
     String(apiKey || ""),
     providerSpecificData

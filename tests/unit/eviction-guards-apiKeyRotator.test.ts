@@ -19,7 +19,10 @@ test("trackConnectionExtraKeys: inserting into a full map does not evict existin
 
   // Now update an existing key — this should NOT evict it
   trackConnectionExtraKeys("conn-0", ["key-0", "key-new"]);
-  assert.ok(connectionHasExtraKeys("conn-0", ["key-0"]), "Existing key should not be evicted on update");
+  assert.ok(
+    connectionHasExtraKeys("conn-0", ["key-0"]),
+    "Existing key should not be evicted on update"
+  );
 });
 
 test("trackConnectionExtraKeys: evicts oldest when inserting NEW key at capacity", () => {

@@ -12,7 +12,10 @@ import {
   hasSelfUsageScope,
   normalizeSelfServiceScopesForCreate,
 } from "../../src/shared/constants/selfServiceScopes.ts";
-import { createKeySchema, updateKeyPermissionsSchema } from "../../src/shared/validation/schemas.ts";
+import {
+  createKeySchema,
+  updateKeyPermissionsSchema,
+} from "../../src/shared/validation/schemas.ts";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 

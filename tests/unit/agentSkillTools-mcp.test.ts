@@ -43,8 +43,14 @@ test("agentSkillTools exports exactly 3 tools", () => {
 
 test("each agentSkillTool has name, description, inputSchema, and handler", () => {
   for (const toolDef of Object.values(agentSkillTools)) {
-    assert.ok(typeof toolDef.name === "string" && toolDef.name.length > 0, `${toolDef.name}: name missing`);
-    assert.ok(typeof toolDef.description === "string" && toolDef.description.length > 0, `${toolDef.name}: description missing`);
+    assert.ok(
+      typeof toolDef.name === "string" && toolDef.name.length > 0,
+      `${toolDef.name}: name missing`
+    );
+    assert.ok(
+      typeof toolDef.description === "string" && toolDef.description.length > 0,
+      `${toolDef.name}: description missing`
+    );
     assert.ok(toolDef.inputSchema != null, `${toolDef.name}: inputSchema missing`);
     assert.ok(typeof toolDef.handler === "function", `${toolDef.name}: handler missing`);
   }

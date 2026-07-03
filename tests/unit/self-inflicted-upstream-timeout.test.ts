@@ -1,9 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-const { isSelfInflictedUpstreamTimeout } = await import(
-  "../../open-sse/handlers/chatCore/cooldownClassification.ts"
-);
+const { isSelfInflictedUpstreamTimeout } =
+  await import("../../open-sse/handlers/chatCore/cooldownClassification.ts");
 
 test("504 + upstream_timeout on a non-antigravity provider is self-inflicted (skip cooldown)", () => {
   assert.equal(isSelfInflictedUpstreamTimeout(504, "upstream_timeout", "claude"), true);

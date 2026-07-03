@@ -80,7 +80,11 @@ test("#5110-4: an empty messages array is rejected with a clear 400 before hitti
     })
   );
 
-  assert.equal(response.status, 400, "empty messages must be a 400, not a forwarded upstream error");
+  assert.equal(
+    response.status,
+    400,
+    "empty messages must be a 400, not a forwarded upstream error"
+  );
   const body = (await response.json()) as { error?: { message?: string } };
   assert.match(
     body.error?.message ?? "",

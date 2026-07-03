@@ -33,10 +33,7 @@ describe("stripTrailingAssistantForProvider (#3396)", () => {
   });
 
   it("strips trailing assistant with array-string content for mistral", () => {
-    const msgs = [
-      user("hi"),
-      { role: "assistant", content: [{ type: "text", text: "response" }] },
-    ];
+    const msgs = [user("hi"), { role: "assistant", content: [{ type: "text", text: "response" }] }];
     const result = stripTrailingAssistantForProvider(msgs, "mistral");
     assert.strictEqual(result.length, 1);
     assert.strictEqual(result[0].role, "user");

@@ -1,8 +1,12 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-const { buildImproveChatBody, parseImprovedContent, META_SYSTEM_PROMPT, ImprovePromptRequestSchema } =
-  await import("../../src/lib/playground/promptImprover.ts");
+const {
+  buildImproveChatBody,
+  parseImprovedContent,
+  META_SYSTEM_PROMPT,
+  ImprovePromptRequestSchema,
+} = await import("../../src/lib/playground/promptImprover.ts");
 
 // ── META_SYSTEM_PROMPT ────────────────────────────────────────────────────────
 
@@ -36,7 +40,7 @@ test("buildImproveChatBody: only system, concise tone", () => {
   assert.ok(body.messages[1].content.includes("<<SYSTEM>>"), "system marker in user msg");
   assert.ok(
     body.messages[1].content.includes("You are a helpful assistant."),
-    "system content present",
+    "system content present"
   );
   // Must NOT include <<PROMPT>> when no prompt was given
   assert.ok(!body.messages[1].content.includes("<<PROMPT>>"), "no prompt marker when no prompt");
@@ -56,12 +60,12 @@ test("buildImproveChatBody: only prompt, detailed tone", () => {
   assert.equal(body.stream, false);
   assert.ok(
     body.messages[1].content.includes("Be detailed and explicit in the rewrite."),
-    "detailed prefix",
+    "detailed prefix"
   );
   assert.ok(body.messages[1].content.includes("<<PROMPT>>"), "prompt marker present");
   assert.ok(
     body.messages[1].content.includes("Fix this code for me please."),
-    "prompt content present",
+    "prompt content present"
   );
   // Must NOT include <<SYSTEM>> when no system was given
   assert.ok(!body.messages[1].content.includes("<<SYSTEM>>"), "no system marker when no system");
@@ -94,7 +98,7 @@ test("buildImproveChatBody: both system and prompt, detailed tone", () => {
 
   assert.ok(
     body.messages[1].content.includes("Be detailed and explicit in the rewrite."),
-    "detailed prefix",
+    "detailed prefix"
   );
 });
 
@@ -108,7 +112,7 @@ test("buildImproveChatBody: only system, detailed tone", () => {
 
   assert.ok(
     body.messages[1].content.includes("Be detailed and explicit in the rewrite."),
-    "detailed prefix",
+    "detailed prefix"
   );
   assert.ok(body.messages[1].content.includes("<<SYSTEM>>"), "system marker");
 });
@@ -189,8 +193,10 @@ test("parseImprovedContent: reversed order (<<PROMPT>> before <<SYSTEM>>)", () =
   // Both markers present, <<PROMPT>> is at index < <<SYSTEM>> index
   // sysStart > promptStart in this case — covers else branch for sysContent
   // and the if(hasSystemMarker && systemIndex > promptStart) branch for promptContent
-  assert.ok(result.improvedSystem !== undefined || result.improvedPrompt !== undefined,
-    "should parse at least one field from reversed markers");
+  assert.ok(
+    result.improvedSystem !== undefined || result.improvedPrompt !== undefined,
+    "should parse at least one field from reversed markers"
+  );
 });
 
 // ── ImprovePromptRequestSchema validation ─────────────────────────────────────

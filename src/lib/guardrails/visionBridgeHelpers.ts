@@ -3,11 +3,7 @@
  */
 import { fetchRemoteImage } from "@/shared/network/remoteImageFetch";
 import { getRuntimePorts } from "@/lib/runtime/ports";
-import {
-  getBestVisionModel,
-  getFallbackModels,
-  recordLatency,
-} from "./visionBridgeRouter";
+import { getBestVisionModel, getFallbackModels, recordLatency } from "./visionBridgeRouter";
 /**
  * Provider to environment variable mapping for API key resolution.
  */

@@ -21,9 +21,8 @@ import path from "node:path";
 const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "omniroute-test-pii-default-"));
 process.env.DATA_DIR = tmpDir;
 
-const { FEATURE_FLAG_DEFINITIONS } = await import(
-  "../../src/shared/constants/featureFlagDefinitions.ts"
-);
+const { FEATURE_FLAG_DEFINITIONS } =
+  await import("../../src/shared/constants/featureFlagDefinitions.ts");
 
 test("PII data-mutation flags are opt-in (default 'false')", async (t) => {
   const def = (key: string) => FEATURE_FLAG_DEFINITIONS.find((d) => d.key === key);

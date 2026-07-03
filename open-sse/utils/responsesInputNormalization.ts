@@ -38,7 +38,11 @@ function normalizeCodexResponsesInputItem(itemValue: unknown): unknown {
   const type = typeof item.type === "string" ? item.type : "";
 
   if (!type && item.content === undefined && typeof item.text === "string") {
-    return { type: "message", role, content: [{ type: textPartTypeForRole(role), text: item.text }] };
+    return {
+      type: "message",
+      role,
+      content: [{ type: textPartTypeForRole(role), text: item.text }],
+    };
   }
 
   if (!type && role) item.type = "message";

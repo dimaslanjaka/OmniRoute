@@ -28,7 +28,11 @@ test("#5649 resolves a Bearer API key to its principal id (not anonymous)", asyn
     { Authorization: "Bearer sk-tenant-A" },
     fakeLookup({ "sk-tenant-A": "42" })
   );
-  assert.equal(id, "42", "a valid Bearer key must resolve to its api-key id, not undefined/anonymous");
+  assert.equal(
+    id,
+    "42",
+    "a valid Bearer key must resolve to its api-key id, not undefined/anonymous"
+  );
 });
 
 test("#5649 resolves x-api-key (with anthropic-version gate) to its principal id", async () => {
@@ -84,7 +88,11 @@ test("#5649 end-to-end: a block stored under the api-key id is retrievable by th
   // A different tenant's key resolves to a different principal → blocked.
   const other = await resolvePrincipalFromHeaders({ Authorization: "Bearer sk-B" }, lookup);
   assert.equal(other, "77");
-  assert.equal(retrieveBlock(hash, other), null, "[HIGH IDOR] other tenant must not retrieve the block");
+  assert.equal(
+    retrieveBlock(hash, other),
+    null,
+    "[HIGH IDOR] other tenant must not retrieve the block"
+  );
   const otherResult = handleCcrRetrieve({ hash }, other);
   assert.ok("error" in otherResult, "[HIGH IDOR] cross-tenant retrieve returns error");
 });

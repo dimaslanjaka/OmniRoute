@@ -61,7 +61,7 @@ describe("tool-detector", () => {
       assert.strictEqual(result!.version, "0.3.1");
       assert.ok(
         result!.configPath.includes(".openclaw/openclaw.json"),
-        `expected configPath to include '.openclaw/openclaw.json', got: ${result!.configPath}`,
+        `expected configPath to include '.openclaw/openclaw.json', got: ${result!.configPath}`
       );
       assert.strictEqual(typeof result!.configured, "boolean");
     });
@@ -85,11 +85,14 @@ describe("tool-detector", () => {
     it("includes openclaw in the detected tools list", async () => {
       const tools = await toolDetector.detectAllTools();
       const openclaw = tools.find((t) => t.id === "openclaw");
-      assert.ok(openclaw !== undefined, "detectAllTools() must include an entry with id='openclaw'");
+      assert.ok(
+        openclaw !== undefined,
+        "detectAllTools() must include an entry with id='openclaw'"
+      );
       assert.strictEqual(openclaw!.name, "OpenClaw");
       assert.ok(
         openclaw!.configPath.includes(".openclaw/openclaw.json"),
-        `expected configPath to include '.openclaw/openclaw.json', got: ${openclaw!.configPath}`,
+        `expected configPath to include '.openclaw/openclaw.json', got: ${openclaw!.configPath}`
       );
     });
   });

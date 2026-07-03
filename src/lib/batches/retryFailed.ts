@@ -35,10 +35,7 @@ function parseErrorIds(errorJsonl: string): Set<string> {
  *   4. Uploading newJsonl via `POST /v1/files`
  *   5. Creating a new batch via `POST /v1/batches`
  */
-export function buildRetryPlan(input: {
-  inputJsonl: string;
-  errorJsonl: string;
-}): RetryPlan {
+export function buildRetryPlan(input: { inputJsonl: string; errorJsonl: string }): RetryPlan {
   const failed = parseErrorIds(input.errorJsonl);
 
   if (failed.size === 0) {

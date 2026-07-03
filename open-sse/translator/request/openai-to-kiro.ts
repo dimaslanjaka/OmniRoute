@@ -23,8 +23,7 @@ export const KIRO_UNSUPPORTED_CONTEXT_1M_MESSAGE =
  */
 export function hasUnsupportedKiroContextSuffix(model: unknown): boolean {
   return (
-    typeof model === "string" &&
-    model.toLowerCase().includes(KIRO_UNSUPPORTED_CONTEXT_1M_SUFFIX)
+    typeof model === "string" && model.toLowerCase().includes(KIRO_UNSUPPORTED_CONTEXT_1M_SUFFIX)
   );
 }
 
@@ -806,9 +805,7 @@ export function buildKiroPayload(model, body, stream, credentials) {
   // compressContext runs). This keeps conversationId stable even when compression alters content.
   // Priority 2: Deterministic hash from first user message in translated history (fallback).
   const preCompressionBody = credentials?._preCompressionBody as
-    | Record<string, unknown>
-    | null
-    | undefined;
+    Record<string, unknown> | null | undefined;
   const preCompressionMessages = Array.isArray(preCompressionBody?.messages)
     ? preCompressionBody.messages
     : null;

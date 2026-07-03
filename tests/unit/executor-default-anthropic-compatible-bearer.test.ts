@@ -29,10 +29,7 @@ const BASE_CREDS_OFFICIAL = {
 
 test("anthropic-compatible (third-party gateway): sends x-api-key AND Authorization: Bearer", () => {
   const executor = new DefaultExecutor("anthropic-compatible-thirdparty");
-  const headers = executor.buildHeaders(BASE_CREDS_THIRD_PARTY, true) as Record<
-    string,
-    string
-  >;
+  const headers = executor.buildHeaders(BASE_CREDS_THIRD_PARTY, true) as Record<string, string>;
   assert.equal(headers["x-api-key"], "k-third-party");
   assert.equal(
     headers["Authorization"],
@@ -43,10 +40,7 @@ test("anthropic-compatible (third-party gateway): sends x-api-key AND Authorizat
 
 test("anthropic-compatible (official api.anthropic.com): only x-api-key, no Bearer", () => {
   const executor = new DefaultExecutor("anthropic-compatible-official");
-  const headers = executor.buildHeaders(BASE_CREDS_OFFICIAL, true) as Record<
-    string,
-    string
-  >;
+  const headers = executor.buildHeaders(BASE_CREDS_OFFICIAL, true) as Record<string, string>;
   assert.equal(headers["x-api-key"], "k-official");
   assert.equal(
     headers["Authorization"],

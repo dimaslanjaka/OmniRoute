@@ -6,7 +6,10 @@
  */
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { splitInlineThinking, flushPendingThinking } from "../../open-sse/executors/kiroThinking.ts";
+import {
+  splitInlineThinking,
+  flushPendingThinking,
+} from "../../open-sse/executors/kiroThinking.ts";
 
 /** Build a fresh state + recorders for each test. */
 function makeHarness() {

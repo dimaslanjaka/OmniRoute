@@ -11,7 +11,10 @@ import { filterModelsByProvider } from "../../src/app/(dashboard)/dashboard/tran
 
 test("#3505 filters models by a custom node prefix (the catalog's model namespace)", () => {
   const all = ["myprefix/gpt-4o", "myprefix/llama-3", "openai/gpt-4o", "anthropic/claude-opus-4-8"];
-  assert.deepEqual(filterModelsByProvider(all, "myprefix"), ["myprefix/gpt-4o", "myprefix/llama-3"]);
+  assert.deepEqual(filterModelsByProvider(all, "myprefix"), [
+    "myprefix/gpt-4o",
+    "myprefix/llama-3",
+  ]);
 });
 
 test("#3505 a UUID-style node id (the old wrong key) matches nothing → empty (the bug)", () => {

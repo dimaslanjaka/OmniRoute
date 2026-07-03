@@ -3,12 +3,7 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 
-const DEFAULT_BYPASS_PATTERNS = [
-  "*.bank.*",
-  "*.gov.*",
-  "*.okta.com",
-  "*.auth0.com",
-];
+const DEFAULT_BYPASS_PATTERNS = ["*.bank.*", "*.gov.*", "*.okta.com", "*.auth0.com"];
 
 interface BypassListEditorProps {
   patterns: string[];

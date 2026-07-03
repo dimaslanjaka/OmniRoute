@@ -43,12 +43,18 @@ export async function testPlugin(
     const hooksToTest: Array<{ name: string; call: () => Promise<unknown> }> = [];
 
     if (loaded.plugin.onRequest) {
-      hooksToTest.push({ name: "onRequest", call: async () => { await loaded!.plugin.onRequest!(MOCK_CONTEXT); } });
+      hooksToTest.push({
+        name: "onRequest",
+        call: async () => {
+          await loaded!.plugin.onRequest!(MOCK_CONTEXT);
+        },
+      });
     }
     if (loaded.plugin.onResponse) {
       hooksToTest.push({
         name: "onResponse",
-        call: () => loaded!.plugin.onResponse!(MOCK_CONTEXT, { choices: [{ message: { content: "test" } }] }),
+        call: () =>
+          loaded!.plugin.onResponse!(MOCK_CONTEXT, { choices: [{ message: { content: "test" } }] }),
       });
     }
     if (loaded.plugin.onError) {

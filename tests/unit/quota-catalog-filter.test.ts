@@ -51,9 +51,7 @@ describe("filterModelsToQuotaPools", () => {
       { id: "cx/gpt-5.5", object: "model", owned_by: "cx" },
     ];
     const result = filterModelsToQuotaPools(richModels, ["times"]);
-    assert.deepEqual(result, [
-      { id: "qtSd/times/cx/gpt-5.5", object: "model", owned_by: "combo" },
-    ]);
+    assert.deepEqual(result, [{ id: "qtSd/times/cx/gpt-5.5", object: "model", owned_by: "combo" }]);
   });
 
   it("does not match a model from a different group when only one slug is provided", () => {

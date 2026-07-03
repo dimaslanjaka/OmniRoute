@@ -274,7 +274,9 @@ export function cloakThirdPartyToolNames(
     // subagents->SubDispatch, session_status->CheckStatus, webfetch->WebFetch, …
     // Then harness-canonical (read_file->Read), then a generic PascalCase.
     const base =
-      TOOL_RENAME_MAP[original] ?? HARNESS_CANONICAL_MAP[original] ?? toPascalCaseToolName(original);
+      TOOL_RENAME_MAP[original] ??
+      HARNESS_CANONICAL_MAP[original] ??
+      toPascalCaseToolName(original);
     let alias = base;
     let suffix = 2;
     while (alias !== original && used.has(alias)) {

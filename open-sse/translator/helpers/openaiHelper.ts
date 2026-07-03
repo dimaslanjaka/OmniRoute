@@ -88,9 +88,7 @@ export function filterToOpenAIFormat(body, opts = {}) {
           // honors OpenAI-format cache breakpoints and preservation was requested (#2069).
           const { signature, cache_control, ...rest } = block;
           const cleanBlock =
-            preserveCacheControl && cache_control !== undefined
-              ? { ...rest, cache_control }
-              : rest;
+            preserveCacheControl && cache_control !== undefined ? { ...rest, cache_control } : rest;
           if (
             cleanBlock.type === "text" &&
             typeof cleanBlock.text === "string" &&

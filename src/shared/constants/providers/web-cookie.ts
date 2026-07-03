@@ -243,7 +243,8 @@ export const WEB_COOKIE_PROVIDERS = {
     color: "#2563EB",
     textIcon: "KW",
     website: "https://www.kimi.com",
-    authHint: "Paste your Cookie header from www.kimi.com (must contain kimi-auth=...). Find it via DevTools → Network → request → Cookie.",
+    authHint:
+      "Paste your Cookie header from www.kimi.com (must contain kimi-auth=...). Find it via DevTools → Network → request → Cookie.",
     subscriptionRisk: true,
     riskNoticeVariant: "webCookie",
   },

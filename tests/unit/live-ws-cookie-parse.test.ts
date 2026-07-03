@@ -35,8 +35,5 @@ test("getCookieValueFromHeader returns null when the cookie is absent", () => {
 });
 
 test("getCookieValueFromHeader URL-decodes the value", () => {
-  assert.equal(
-    getCookieValueFromHeader({ cookie: "x=1; auth_token=a%20b" }, "auth_token"),
-    "a b"
-  );
+  assert.equal(getCookieValueFromHeader({ cookie: "x=1; auth_token=a%20b" }, "auth_token"), "a b");
 });

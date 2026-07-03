@@ -78,6 +78,6 @@ test("list-capabilities is registered in A2A_SKILL_HANDLERS", async () => {
   const { A2A_SKILL_HANDLERS } = await import("../../src/lib/a2a/taskExecution.js");
   assert.ok(
     "list-capabilities" in A2A_SKILL_HANDLERS,
-    "list-capabilities must be in A2A_SKILL_HANDLERS",
+    "list-capabilities must be in A2A_SKILL_HANDLERS"
   );
 });

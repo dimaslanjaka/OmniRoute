@@ -1,16 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { isAuthenticated } from "@/shared/utils/apiAuth";
-import {
-  getNotionConfig,
-  setNotionToken,
-  clearNotionToken,
-} from "@/lib/db/notion";
+import { getNotionConfig, setNotionToken, clearNotionToken } from "@/lib/db/notion";
 import { createNotionClient } from "@/lib/notion/api";
 
-const setTokenSchema = z.object({
-  token: z.string().min(1).max(500),
-}).strict();
+const setTokenSchema = z
+  .object({
+    token: z.string().min(1).max(500),
+  })
+  .strict();
 
 export async function GET(request: NextRequest) {
   if (!(await isAuthenticated(request))) {
@@ -53,7 +51,12 @@ export async function POST(request: NextRequest) {
 
     const client = createNotionClient(parsed.data.token);
     const result = await client.searchPagesAndDatabases("test", undefined, 1);
-    if (result && typeof result === "object" && "object" in result && (result as Record<string, unknown>).object === "error") {
+    if (
+      result &&
+      typeof result === "object" &&
+      "object" in result &&
+      (result as Record<string, unknown>).object === "error"
+    ) {
       clearNotionToken();
       return NextResponse.json(
         { error: "Token validation failed: invalid token", connected: false },

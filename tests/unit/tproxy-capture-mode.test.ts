@@ -14,9 +14,8 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { EventEmitter } from "node:events";
 
-const { normalizeDest, handleTproxyConnection, startTproxyCapture } = await import(
-  "../../src/mitm/tproxy/captureMode.ts"
-);
+const { normalizeDest, handleTproxyConnection, startTproxyCapture } =
+  await import("../../src/mitm/tproxy/captureMode.ts");
 
 const CFG = { dport: 443, mark: 0x2333, onPort: 8443, routeTable: 233, bypassMark: 0x539 };
 
@@ -194,8 +193,8 @@ test("startTproxyCapture decrypt mode installs the CA, wires the engine, stop() 
   };
   let installedPem: string | undefined;
   const certStore = {
-    createSNICallback:
-      () => (_name: string, cb: (e: Error | null, ctx?: unknown) => void) => cb(null, {}),
+    createSNICallback: () => (_name: string, cb: (e: Error | null, ctx?: unknown) => void) =>
+      cb(null, {}),
     getCaCertPem: async () => "CA-CERT-PEM",
   };
   const handle = await startTproxyCapture(CFG, {
@@ -211,7 +210,11 @@ test("startTproxyCapture decrypt mode installs the CA, wires the engine, stop() 
       },
     },
   });
-  assert.equal(installedPem, "CA-CERT-PEM", "the dynamic CA cert PEM is installed in the trust store");
+  assert.equal(
+    installedPem,
+    "CA-CERT-PEM",
+    "the dynamic CA cert PEM is installed in the trust store"
+  );
   assert.deepEqual(order, ["apply", "installCa", "createFd", "listen"]);
   await handle.stop();
   assert.deepEqual(order, [

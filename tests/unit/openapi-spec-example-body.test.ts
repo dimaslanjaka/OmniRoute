@@ -29,8 +29,7 @@ test("string types: enum, formats, and a plain default", () => {
 });
 
 test("string property-name heuristics produce realistic values", () => {
-  const s = (name: string) =>
-    generateExampleFromSchema({ type: "string" }, NO_COMPONENTS, 0, name);
+  const s = (name: string) => generateExampleFromSchema({ type: "string" }, NO_COMPONENTS, 0, name);
   assert.equal(s("model"), "openai/gpt-4o");
   assert.equal(s("prompt"), "Write a function to sort an array");
   assert.equal(s("system"), "You are a concise, helpful assistant.");
@@ -72,14 +71,19 @@ test("objects include all required + only the first 3 optional properties", () =
 
 test("resolves $ref against components and merges allOf", () => {
   const components = { Msg: { type: "object", properties: { role: { type: "string" } } } };
-  const refOut = generateExampleFromSchema({ $ref: "#/components/schemas/Msg" }, components) as Record<
-    string,
-    unknown
-  >;
+  const refOut = generateExampleFromSchema(
+    { $ref: "#/components/schemas/Msg" },
+    components
+  ) as Record<string, unknown>;
   assert.equal(refOut.role, "string");
 
   const allOfOut = generateExampleFromSchema(
-    { allOf: [{ type: "object", properties: { x: { type: "boolean" } } }, { $ref: "#/components/schemas/Msg" }] },
+    {
+      allOf: [
+        { type: "object", properties: { x: { type: "boolean" } } },
+        { $ref: "#/components/schemas/Msg" },
+      ],
+    },
     components
   ) as Record<string, unknown>;
   assert.equal(allOfOut.x, false);

@@ -14,7 +14,6 @@ import {
 } from "@/shared/constants/upstreamHeaders";
 import { MAX_TIMER_TIMEOUT_MS } from "@/shared/utils/runtimeTimeouts";
 
-
 export function isHttpUrl(value: string): boolean {
   try {
     const parsed = new URL(value);

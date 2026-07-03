@@ -5,9 +5,8 @@ import assert from "node:assert/strict";
 // in the connection row (`connection.isActive !== false` gated it), yet the provider
 // card's error badge still counts disabled-with-error rows. The operator could see the
 // error count but not the cause. The row now shows the error whenever there is one.
-const { shouldShowConnectionLastError } = await import(
-  "../../src/app/(dashboard)/dashboard/providers/[id]/components/connectionRowHelpers.ts"
-);
+const { shouldShowConnectionLastError } =
+  await import("../../src/app/(dashboard)/dashboard/providers/[id]/components/connectionRowHelpers.ts");
 
 test("#1447: lastError is shown even when the connection is disabled", () => {
   assert.equal(

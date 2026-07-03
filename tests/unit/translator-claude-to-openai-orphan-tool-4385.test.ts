@@ -164,8 +164,7 @@ test("#4714 regroups parallel tool_results split across user turns next to their
 
   // The real "result B" must NOT have been replaced by a placeholder.
   const toolB = messages.find((m) => m.role === "tool" && m.tool_call_id === "callB") as
-    | (Msg & { content?: string })
-    | undefined;
+    (Msg & { content?: string }) | undefined;
   assert.ok(toolB);
   assert.notEqual(toolB.content, "[No response received]");
   // Exactly one tool message per call id (no duplicate placeholder + real result).
@@ -196,8 +195,7 @@ test("#4714 still inserts a placeholder for a genuinely unanswered parallel tool
   const messages = result.messages as Msg[];
   assertToolOrdering(messages);
   const placeholder = messages.find((m) => m.role === "tool" && m.tool_call_id === "noAns") as
-    | (Msg & { content?: string })
-    | undefined;
+    (Msg & { content?: string }) | undefined;
   assert.ok(placeholder, "missing tool_call must still get a placeholder response");
   assert.equal(placeholder.content, "[No response received]");
 });

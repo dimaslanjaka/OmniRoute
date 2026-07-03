@@ -147,8 +147,7 @@ export async function runConnectionRecoveryTick(
         return (Array.isArray(rows) ? rows : []).map((row) => ({
           id: typeof row.id === "string" ? row.id : "",
           testStatus: typeof row.testStatus === "string" ? row.testStatus : null,
-          rateLimitedUntil:
-            typeof row.rateLimitedUntil === "string" ? row.rateLimitedUntil : null,
+          rateLimitedUntil: typeof row.rateLimitedUntil === "string" ? row.rateLimitedUntil : null,
         }));
       });
     connections = await load();
@@ -203,8 +202,7 @@ const TRUE_ENV_VALUES = new Set(["1", "true", "yes", "on"]);
 
 declare global {
   var __omnirouteConnRecovery:
-    | { initialized: boolean; interval: ReturnType<typeof setInterval> | null }
-    | undefined;
+    { initialized: boolean; interval: ReturnType<typeof setInterval> | null } | undefined;
 }
 
 function getRecoveryState() {

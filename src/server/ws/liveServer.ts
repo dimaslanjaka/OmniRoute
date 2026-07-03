@@ -20,12 +20,7 @@ import { randomUUID } from "crypto";
 
 // ── Types ─────────────────────────────────────────────────────────────────
 
-import type {
-  WsClientMessage,
-  WsServerMessage,
-  WsEventMessage,
-  WsAuthResult,
-} from "./types";
+import type { WsClientMessage, WsServerMessage, WsEventMessage, WsAuthResult } from "./types";
 
 import { emit, on, onAny, getEventHistory, type HistoryEntry } from "@/lib/events/eventBus";
 

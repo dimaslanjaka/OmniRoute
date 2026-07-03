@@ -69,7 +69,10 @@ describe("plugin marketplace", () => {
 
   describe("isSafeMarketplaceUrl — SSRF guard", () => {
     // A resolver stub so the DNS-resolution branch is deterministic in tests.
-    const resolveTo = (...ips: string[]) => async () => ips.map((address) => ({ address }));
+    const resolveTo =
+      (...ips: string[]) =>
+      async () =>
+        ips.map((address) => ({ address }));
 
     it("rejects non-http(s) protocols", async () => {
       const { isSafeMarketplaceUrl } = await import("../../src/lib/plugins/marketplace.ts");
@@ -80,22 +83,38 @@ describe("plugin marketplace", () => {
 
     it("rejects literal private/loopback IPv4 hosts", async () => {
       const { isSafeMarketplaceUrl } = await import("../../src/lib/plugins/marketplace.ts");
-      for (const h of ["http://127.0.0.1", "http://10.0.0.5", "http://192.168.1.1", "http://169.254.169.254"]) {
+      for (const h of [
+        "http://127.0.0.1",
+        "http://10.0.0.5",
+        "http://192.168.1.1",
+        "http://169.254.169.254",
+      ]) {
         assert.equal(await isSafeMarketplaceUrl(h, resolveTo("8.8.8.8")), false, h);
       }
     });
 
     it("rejects literal IPv6 loopback / ULA / link-local hosts (the IPv4-only bypass)", async () => {
       const { isSafeMarketplaceUrl } = await import("../../src/lib/plugins/marketplace.ts");
-      for (const h of ["http://[::1]", "http://[fc00::1]", "http://[fd12:3456::1]", "http://[fe80::1]"]) {
+      for (const h of [
+        "http://[::1]",
+        "http://[fc00::1]",
+        "http://[fd12:3456::1]",
+        "http://[fe80::1]",
+      ]) {
         assert.equal(await isSafeMarketplaceUrl(h, resolveTo("8.8.8.8")), false, h);
       }
     });
 
     it("rejects a public hostname that RESOLVES to a private IPv4 (DNS rebinding / public→private)", async () => {
       const { isSafeMarketplaceUrl } = await import("../../src/lib/plugins/marketplace.ts");
-      assert.equal(await isSafeMarketplaceUrl("https://evil.example.com", resolveTo("10.1.2.3")), false);
-      assert.equal(await isSafeMarketplaceUrl("https://evil.example.com", resolveTo("169.254.169.254")), false);
+      assert.equal(
+        await isSafeMarketplaceUrl("https://evil.example.com", resolveTo("10.1.2.3")),
+        false
+      );
+      assert.equal(
+        await isSafeMarketplaceUrl("https://evil.example.com", resolveTo("169.254.169.254")),
+        false
+      );
     });
 
     it("rejects a public hostname that resolves to a private IPv6 (AAAA bypass)", async () => {
@@ -105,7 +124,10 @@ describe("plugin marketplace", () => {
         await isSafeMarketplaceUrl("https://evil.example.com", resolveTo("8.8.8.8", "::1")),
         false
       );
-      assert.equal(await isSafeMarketplaceUrl("https://evil.example.com", resolveTo("fc00::1")), false);
+      assert.equal(
+        await isSafeMarketplaceUrl("https://evil.example.com", resolveTo("fc00::1")),
+        false
+      );
     });
 
     it("rejects on DNS failure or empty resolution (fail-closed)", async () => {
@@ -120,7 +142,10 @@ describe("plugin marketplace", () => {
     it("accepts a public hostname resolving only to public addresses", async () => {
       const { isSafeMarketplaceUrl } = await import("../../src/lib/plugins/marketplace.ts");
       assert.equal(
-        await isSafeMarketplaceUrl("https://registry.example.com", resolveTo("93.184.216.34", "2606:2800:220:1::1")),
+        await isSafeMarketplaceUrl(
+          "https://registry.example.com",
+          resolveTo("93.184.216.34", "2606:2800:220:1::1")
+        ),
         true
       );
     });

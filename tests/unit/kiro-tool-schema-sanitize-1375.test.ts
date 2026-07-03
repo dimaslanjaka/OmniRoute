@@ -2,9 +2,8 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import { sanitizeKiroTools } from "../../open-sse/utils/kiroSanitizer.ts";
-const { convertKiroToOpenAI } = await import(
-  "../../open-sse/translator/response/kiro-to-openai.ts"
-);
+const { convertKiroToOpenAI } =
+  await import("../../open-sse/translator/response/kiro-to-openai.ts");
 
 // #1375 — Kiro returns 400 "Improperly formed request" when a tool schema
 // carries unsupported JSON-Schema keywords or a tool name longer than 64 chars.

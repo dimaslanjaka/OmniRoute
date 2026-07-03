@@ -161,8 +161,7 @@ export function listAccessTokens(): AccessTokenRecord[] {
 export function getAccessToken(id: string): AccessTokenRecord | null {
   const db = getDbInstance();
   const row = db.prepare("SELECT * FROM cli_access_tokens WHERE id = ?").get(id) as
-    | AccessTokenRow
-    | undefined;
+    AccessTokenRow | undefined;
   return row ? rowToRecord(row) : null;
 }
 

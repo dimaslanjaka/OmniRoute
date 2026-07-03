@@ -51,7 +51,7 @@ export function openaiResponsesRequestToXai(req: OpenAiResponsesRequest): OpenAi
  * into the OpenAI Responses JSON shape that callers expect.
  */
 export function xaiCompletedToOpenaiResponses(
-  completed: XaiCompletedResponse,
+  completed: XaiCompletedResponse
 ): XaiCompletedResponse {
   if (!completed || typeof completed !== "object") return completed;
   return {

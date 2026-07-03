@@ -331,9 +331,7 @@ test("handleChat injects context-relay handoffs during live failover for Respons
   assert.equal(secondResponse.status, 200);
 
   const relayedSecondaryCall = upstreamBodies.find(
-    (call) =>
-      call.authHeader === "Bearer token-b" &&
-      typeof call.body.instructions === "string"
+    (call) => call.authHeader === "Bearer token-b" && typeof call.body.instructions === "string"
   );
 
   assert.ok(relayedSecondaryCall, "secondary account should receive a request after primary 429");

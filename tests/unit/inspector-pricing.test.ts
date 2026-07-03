@@ -5,15 +5,15 @@ import { lookupPricing, estimateCost } from "../../src/mitm/inspector/pricing.ts
 test("lookupPricing - exact key gpt-4o", () => {
   const p = lookupPricing("gpt-4o");
   assert.ok(p);
-  assert.equal(p.inputPerMTok, 2.50);
-  assert.equal(p.outputPerMTok, 10.00);
+  assert.equal(p.inputPerMTok, 2.5);
+  assert.equal(p.outputPerMTok, 10.0);
 });
 
 test("lookupPricing - versioned claude id matches prefix", () => {
   const p = lookupPricing("claude-3-5-sonnet-20240620");
   assert.ok(p);
-  assert.equal(p.inputPerMTok, 3.00);
-  assert.equal(p.outputPerMTok, 15.00);
+  assert.equal(p.inputPerMTok, 3.0);
+  assert.equal(p.outputPerMTok, 15.0);
 });
 
 test("lookupPricing - unknown model returns null", () => {
@@ -34,7 +34,7 @@ test("estimateCost - gpt-4o with 1M input + 100k output = 3.50", () => {
   const cost = estimateCost("gpt-4o", 1_000_000, 100_000);
   assert.ok(cost !== null);
   // 1M * 2.50/1M + 100k * 10.00/1M = 2.50 + 1.00 = 3.50
-  assert.equal(cost, 3.50);
+  assert.equal(cost, 3.5);
 });
 
 test("estimateCost - null model returns null", () => {

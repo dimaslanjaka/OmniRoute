@@ -92,10 +92,7 @@ test.describe("Playground Studio", () => {
     await expect(chatTab).toBeVisible({ timeout: 15000 });
 
     // Chat tab should have a message input / send area
-    const textarea = page
-      .locator("textarea")
-      .filter({ hasText: "" })
-      .first();
+    const textarea = page.locator("textarea").filter({ hasText: "" }).first();
     await expect(textarea).toBeVisible({ timeout: 10000 });
   });
 });

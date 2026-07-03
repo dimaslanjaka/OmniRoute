@@ -8,9 +8,8 @@ import React, { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 
-const { CompressionPipelineEditor } = await import(
-  "../../../src/shared/components/compression/CompressionPipelineEditor"
-);
+const { CompressionPipelineEditor } =
+  await import("../../../src/shared/components/compression/CompressionPipelineEditor");
 
 const TABLE = {
   rtk: ["standard", "aggressive"],
@@ -63,7 +62,9 @@ describe("CompressionPipelineEditor (T06)", () => {
     render([{ engine: "rtk", intensity: "standard" }], (s) => {
       received = s as typeof received;
     });
-    const addBtn = container.querySelector('[data-testid="pipeline-add-step"]') as HTMLButtonElement;
+    const addBtn = container.querySelector(
+      '[data-testid="pipeline-add-step"]'
+    ) as HTMLButtonElement;
     act(() => addBtn.dispatchEvent(new MouseEvent("click", { bubbles: true })));
     expect(received).not.toBeNull();
     expect(received!.length).toBe(2);

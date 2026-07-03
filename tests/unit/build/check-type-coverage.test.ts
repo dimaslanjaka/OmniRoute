@@ -60,18 +60,12 @@ test("parseTypeCoverageOutput: handles high-precision decimals", () => {
 });
 
 test("parseTypeCoverageOutput: throws on invalid JSON", () => {
-  assert.throws(
-    () => parseTypeCoverageOutput("not-valid-json"),
-    /Failed to parse JSON output/,
-  );
+  assert.throws(() => parseTypeCoverageOutput("not-valid-json"), /Failed to parse JSON output/);
 });
 
 test("parseTypeCoverageOutput: throws when percent field is missing", () => {
   const raw = JSON.stringify({ succeeded: true, correctCount: 100 });
-  assert.throws(
-    () => parseTypeCoverageOutput(raw),
-    /missing numeric 'percent' field/,
-  );
+  assert.throws(() => parseTypeCoverageOutput(raw), /missing numeric 'percent' field/);
 });
 
 test("parseTypeCoverageOutput: throws when percent field is a string instead of number", () => {
@@ -82,17 +76,11 @@ test("parseTypeCoverageOutput: throws when percent field is a string instead of 
     totalCount: 100,
     correctCount: 91,
   });
-  assert.throws(
-    () => parseTypeCoverageOutput(raw),
-    /missing numeric 'percent' field/,
-  );
+  assert.throws(() => parseTypeCoverageOutput(raw), /missing numeric 'percent' field/);
 });
 
 test("parseTypeCoverageOutput: throws on empty string", () => {
-  assert.throws(
-    () => parseTypeCoverageOutput(""),
-    /Failed to parse JSON output/,
-  );
+  assert.throws(() => parseTypeCoverageOutput(""), /Failed to parse JSON output/);
 });
 
 test("parseTypeCoverageOutput: ignores extra unknown fields", () => {

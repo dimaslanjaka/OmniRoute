@@ -62,7 +62,7 @@ test("extractOAuthErrorCode: bare string code 'invalid_grant'", () => {
   assert.equal(extractOAuthErrorCode("invalid_grant"), "invalid_grant");
 });
 
-test("extractOAuthErrorCode: JSON string body '{\"error\":\"invalid_grant\"}'", () => {
+test('extractOAuthErrorCode: JSON string body \'{"error":"invalid_grant"}\'', () => {
   assert.equal(extractOAuthErrorCode('{"error": "invalid_grant"}'), "invalid_grant");
 });
 
@@ -95,8 +95,14 @@ test("extractOAuthErrorCode: transient errors are NOT misclassified (no false po
 // ── refreshClaudeOAuthToken: every shape → unrecoverable sentinel ────────────
 
 const SENTINEL_SHAPES: Array<{ name: string; body: string; ct?: string }> = [
-  { name: "canonical object", body: '{"error": "invalid_grant", "error_description": "Refresh token not found or invalid"}' },
-  { name: "double-encoded JSON string", body: JSON.stringify('{"error": "invalid_grant", "error_description": "x"}') },
+  {
+    name: "canonical object",
+    body: '{"error": "invalid_grant", "error_description": "Refresh token not found or invalid"}',
+  },
+  {
+    name: "double-encoded JSON string",
+    body: JSON.stringify('{"error": "invalid_grant", "error_description": "x"}'),
+  },
   { name: "bare string code", body: '"invalid_grant"' },
   { name: "nested error.code", body: '{"error": {"code": "invalid_grant", "message": "x"}}' },
   { name: "json served as text/plain", body: '{"error": "invalid_grant"}', ct: "text/plain" },
@@ -105,7 +111,8 @@ const SENTINEL_SHAPES: Array<{ name: string; body: string; ct?: string }> = [
 for (const shape of SENTINEL_SHAPES) {
   test(`refreshClaudeOAuthToken → unrecoverable sentinel for shape: ${shape.name}`, async () => {
     await withMockedFetch(
-      (async () => rawResponse(shape.body, 400, shape.ct ?? "application/json")) as unknown as typeof fetch,
+      (async () =>
+        rawResponse(shape.body, 400, shape.ct ?? "application/json")) as unknown as typeof fetch,
       async () => {
         const result = await refreshClaudeOAuthToken("dead-refresh-token");
         assert.ok(
@@ -123,14 +130,19 @@ test("refreshClaudeOAuthToken: transient 500 server_error stays null (NOT unreco
     (async () => rawResponse('{"error": "server_error"}', 500)) as unknown as typeof fetch,
     async () => {
       const result = await refreshClaudeOAuthToken("token");
-      assert.equal(result, null, "transient errors must remain recoverable (null), not deactivate the account");
+      assert.equal(
+        result,
+        null,
+        "transient errors must remain recoverable (null), not deactivate the account"
+      );
     }
   );
 });
 
 test("refreshClaudeOAuthToken: 502 HTML gateway error stays null", async () => {
   await withMockedFetch(
-    (async () => rawResponse("<html>502 Bad Gateway</html>", 502, "text/html")) as unknown as typeof fetch,
+    (async () =>
+      rawResponse("<html>502 Bad Gateway</html>", 502, "text/html")) as unknown as typeof fetch,
     async () => {
       const result = await refreshClaudeOAuthToken("token");
       assert.equal(result, null);

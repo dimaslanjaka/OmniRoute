@@ -29,8 +29,5 @@ test("nous-research DefaultExecutor.buildUrl() targets the correct inference end
 
   const url = executor.buildUrl("Hermes-4-70B", false, 0, null);
 
-  assert.equal(
-    url,
-    "https://inference-api.nousresearch.com/v1/chat/completions"
-  );
+  assert.equal(url, "https://inference-api.nousresearch.com/v1/chat/completions");
 });

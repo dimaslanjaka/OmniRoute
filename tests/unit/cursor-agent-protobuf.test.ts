@@ -166,7 +166,10 @@ test("encodeAgentRunRequest keeps RequestedModel + parameters alongside ModelDet
   const composerText = composer.toString("latin1");
   assert.ok(composerText.includes("composer-2"), "split model id still present");
   assert.ok(composerText.includes("fast"), "'-fast' parameter id still present (RequestedModel)");
-  assert.ok(composerText.includes("true"), "'-fast' parameter value still present (RequestedModel)");
+  assert.ok(
+    composerText.includes("true"),
+    "'-fast' parameter value still present (RequestedModel)"
+  );
 
   // auto → default, now appearing in both RequestedModel and ModelDetails.
   const auto = encodeAgentRunRequest({ modelId: "auto", userText: "hi" });

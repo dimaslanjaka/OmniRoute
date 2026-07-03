@@ -23,13 +23,19 @@ function makeReq(body: unknown): InterceptedRequest {
 
 test("extractSystemPrompt — OpenAI chat messages[0] role=system", () => {
   const req = makeReq({
-    messages: [{ role: "system", content: "You are a helpful assistant." }, { role: "user", content: "Hello" }],
+    messages: [
+      { role: "system", content: "You are a helpful assistant." },
+      { role: "user", content: "Hello" },
+    ],
   });
   assert.equal(extractSystemPrompt(req), "You are a helpful assistant.");
 });
 
 test("extractSystemPrompt — Anthropic top-level system field (string)", () => {
-  const req = makeReq({ system: "You are Claude.", messages: [{ role: "user", content: "Hello" }] });
+  const req = makeReq({
+    system: "You are Claude.",
+    messages: [{ role: "user", content: "Hello" }],
+  });
   assert.equal(extractSystemPrompt(req), "You are Claude.");
 });
 
@@ -65,14 +71,35 @@ test("extractSystemPrompt — null when requestBody is invalid JSON", () => {
 
 test("computeContextKey — same system → same 12-hex key", () => {
   const sys = "You are a helpful assistant.";
-  const key1 = computeContextKey(makeReq({ messages: [{ role: "system", content: sys }, { role: "user", content: "Hi" }] }));
-  const key2 = computeContextKey(makeReq({ messages: [{ role: "system", content: sys }, { role: "user", content: "Bye" }] }));
+  const key1 = computeContextKey(
+    makeReq({
+      messages: [
+        { role: "system", content: sys },
+        { role: "user", content: "Hi" },
+      ],
+    })
+  );
+  const key2 = computeContextKey(
+    makeReq({
+      messages: [
+        { role: "system", content: sys },
+        { role: "user", content: "Bye" },
+      ],
+    })
+  );
   assert.ok(key1 !== null);
   assert.equal(key1, key2);
 });
 
 test("computeContextKey — returns 12 hex chars", () => {
-  const key = computeContextKey(makeReq({ messages: [{ role: "system", content: "Test system" }, { role: "user", content: "Hi" }] }));
+  const key = computeContextKey(
+    makeReq({
+      messages: [
+        { role: "system", content: "Test system" },
+        { role: "user", content: "Hi" },
+      ],
+    })
+  );
   assert.ok(key !== null);
   assert.equal(key!.length, 12);
   assert.match(key!, /^[0-9a-f]{12}$/);
@@ -83,7 +110,21 @@ test("computeContextKey — null when no system", () => {
 });
 
 test("computeContextKey — different systems → different keys", () => {
-  const k1 = computeContextKey(makeReq({ messages: [{ role: "system", content: "System A" }, { role: "user", content: "Hi" }] }));
-  const k2 = computeContextKey(makeReq({ messages: [{ role: "system", content: "System B" }, { role: "user", content: "Hi" }] }));
+  const k1 = computeContextKey(
+    makeReq({
+      messages: [
+        { role: "system", content: "System A" },
+        { role: "user", content: "Hi" },
+      ],
+    })
+  );
+  const k2 = computeContextKey(
+    makeReq({
+      messages: [
+        { role: "system", content: "System B" },
+        { role: "user", content: "Hi" },
+      ],
+    })
+  );
   assert.notEqual(k1, k2);
 });

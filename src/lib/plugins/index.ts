@@ -57,9 +57,7 @@ import { getActiveEvents, getHooks, unregisterHooks } from "./hooks.ts";
  */
 export function setPluginEnabled(name: string, enabled: boolean): boolean {
   const hasHooks = (): boolean =>
-    getActiveEvents().some((event) =>
-      getHooks(event).some((h) => h.pluginName === name)
-    );
+    getActiveEvents().some((event) => getHooks(event).some((h) => h.pluginName === name));
   if (!enabled) {
     const existed = hasHooks();
     unregisterHooks(name);

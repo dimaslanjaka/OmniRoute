@@ -11,7 +11,10 @@ describe("validatePluginConfig", () => {
   };
 
   it("valid config passes", () => {
-    const result = validatePluginConfig({ name: "hello", count: 5, enabled: true, mode: "fast" }, schema);
+    const result = validatePluginConfig(
+      { name: "hello", count: 5, enabled: true, mode: "fast" },
+      schema
+    );
     assert.deepStrictEqual(result, { valid: true });
   });
 

@@ -120,8 +120,7 @@ export function getRequestDetailLogById(id: string): RequestDetailLog | null {
   if (!requestDetailLogsTableExists()) return null;
   const db = getDbInstance();
   const row = db.prepare("SELECT * FROM request_detail_logs WHERE id = ?").get(id) as
-    | Record<string, unknown>
-    | undefined;
+    Record<string, unknown> | undefined;
   return row ? mapDetailedLogRow(row) : null;
 }
 

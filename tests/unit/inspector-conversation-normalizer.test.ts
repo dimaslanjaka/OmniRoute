@@ -81,9 +81,7 @@ test("normalizes OpenAI assistant tool_calls into tool_use blocks", () => {
 test("normalizes OpenAI tool role into tool_result", () => {
   const req = makeReq({
     requestBody: JSON.stringify({
-      messages: [
-        { role: "tool", tool_call_id: "call-1", content: "sunny" },
-      ],
+      messages: [{ role: "tool", tool_call_id: "call-1", content: "sunny" }],
     }),
   });
   const conv = normalizeConversation(req);

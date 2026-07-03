@@ -10,18 +10,22 @@ test("transformToOllama coerces numeric tool_call id to string without crashing"
       object: "chat.completion.chunk",
       created: 1,
       model: "gpt-4",
-      choices: [{
-        index: 0,
-        delta: {
-          tool_calls: [{
-            index: 0,
-            id: 12345,
-            type: "function",
-            function: { name: "test", arguments: "{}" }
-          }]
+      choices: [
+        {
+          index: 0,
+          delta: {
+            tool_calls: [
+              {
+                index: 0,
+                id: 12345,
+                type: "function",
+                function: { name: "test", arguments: "{}" },
+              },
+            ],
+          },
+          finish_reason: "tool_calls",
         },
-        finish_reason: "tool_calls"
-      }]
+      ],
     })}\n`,
   ].join("");
 
@@ -87,7 +91,10 @@ test("transformToOllama handles string tool_call id normally", async () => {
 
   const result = transformToOllama(mockResponse, "test-model");
   const text = await result.text();
-  const lines = text.trim().split("\n").map((line) => JSON.parse(line));
+  const lines = text
+    .trim()
+    .split("\n")
+    .map((line) => JSON.parse(line));
 
   const toolCallLine = lines.find((line) => line.message?.tool_calls);
   assert.ok(toolCallLine, "Should produce a tool call line");
@@ -153,7 +160,10 @@ test("transformToOllama merges multi-chunk numeric tool_call id", async () => {
 
   const result = transformToOllama(mockResponse, "test-model");
   const text = await result.text();
-  const lines = text.trim().split("\n").map((line) => JSON.parse(line));
+  const lines = text
+    .trim()
+    .split("\n")
+    .map((line) => JSON.parse(line));
   const toolCallLines = lines.filter((line) => line.message?.tool_calls);
 
   assert.equal(toolCallLines.length, 1);

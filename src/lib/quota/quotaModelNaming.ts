@@ -50,7 +50,7 @@ export function quotaModelName(groupName: string, provider: string, model: strin
  * Requires at least 4 segments. Model is the remainder joined by "/".
  */
 export function parseQuotaModelName(
-  name: string,
+  name: string
 ): { groupSlug: string; provider: string; model: string } | null {
   if (!name.startsWith(QUOTA_MODEL_PREFIX)) {
     return null;

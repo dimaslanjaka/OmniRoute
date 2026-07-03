@@ -138,9 +138,7 @@ export function runFuzzyPass(
   principalId?: string
 ): FuzzyPassResult {
   const raw = stepConfig["fuzzy"] as
-    | boolean
-    | { enabled?: boolean; minJaccard?: number; shingleSize?: number }
-    | undefined;
+    boolean | { enabled?: boolean; minJaccard?: number; shingleSize?: number } | undefined;
   const cfg = typeof raw === "boolean" ? { enabled: raw } : raw;
   if (!cfg?.enabled) return { messages, fuzzyCount: 0 };
   return applyFuzzyPass(messages, {

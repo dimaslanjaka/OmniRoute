@@ -11,7 +11,10 @@
 
 import { getModelUpstreamExtraHeaders } from "@/lib/db/models";
 import { resolveModelAlias } from "../../services/modelDeprecation.ts";
-import { CPA_FORCE_FAST_MODE_HEADER, shouldRequestClaudeFastMode } from "@/lib/providers/claudeFastMode";
+import {
+  CPA_FORCE_FAST_MODE_HEADER,
+  shouldRequestClaudeFastMode,
+} from "@/lib/providers/claudeFastMode";
 
 export function buildUpstreamHeadersForExecute(opts: {
   modelToCall: string;

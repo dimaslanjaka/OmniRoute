@@ -79,10 +79,7 @@ test("isInRefreshBackoff false when no circuit recorded", () => {
 });
 
 test("expired connections still track expiredRetryCount AND the circuit", () => {
-  const update = buildRefreshFailureUpdate(
-    { testStatus: "expired", expiredRetryCount: 1 },
-    NOW
-  );
+  const update = buildRefreshFailureUpdate({ testStatus: "expired", expiredRetryCount: 1 }, NOW);
   assert.equal(update.testStatus, "expired");
   assert.equal(update.expiredRetryCount, 2);
   assert.equal(update.providerSpecificData.refreshCircuit.streak, 1);

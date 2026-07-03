@@ -654,8 +654,7 @@ export async function getCompressionSettings(): Promise<CompressionConfig> {
         storedEngines = parseStoredEnginesMap(parsed);
         break;
       case "activeComboId":
-        config.activeComboId =
-          typeof parsed === "string" && parsed.trim() ? parsed.trim() : null;
+        config.activeComboId = typeof parsed === "string" && parsed.trim() ? parsed.trim() : null;
         break;
       case "ultraEngine":
         // Phase 4 (B): SLM tier selector. Only the two known values; anything else

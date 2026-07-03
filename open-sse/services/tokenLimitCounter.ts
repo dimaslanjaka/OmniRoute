@@ -295,8 +295,7 @@ export function recordTokenUsage(
                  ORDER BY window_start DESC LIMIT 1`
               )
               .get(limit.id, windowStart) as
-              | { window_start?: string; tokens_used?: number }
-              | undefined;
+              { window_start?: string; tokens_used?: number } | undefined;
             const prevTokens =
               priorRow && typeof priorRow.tokens_used === "number" ? priorRow.tokens_used : 0;
             if (prevTokens > 0) {

@@ -284,7 +284,8 @@ function validateSessionDedupConfig(config: Record<string, unknown>): EngineVali
     const f = config["fuzzy"];
     if (typeof f === "object" && f !== null) {
       const fe = (f as Record<string, unknown>)["enabled"];
-      if (fe !== undefined && typeof fe !== "boolean") errors.push("fuzzy.enabled must be a boolean");
+      if (fe !== undefined && typeof fe !== "boolean")
+        errors.push("fuzzy.enabled must be a boolean");
     } else if (typeof f !== "boolean") {
       errors.push("fuzzy must be an object { enabled } or a boolean");
     }

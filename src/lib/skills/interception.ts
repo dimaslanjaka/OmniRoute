@@ -310,9 +310,7 @@ export async function handleToolCallExecution(
       );
       const resultTextBlocks = results.map((r) => ({
         type: "text",
-        text: `[Skill result: ${toolNamesById.get(r.id) || r.id}]\n${JSON.stringify(
-          r.result
-        )}`,
+        text: `[Skill result: ${toolNamesById.get(r.id) || r.id}]\n${JSON.stringify(r.result)}`,
       }));
       const firstRemainingToolUseIndex = remainingContent.findIndex(
         (block: any) => block?.type === "tool_use"

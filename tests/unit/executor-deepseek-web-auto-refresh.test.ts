@@ -38,6 +38,8 @@ describe("DeepSeekWebWithAutoRefreshExecutor", () => {
 
   it("exports singleton instance", () => {
     assert.ok(mod.deepseekWebWithAutoRefreshExecutor);
-    assert.ok(mod.deepseekWebWithAutoRefreshExecutor instanceof mod.DeepSeekWebWithAutoRefreshExecutor);
+    assert.ok(
+      mod.deepseekWebWithAutoRefreshExecutor instanceof mod.DeepSeekWebWithAutoRefreshExecutor
+    );
   });
 });

@@ -14,9 +14,8 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 const { REGISTRY } = await import("../../open-sse/config/providerRegistry.ts");
-const { getModelsByProviderId, getProviderModel, isValidModel } = await import(
-  "../../open-sse/config/providerModels.ts"
-);
+const { getModelsByProviderId, getProviderModel, isValidModel } =
+  await import("../../open-sse/config/providerModels.ts");
 
 type ModelEntry = { id: string; name?: string; targetFormat?: string; [k: string]: unknown };
 

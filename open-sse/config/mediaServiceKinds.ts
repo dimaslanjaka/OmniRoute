@@ -17,10 +17,7 @@
  * still declared explicitly via `serviceKinds` on the provider entry; callers
  * union the two sources.
  */
-import {
-  AUDIO_TRANSCRIPTION_PROVIDERS,
-  AUDIO_SPEECH_PROVIDERS,
-} from "./audioRegistry.ts";
+import { AUDIO_TRANSCRIPTION_PROVIDERS, AUDIO_SPEECH_PROVIDERS } from "./audioRegistry.ts";
 import { VIDEO_PROVIDERS } from "./videoRegistry.ts";
 import { MUSIC_PROVIDERS } from "./musicRegistry.ts";
 import { IMAGE_PROVIDERS } from "./imageRegistry.ts";

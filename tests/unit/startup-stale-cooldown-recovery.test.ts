@@ -270,8 +270,5 @@ test("clearStaleCrashCooldowns handles mixed transient + terminal connections co
 
   const updatedTerminal = await providersDb.getProviderConnectionById(terminal.id);
   assert.equal(updatedTerminal?.testStatus, "banned", "terminal connection untouched");
-  assert.ok(
-    updatedTerminal?.rateLimitedUntil,
-    "terminal rate_limited_until preserved"
-  );
+  assert.ok(updatedTerminal?.rateLimitedUntil, "terminal rate_limited_until preserved");
 });

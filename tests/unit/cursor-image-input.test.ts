@@ -23,9 +23,7 @@ const PUBLIC_IP = [{ address: "93.184.216.34", family: 4 }];
 // ─── Minimal protobuf field walker (test-only) ──────────────────────────────
 // Mirrors the production decoder enough to assert field layout without exposing
 // the internal decodeFields helper.
-type WalkField =
-  | { fn: number; wt: 0; varint: bigint }
-  | { fn: number; wt: 2; bytes: Buffer };
+type WalkField = { fn: number; wt: 0; varint: bigint } | { fn: number; wt: 2; bytes: Buffer };
 
 function walk(buf: Buffer): WalkField[] {
   const out: WalkField[] = [];
@@ -265,7 +263,11 @@ test("resolveCursorImages accepts an uppercase DATA: scheme (RFC 2397 case-insen
 
 test("assertResolvedAddressesPublic blocks private/metadata IPs, allows public", () => {
   for (const ip of ["127.0.0.1", "10.0.0.1", "169.254.169.254", "192.168.1.1", "::1", "fd00::1"]) {
-    assert.throws(() => assertResolvedAddressesPublic([ip]), CursorImageError, `should block ${ip}`);
+    assert.throws(
+      () => assertResolvedAddressesPublic([ip]),
+      CursorImageError,
+      `should block ${ip}`
+    );
   }
   assert.doesNotThrow(() => assertResolvedAddressesPublic(["93.184.216.34", "1.1.1.1"]));
   // A single private answer among public ones still blocks (DNS-rebinding).

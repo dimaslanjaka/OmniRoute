@@ -18,9 +18,7 @@ import {
   type TargetNodeModel,
 } from "../../../src/app/(dashboard)/dashboard/combos/live/comboFlowModel.ts";
 
-function mkRun(
-  targets: Array<Partial<TargetNodeModel> & { provider: string }>
-): ComboRunModel {
+function mkRun(targets: Array<Partial<TargetNodeModel> & { provider: string }>): ComboRunModel {
   return {
     comboName: "c",
     strategy: "priority",

@@ -13,7 +13,8 @@ import { buildCloudflareWorkerScript } from "@/lib/proxyRelay/cloudflareWorkerSc
 // guard work unchanged. Only the deployment surface differs (Cloudflare Workers
 // API instead of Vercel /v13/deployments).
 
-const CLOUDFLARE_API_BASE = process.env.CLOUDFLARE_API_BASE || "https://api.cloudflare.com/client/v4";
+const CLOUDFLARE_API_BASE =
+  process.env.CLOUDFLARE_API_BASE || "https://api.cloudflare.com/client/v4";
 
 export async function POST(request: Request) {
   const authError = await requireManagementAuth(request);

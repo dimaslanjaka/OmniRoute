@@ -1,6 +1,8 @@
 import { CLAUDE_OAUTH_TOOL_PREFIX } from "../../translator/request/openai-to-claude.ts";
 
-export function buildClaudePassthroughToolNameMap(body: Record<string, unknown> | null | undefined) {
+export function buildClaudePassthroughToolNameMap(
+  body: Record<string, unknown> | null | undefined
+) {
   if (!body || !Array.isArray(body.tools)) return null;
 
   const toolNameMap = new Map<string, string>();

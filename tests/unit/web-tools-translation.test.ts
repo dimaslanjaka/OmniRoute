@@ -45,13 +45,21 @@ describe("webTools — parseToolCallsFromText", () => {
 
     assert.ok(toolCalls && toolCalls.length === 1, "one tool call expected");
     assert.equal(toolCalls[0].function.name, "get_weather");
-    assert.equal(typeof toolCalls[0].function.arguments, "string", "arguments must be a JSON string");
+    assert.equal(
+      typeof toolCalls[0].function.arguments,
+      "string",
+      "arguments must be a JSON string"
+    );
     assert.deepEqual(JSON.parse(toolCalls[0].function.arguments), { city: "SP" });
     assert.ok(!content.includes("<tool>"), "the <tool> block must be stripped from content");
   });
 
   test("returns null tool calls for plain text with no tool block", () => {
-    const { content, toolCalls } = parseToolCallsFromText("just a normal answer", "call", WEATHER_TOOL);
+    const { content, toolCalls } = parseToolCallsFromText(
+      "just a normal answer",
+      "call",
+      WEATHER_TOOL
+    );
     assert.equal(toolCalls, null);
     assert.equal(content, "just a normal answer");
   });
@@ -63,7 +71,11 @@ describe("webTools — parseToolCallsFromText", () => {
     assert.ok(withTools.toolCalls && withTools.toolCalls[0].function.name === "get_weather");
 
     const withoutTools = parseToolCallsFromText(bare, "call");
-    assert.equal(withoutTools.toolCalls, null, "bare JSON must not be parsed without a tools[] set");
+    assert.equal(
+      withoutTools.toolCalls,
+      null,
+      "bare JSON must not be parsed without a tools[] set"
+    );
   });
 });
 

@@ -58,9 +58,7 @@ function captureSql(run: () => void): string[] {
 }
 
 const unboundedSelectsOnCallLogs = (sqls: string[]) =>
-  sqls.filter(
-    (s) => /SELECT/i.test(s) && /\bFROM\s+call_logs\b/i.test(s) && !/LIMIT/i.test(s)
-  );
+  sqls.filter((s) => /SELECT/i.test(s) && /\bFROM\s+call_logs\b/i.test(s) && !/LIMIT/i.test(s));
 
 test.beforeEach(() => {
   core.resetDbInstance();

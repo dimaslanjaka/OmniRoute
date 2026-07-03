@@ -159,9 +159,7 @@ function genId(prefix: string): string {
  * Anthropic block types:
  *   "text", "image", "tool_use", "tool_result", "thinking"
  */
-function blocksToXai(
-  blocks: string | AnthropicContentBlock[],
-): XaiInputBlock[] {
+function blocksToXai(blocks: string | AnthropicContentBlock[]): XaiInputBlock[] {
   if (typeof blocks === "string") return [{ type: "input_text", text: blocks }];
   if (!Array.isArray(blocks)) return [];
   const out: XaiInputBlock[] = [];
@@ -200,16 +198,13 @@ function toolsAnthropicToXai(tools: AnthropicTool[]): XaiTool[] | undefined {
       function: {
         name: t.name,
         description: t.description,
-        parameters:
-          (t.input_schema ?? t.parameters ?? { type: "object" }),
+        parameters: t.input_schema ?? t.parameters ?? { type: "object" },
       },
     };
   });
 }
 
-function mapClaudeThinking(
-  thinking: AnthropicThinking,
-): XaiReasoning | undefined {
+function mapClaudeThinking(thinking: AnthropicThinking): XaiReasoning | undefined {
   if (!thinking || typeof thinking !== "object") return undefined;
   if (thinking.type === "enabled") {
     if (typeof thinking.budget_tokens === "number") {
@@ -245,10 +240,7 @@ export function claudeRequestToXaiResponses(req: AnthropicRequest): XaiResponses
           input.push({
             type: "function_call_output",
             call_id: b.tool_use_id,
-            output:
-              typeof b.content === "string"
-                ? b.content
-                : JSON.stringify(b.content ?? ""),
+            output: typeof b.content === "string" ? b.content : JSON.stringify(b.content ?? ""),
           });
         } else {
           userBlocks.push(b);
@@ -271,8 +263,7 @@ export function claudeRequestToXaiResponses(req: AnthropicRequest): XaiResponses
             type: "function_call",
             call_id: b.id,
             name: b.name,
-            arguments:
-              typeof b.input === "string" ? b.input : JSON.stringify(b.input ?? {}),
+            arguments: typeof b.input === "string" ? b.input : JSON.stringify(b.input ?? {}),
           });
         } else {
           textBlocks.push(b);
@@ -315,7 +306,7 @@ export function claudeRequestToXaiResponses(req: AnthropicRequest): XaiResponses
  */
 export function xaiCompletedToClaudeJson(
   completed: XaiCompleted,
-  origReq: AnthropicRequest | null = null,
+  origReq: AnthropicRequest | null = null
 ): object {
   const content: unknown[] = [];
   let stopReason = "end_turn";

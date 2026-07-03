@@ -3,10 +3,7 @@ import { PEER_IP_HEADER } from "@/server/authz/headers";
 import { resolveStampedPeer } from "@/server/authz/peerStamp";
 
 export type PublicOriginSource =
-  | "configured"
-  | "trusted-forwarded"
-  | "request-url"
-  | "direct-local-host";
+  "configured" | "trusted-forwarded" | "request-url" | "direct-local-host";
 
 export interface PublicOriginCandidate {
   origin: string;
@@ -200,7 +197,7 @@ function directLocalHostOrigin(request: Request): string | null {
   if (classifyHostLocality(peer) === "remote") return null;
 
   const rawHost = trustsForwardedHeaders(request)
-    ? firstHeaderValue(request.headers.get("x-forwarded-host")) ?? request.headers.get("host")
+    ? (firstHeaderValue(request.headers.get("x-forwarded-host")) ?? request.headers.get("host"))
     : request.headers.get("host");
   const host = sanitizeForwardedHost(rawHost);
   if (!host) return null;

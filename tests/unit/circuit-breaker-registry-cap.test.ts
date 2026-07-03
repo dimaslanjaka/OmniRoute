@@ -1,11 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-const {
-  getCircuitBreaker,
-  resetAllCircuitBreakers,
-  __getCircuitRegistrySizeForTests,
-} = await import("../../src/shared/utils/circuitBreaker.ts");
+const { getCircuitBreaker, resetAllCircuitBreakers, __getCircuitRegistrySizeForTests } =
+  await import("../../src/shared/utils/circuitBreaker.ts");
 
 test("circuit breaker registry stays bounded by MAX_REGISTRY_SIZE", () => {
   resetAllCircuitBreakers();

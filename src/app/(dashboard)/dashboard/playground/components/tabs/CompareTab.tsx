@@ -290,8 +290,7 @@ export default function CompareTab({ configState }: CompareTabProps) {
           }
 
           const usage = parsed["usage"] as
-            | { prompt_tokens?: number; completion_tokens?: number }
-            | undefined;
+            { prompt_tokens?: number; completion_tokens?: number } | undefined;
           if (usage != null) {
             tracker.finish(usage);
           }

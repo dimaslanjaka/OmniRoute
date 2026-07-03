@@ -116,7 +116,9 @@ self.addEventListener("fetch", (event) => {
 });
 
 async function navigationFallback(request) {
-  return (await caches.match(request)) || (await caches.match("/")) || (await caches.match("/offline"));
+  return (
+    (await caches.match(request)) || (await caches.match("/")) || (await caches.match("/offline"))
+  );
 }
 
 // ── Push Notifications ───────────────────────────────────────────────────────

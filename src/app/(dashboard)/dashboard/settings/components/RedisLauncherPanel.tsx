@@ -153,15 +153,7 @@ export default function RedisLauncherPanel() {
   );
 }
 
-function Stat({
-  label,
-  value,
-  tone,
-}: {
-  label: string;
-  value: string;
-  tone: "ok" | "warn";
-}) {
+function Stat({ label, value, tone }: { label: string; value: string; tone: "ok" | "warn" }) {
   const color = tone === "ok" ? "text-emerald-400" : "text-amber-400";
   return (
     <div className="rounded-lg border border-border bg-bg-subtle p-3">

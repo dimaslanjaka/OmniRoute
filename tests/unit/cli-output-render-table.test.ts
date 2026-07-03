@@ -65,7 +65,7 @@ test("renderTable: quiet:true suppresses headers", async () => {
     { key: "b", header: "Beta" },
   ];
   const out = captureStdout(() =>
-    emit([{ a: "val1", b: "val2" }], { output: "table", quiet: true }, schema),
+    emit([{ a: "val1", b: "val2" }], { output: "table", quiet: true }, schema)
   );
   // headers must NOT appear in quiet mode
   assert.ok(!out.includes("Alpha"), `header "Alpha" should be hidden in quiet mode, got: ${out}`);
@@ -129,6 +129,6 @@ test("renderTable: ANSI-wrapped formatter value does not bleed — reset code al
   // The rendered output must always contain the ANSI reset code — never a bleed.
   assert.ok(
     out.includes(RESET_CODE),
-    `expected ANSI reset code (\\x1b[0m) in output to prevent color bleed, got: ${JSON.stringify(out)}`,
+    `expected ANSI reset code (\\x1b[0m) in output to prevent color bleed, got: ${JSON.stringify(out)}`
   );
 });

@@ -8,11 +8,8 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 
-const {
-  TOKEN_EXTRACTION_CONFIGS,
-  getExtractionConfig,
-  listExtractionConfigs,
-} = await import("../../open-sse/services/tokenExtractionConfig.ts");
+const { TOKEN_EXTRACTION_CONFIGS, getExtractionConfig, listExtractionConfigs } =
+  await import("../../open-sse/services/tokenExtractionConfig.ts");
 
 describe("tokenExtractionConfig", () => {
   it("exports TOKEN_EXTRACTION_CONFIGS as a Map", () => {

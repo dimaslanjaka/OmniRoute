@@ -60,7 +60,8 @@ test("recurring-uncapped models are surfaced but NEVER summed into the steady he
   const t = computeFreeModelTotals();
   // every uncapped record must carry monthlyTokens 0 (un-quantifiable, not counted)
   for (const m of FREE_MODEL_BUDGETS) {
-    if (m.freeType === "recurring-uncapped") assert.equal(m.monthlyTokens, 0, `${m.provider}/${m.modelId} uncapped but counted`);
+    if (m.freeType === "recurring-uncapped")
+      assert.equal(m.monthlyTokens, 0, `${m.provider}/${m.modelId} uncapped but counted`);
   }
   // uncappedProviders is the de-duped provider list and is non-empty (siliconflow, glm-cn, kilo…)
   assert.ok(Array.isArray(t.uncappedProviders) && t.uncappedProviders.length >= 3);

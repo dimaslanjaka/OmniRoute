@@ -40,7 +40,7 @@ function chatCreatedResponse(id = "chat-abc"): Response {
 function wafHtmlResponse(status = 504): Response {
   return new Response(
     "<html>\n<head><title>504 Gateway Time-out</title></head>\n<body>\n" +
-      '<center><h1>504 Gateway Time-out</h1></center>\n<hr><center>alibaba-ga</center>\n' +
+      "<center><h1>504 Gateway Time-out</h1></center>\n<hr><center>alibaba-ga</center>\n" +
       '<meta name="aliyun_waf_aa" content="ff926c7f07e45e2e487a29a6197d3460">\n</body>\n</html>',
     { status, headers: { "content-type": "text/html; charset=utf-8" } }
   );
@@ -280,7 +280,11 @@ describe("QwenWebExecutor (v2 migration)", () => {
   it("registry points at the v2 endpoint and the current model catalog", () => {
     const provider = (REGISTRY as any)["qwen-web"];
     assert.ok(provider, "qwen-web must be registered");
-    assert.match(provider.baseUrl, /\/api\/v2\/chat\/completions$/, "registry must use v2 endpoint");
+    assert.match(
+      provider.baseUrl,
+      /\/api\/v2\/chat\/completions$/,
+      "registry must use v2 endpoint"
+    );
     const ids = provider.models.map((m: any) => m.id);
     assert.deepEqual(ids.sort(), ["qwen3.6-plus", "qwen3.7-max", "qwen3.7-plus"]);
   });

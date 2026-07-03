@@ -78,7 +78,11 @@ test("#4012 successful describe still replaces the image with its text descripti
   const content = (result.modifiedPayload as { messages: { content: Part[] }[] }).messages[0]
     .content;
 
-  assert.equal(content.find((p) => p.type === "image_url"), undefined, "image replaced on success");
+  assert.equal(
+    content.find((p) => p.type === "image_url"),
+    undefined,
+    "image replaced on success"
+  );
   const desc = content.find((p) => p.type === "text" && p.text?.includes("a sea turtle swimming"));
   assert.ok(desc, "the vision description should be injected as text");
 });

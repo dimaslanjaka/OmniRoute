@@ -51,9 +51,7 @@ test("rejects a token file missing access_token", () => {
   assert.throws(
     () => parseAndValidateAgyToken({ token: { refresh_token: REFRESH } }),
     (err) =>
-      err instanceof AgyAuthFileError &&
-      err.code === "missing_access_token" &&
-      err.status === 400
+      err instanceof AgyAuthFileError && err.code === "missing_access_token" && err.status === 400
   );
 });
 

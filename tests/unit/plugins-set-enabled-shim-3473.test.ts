@@ -19,7 +19,7 @@ test("setPluginEnabled(false) unregisters a plugin's hooks and reports prior sta
   assert.strictEqual(result, true, "should report the plugin existed");
   assert.ok(
     !getHooks("onRequest").some((h) => h.pluginName === "demo-plugin"),
-    "hooks should be unregistered after disable",
+    "hooks should be unregistered after disable"
   );
   resetHooks();
 });

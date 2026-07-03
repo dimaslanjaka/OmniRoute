@@ -132,7 +132,9 @@ test("execute (non-stream) parses <tool> reply into OpenAI tool_calls", async ()
     assert.equal(choice.finish_reason, "tool_calls");
     assert.equal(choice.message.tool_calls.length, 1);
     assert.equal(choice.message.tool_calls[0].function.name, "get_weather");
-    assert.deepEqual(JSON.parse(choice.message.tool_calls[0].function.arguments), { city: "Paris" });
+    assert.deepEqual(JSON.parse(choice.message.tool_calls[0].function.arguments), {
+      city: "Paris",
+    });
     assert.ok(
       !String(choice.message.content || "").includes("<tool>"),
       "raw tool block stripped from content"
@@ -159,7 +161,9 @@ test("execute (non-stream) parses bare JSON reply into OpenAI tool_calls", async
     assert.equal(choice.finish_reason, "tool_calls");
     assert.equal(choice.message.tool_calls.length, 1);
     assert.equal(choice.message.tool_calls[0].function.name, "get_weather");
-    assert.deepEqual(JSON.parse(choice.message.tool_calls[0].function.arguments), { city: "Paris" });
+    assert.deepEqual(JSON.parse(choice.message.tool_calls[0].function.arguments), {
+      city: "Paris",
+    });
     assert.equal(choice.message.content, null, "bare JSON tool call is stripped from content");
   } finally {
     mock.restore();

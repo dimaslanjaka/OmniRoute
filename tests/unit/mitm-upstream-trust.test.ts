@@ -17,7 +17,10 @@ test("configureUpstreamCa — throws structured error for non-existent path", ()
     assert.fail("Should have thrown");
   } catch (err) {
     assert.ok(err instanceof Error);
-    assert.ok(!err.message.includes(" at /"), `Error message should not contain stack trace: ${err.message}`);
+    assert.ok(
+      !err.message.includes(" at /"),
+      `Error message should not contain stack trace: ${err.message}`
+    );
     assert.ok(err.message.includes(fakePath));
   }
 });

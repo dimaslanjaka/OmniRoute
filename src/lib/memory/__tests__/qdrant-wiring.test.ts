@@ -112,12 +112,7 @@ describe("Qdrant scalar quantization wiring (Q1 / F4.4)", () => {
 });
 
 describe("normalizeQdrantConfig — env-var fallbacks (cluster profile: --profile memory)", () => {
-  const KEYS = [
-    "QDRANT_HOST",
-    "QDRANT_PORT",
-    "QDRANT_API_KEY",
-    "QDRANT_COLLECTION",
-  ] as const;
+  const KEYS = ["QDRANT_HOST", "QDRANT_PORT", "QDRANT_API_KEY", "QDRANT_COLLECTION"] as const;
   const savedEnv: Record<string, string | undefined> = {};
 
   beforeAll(() => {

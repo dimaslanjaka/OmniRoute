@@ -10,13 +10,10 @@
  */
 
 type LoggerLike =
-  | { info?: (...args: unknown[]) => void; debug?: (...args: unknown[]) => void }
-  | null
-  | undefined;
+  { info?: (...args: unknown[]) => void; debug?: (...args: unknown[]) => void } | null | undefined;
 
 export type PluginOnRequestGate =
-  | { blocked: true; response: Response }
-  | { blocked: false; body?: unknown };
+  { blocked: true; response: Response } | { blocked: false; body?: unknown };
 
 const JSON_HEADERS = { status: 403, headers: { "Content-Type": "application/json" } } as const;
 

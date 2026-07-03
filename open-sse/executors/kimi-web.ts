@@ -26,7 +26,10 @@
  * session; the upstream returns the same response either way.
  */
 import { BaseExecutor, type ExecuteInput } from "./base.ts";
-import { makeExecutorErrorResult as makeErrorResult, sanitizeErrorMessage } from "../utils/error.ts";
+import {
+  makeExecutorErrorResult as makeErrorResult,
+  sanitizeErrorMessage,
+} from "../utils/error.ts";
 import { extractKimiJwt } from "@/lib/providers/webCookieAuth";
 
 export { extractKimiJwt };
@@ -76,7 +79,10 @@ const MAX_FRAME_LEN = 8 * 1024 * 1024;
  *     (caller must treat this as a stream-fatal protocol error)
  *   - `consumed: N` + the parsed frame otherwise
  */
-export function decodeConnectFrame(buf: Uint8Array, byteOffset: number): { consumed: number; frame: ConnectFrame | null } {
+export function decodeConnectFrame(
+  buf: Uint8Array,
+  byteOffset: number
+): { consumed: number; frame: ConnectFrame | null } {
   if (byteOffset + 5 > buf.length) return { consumed: 0, frame: null };
   const flags = buf[byteOffset];
   const len =
@@ -113,7 +119,9 @@ type DeltaKind = "text" | "think" | null;
  * Anything else (heartbeats, chat/message metadata, stage transitions) is
  * suppressed; we only surface text to the client.
  */
-export function extractDelta(msg: Record<string, unknown> | null): { kind: DeltaKind; text: string } | null {
+export function extractDelta(
+  msg: Record<string, unknown> | null
+): { kind: DeltaKind; text: string } | null {
   if (!msg) return null;
   const op = String(msg.op ?? "");
   const mask = String(msg.mask ?? "");
@@ -150,7 +158,11 @@ export function isEndOfStream(msg: Record<string, unknown> | null): boolean {
   if (!msg) return false;
   // Assistant message flipped to COMPLETED.
   const message = (msg.message ?? null) as Record<string, unknown> | null;
-  if (message && String(message.status ?? "") === "MESSAGE_STATUS_COMPLETED" && String(message.role ?? "") === "assistant") {
+  if (
+    message &&
+    String(message.status ?? "") === "MESSAGE_STATUS_COMPLETED" &&
+    String(message.role ?? "") === "assistant"
+  ) {
     return true;
   }
   return false;
@@ -269,7 +281,12 @@ export class KimiWebExecutor extends BaseExecutor {
 
     if (!upstream.ok) {
       const errText = await upstream.text().catch(() => "");
-      return makeErrorResult(upstream.status, `Kimi error: ${sanitizeErrorMessage(errText)}`, body, CHAT_URL);
+      return makeErrorResult(
+        upstream.status,
+        `Kimi error: ${sanitizeErrorMessage(errText)}`,
+        body,
+        CHAT_URL
+      );
     }
 
     const encoder = new TextEncoder();

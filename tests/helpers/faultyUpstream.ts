@@ -15,7 +15,9 @@ export interface FaultyUpstream {
   stop(): Promise<void>;
 }
 
-export async function startFaultyUpstream(initial: FaultMode = { kind: "ok" }): Promise<FaultyUpstream> {
+export async function startFaultyUpstream(
+  initial: FaultMode = { kind: "ok" }
+): Promise<FaultyUpstream> {
   let mode: FaultMode = initial;
 
   const server = http.createServer((req, res) => {

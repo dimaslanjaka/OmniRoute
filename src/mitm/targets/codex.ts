@@ -24,7 +24,6 @@ export const CODEX_TARGET: MitmTarget = {
     ],
     detection: { command: "which codex", platform: "all" },
   },
-  handler: () =>
-    import("../handlers/codex").then((m) => ({ default: m.CodexHandler })),
+  handler: () => import("../handlers/codex").then((m) => ({ default: m.CodexHandler })),
   riskNoticeKey: "providers.riskNotice.oauth",
 };

@@ -159,9 +159,7 @@ export function safeValidateManifest(
 
 // ── Config validation ──
 
-export type ValidatePluginConfigResult =
-  | { valid: true }
-  | { valid: false; errors: string[] };
+export type ValidatePluginConfigResult = { valid: true } | { valid: false; errors: string[] };
 
 /**
  * Validate a config object against a ConfigField schema map.

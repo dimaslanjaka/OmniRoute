@@ -69,10 +69,7 @@ export function computeBurnRateFromWindow(
  * @param remaining Optional remaining quota (same unit as consumed).
  *                  When provided, `timeToExhaustionMs` is calculated.
  */
-export function computeBurnRate(
-  history: BurnRateSample[],
-  remaining?: number
-): BurnRateResult {
+export function computeBurnRate(history: BurnRateSample[], remaining?: number): BurnRateResult {
   if (history.length < 2) {
     return { tokensPerSecond: 0, timeToExhaustionMs: null };
   }

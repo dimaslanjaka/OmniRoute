@@ -92,8 +92,7 @@ function upgradeLegacySeededDefaultCompressionCombo(): void {
   const row = db
     .prepare("SELECT name, description, pipeline FROM compression_combos WHERE id = ?")
     .get(DEFAULT_COMPRESSION_COMBO_ID) as
-    | { name?: string; description?: string; pipeline?: string }
-    | undefined;
+    { name?: string; description?: string; pipeline?: string } | undefined;
 
   if (!row) return;
 

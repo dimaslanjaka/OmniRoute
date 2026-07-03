@@ -56,7 +56,9 @@ test.describe("Playground Compare Tab", () => {
     await expect(addButton).toBeVisible({ timeout: 10000 });
 
     // Type a model name in the input and add it
-    const modelInput = page.locator('input[placeholder*="Model"], input[aria-label*="model" i]').first();
+    const modelInput = page
+      .locator('input[placeholder*="Model"], input[aria-label*="model" i]')
+      .first();
     await expect(modelInput).toBeVisible({ timeout: 10000 });
 
     // Add first column
@@ -90,7 +92,9 @@ test.describe("Playground Compare Tab", () => {
     const addButton = page.getByRole("button", { name: /add model/i });
     await expect(addButton).toBeVisible({ timeout: 10000 });
 
-    const modelInput = page.locator('input[placeholder*="Model"], input[aria-label*="model" i]').first();
+    const modelInput = page
+      .locator('input[placeholder*="Model"], input[aria-label*="model" i]')
+      .first();
     await expect(modelInput).toBeVisible({ timeout: 10000 });
     await modelInput.fill("openai/gpt-4o");
     await addButton.click();

@@ -71,8 +71,7 @@ export function maybeEnrichCompletedDetail(updated: PendingRequestDetail, connec
         const art = readCallArtifact(row.artifact_relpath);
         if (art.state !== "ready" || !art.artifact) continue;
         const pipeline = art.artifact.pipeline as
-          | { providerResponse?: unknown; clientResponse?: unknown }
-          | undefined;
+          { providerResponse?: unknown; clientResponse?: unknown } | undefined;
         if (missingProvider && pipeline?.providerResponse) {
           updated.providerResponse = pipeline.providerResponse;
         }

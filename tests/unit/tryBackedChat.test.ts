@@ -58,7 +58,9 @@ describe("tryBackedChat", () => {
   // --------------------------------------------------------------------------
   it("returns httpBackedChat result when status is 2xx", async () => {
     __setHttpBackedChatOverrideForTesting(() => Promise.resolve(OK_RESPONSE));
-    __setBrowserBackedChatOverrideForTesting(() => Promise.reject(new Error("should not be called")));
+    __setBrowserBackedChatOverrideForTesting(() =>
+      Promise.reject(new Error("should not be called"))
+    );
 
     const result = await tryBackedChat({ ...BASE_REQ });
 
@@ -75,7 +77,9 @@ describe("tryBackedChat", () => {
       status: 501,
     };
     __setHttpBackedChatOverrideForTesting(() => Promise.resolve(notImplemented));
-    __setBrowserBackedChatOverrideForTesting(() => Promise.reject(new Error("should not be called")));
+    __setBrowserBackedChatOverrideForTesting(() =>
+      Promise.reject(new Error("should not be called"))
+    );
 
     const result = await tryBackedChat({ ...BASE_REQ });
 
@@ -131,8 +135,12 @@ describe("tryBackedChat", () => {
   // 5. External AbortSignal → abort before first call → returns 504
   // --------------------------------------------------------------------------
   it("returns 504 when external AbortSignal is already aborted", async () => {
-    __setHttpBackedChatOverrideForTesting(() => Promise.reject(new DOMException("Aborted", "AbortError")));
-    __setBrowserBackedChatOverrideForTesting(() => Promise.reject(new Error("should not be called")));
+    __setHttpBackedChatOverrideForTesting(() =>
+      Promise.reject(new DOMException("Aborted", "AbortError"))
+    );
+    __setBrowserBackedChatOverrideForTesting(() =>
+      Promise.reject(new Error("should not be called"))
+    );
 
     const ac = new AbortController();
     ac.abort();
@@ -147,8 +155,12 @@ describe("tryBackedChat", () => {
   // 6. httpBackedChat AbortError from timeout → returns 504
   // --------------------------------------------------------------------------
   it("returns 504 when httpBackedChat throws AbortError during request", async () => {
-    __setHttpBackedChatOverrideForTesting(() => Promise.reject(new DOMException("Aborted", "AbortError")));
-    __setBrowserBackedChatOverrideForTesting(() => Promise.reject(new Error("should not be called")));
+    __setHttpBackedChatOverrideForTesting(() =>
+      Promise.reject(new DOMException("Aborted", "AbortError"))
+    );
+    __setBrowserBackedChatOverrideForTesting(() =>
+      Promise.reject(new Error("should not be called"))
+    );
 
     // Use a signal that aborts immediately to simulate timeout
     const ac = new AbortController();
@@ -175,7 +187,9 @@ describe("tryBackedChat", () => {
   // --------------------------------------------------------------------------
   it("does not leak AbortController timer when httpBackedChat succeeds quickly", async () => {
     __setHttpBackedChatOverrideForTesting(() => Promise.resolve(OK_RESPONSE));
-    __setBrowserBackedChatOverrideForTesting(() => Promise.reject(new Error("should not be called")));
+    __setBrowserBackedChatOverrideForTesting(() =>
+      Promise.reject(new Error("should not be called"))
+    );
 
     // Call tryBackedChat without an external signal so it creates an internal AbortController
     const result = await tryBackedChat({ ...BASE_REQ, signal: undefined });

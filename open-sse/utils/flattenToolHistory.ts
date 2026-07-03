@@ -53,8 +53,7 @@ export function flattenToolHistory<T extends Message>(
 
     // OpenAI tool / function role -> assistant prose
     if (msg.role === "tool" || msg.role === "function") {
-      const text =
-        extractTextContent(msg.content) || String(msg.content ?? "");
+      const text = extractTextContent(msg.content) || String(msg.content ?? "");
       out.push({
         role: "assistant",
         content: `${TOOL_RESULT_PREFIX}${text}]`,
@@ -65,12 +64,9 @@ export function flattenToolHistory<T extends Message>(
     // OpenAI assistant with structured tool_calls -> flatten into prose
     if (msg.role === "assistant" && Array.isArray(msg.tool_calls)) {
       const { tool_calls, ...rest } = msg;
-      const names = tool_calls
-        .map((c) => c?.function?.name || c?.name || "tool")
-        .join(", ");
+      const names = tool_calls.map((c) => c?.function?.name || c?.name || "tool").join(", ");
       const base =
-        extractTextContent(rest.content) ||
-        (typeof rest.content === "string" ? rest.content : "");
+        extractTextContent(rest.content) || (typeof rest.content === "string" ? rest.content : "");
       out.push({
         ...rest,
         content: `${base}${base ? "\n" : ""}${TOOL_CALL_PREFIX}${names}]`,
@@ -93,9 +89,7 @@ export function flattenToolHistory<T extends Message>(
           } else if (block?.type === "tool_use") {
             toolNames.push(block.name || "tool");
           } else if (block?.type === "tool_result") {
-            toolResults.push(
-              extractTextContent(block.content) || String(block.content ?? "")
-            );
+            toolResults.push(extractTextContent(block.content) || String(block.content ?? ""));
           }
         }
         let newContent = textParts.join("\n");

@@ -25,7 +25,12 @@ function render(props: Record<string, unknown>) {
   const root = createRoot(el);
   act(() => {
     root.render(
-      <AddApiKeyModal isOpen onSave={async () => undefined} onClose={() => {}} {...(props as any)} />
+      <AddApiKeyModal
+        isOpen
+        onSave={async () => undefined}
+        onClose={() => {}}
+        {...(props as any)}
+      />
     );
   });
   containers.push({ root, el });
@@ -62,7 +67,10 @@ beforeEach(() => {
             Promise.resolve({ error: "Provider validation not supported", unsupported: true }),
         } as Response);
       }
-      return Promise.resolve({ ok: true, json: () => Promise.resolve({ valid: true }) } as Response);
+      return Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ valid: true }),
+      } as Response);
     })
   );
 });

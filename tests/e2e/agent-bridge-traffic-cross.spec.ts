@@ -42,12 +42,12 @@ test.describe("AgentBridge ↔ Traffic Inspector cross-page integration", () => 
       return;
     }
     // Both Tools items should be in the sidebar
-    const agentBridgeLink = page.locator(
-      "a[href*='agent-bridge'], [data-testid='sidebar-agent-bridge']"
-    ).first();
-    const inspectorLink = page.locator(
-      "a[href*='traffic-inspector'], [data-testid='sidebar-traffic-inspector']"
-    ).first();
+    const agentBridgeLink = page
+      .locator("a[href*='agent-bridge'], [data-testid='sidebar-agent-bridge']")
+      .first();
+    const inspectorLink = page
+      .locator("a[href*='traffic-inspector'], [data-testid='sidebar-traffic-inspector']")
+      .first();
 
     await expect(agentBridgeLink).toBeVisible({ timeout: 5000 });
     await expect(inspectorLink).toBeVisible({ timeout: 5000 });
@@ -61,9 +61,11 @@ test.describe("AgentBridge ↔ Traffic Inspector cross-page integration", () => 
       return;
     }
     // Look for a "View traffic" / "Traffic Inspector" link on the AgentBridge page
-    const viewTrafficLink = page.locator(
-      "a[href*='traffic-inspector'], a:has-text('Traffic Inspector'), [data-testid='view-traffic-link']"
-    ).first();
+    const viewTrafficLink = page
+      .locator(
+        "a[href*='traffic-inspector'], a:has-text('Traffic Inspector'), [data-testid='view-traffic-link']"
+      )
+      .first();
     const isVisible = await viewTrafficLink.isVisible({ timeout: 5000 }).catch(() => false);
     if (!isVisible) {
       // Quick links section may not render without providers configured
@@ -83,9 +85,9 @@ test.describe("AgentBridge ↔ Traffic Inspector cross-page integration", () => 
       return;
     }
     // Source filter dropdown should list agent-bridge as an option
-    const sourceFilter = page.locator(
-      "[data-testid='source-filter'], select[name='source'], [aria-label*='source']"
-    ).first();
+    const sourceFilter = page
+      .locator("[data-testid='source-filter'], select[name='source'], [aria-label*='source']")
+      .first();
     const isVisible = await sourceFilter.isVisible({ timeout: 5000 }).catch(() => false);
     if (!isVisible) {
       test.skip();
@@ -93,9 +95,11 @@ test.describe("AgentBridge ↔ Traffic Inspector cross-page integration", () => 
     }
     // Open the dropdown
     await sourceFilter.click();
-    const agentBridgeOption = page.locator(
-      "option[value='agent-bridge'], [data-value='agent-bridge'], li:has-text('Agent Bridge'), li:has-text('agent-bridge')"
-    ).first();
+    const agentBridgeOption = page
+      .locator(
+        "option[value='agent-bridge'], [data-value='agent-bridge'], li:has-text('Agent Bridge'), li:has-text('agent-bridge')"
+      )
+      .first();
     await expect(agentBridgeOption).toBeVisible({ timeout: 3000 });
   });
 
@@ -107,9 +111,11 @@ test.describe("AgentBridge ↔ Traffic Inspector cross-page integration", () => 
       return;
     }
     // Start / Stop / Restart buttons should be present in server card
-    const startBtn = page.locator(
-      "button:has-text('Start'), button:has-text('Start Server'), [data-testid='start-server-btn']"
-    ).first();
+    const startBtn = page
+      .locator(
+        "button:has-text('Start'), button:has-text('Start Server'), [data-testid='start-server-btn']"
+      )
+      .first();
     const isVisible = await startBtn.isVisible({ timeout: 5000 }).catch(() => false);
     if (!isVisible) {
       test.skip();
@@ -139,7 +145,9 @@ test.describe("AgentBridge ↔ Traffic Inspector cross-page integration", () => 
     await expect(page.locator("body")).toBeVisible();
   });
 
-  test("Traffic Inspector shows AgentBridge mode as always-on in capture sources", async ({ page }) => {
+  test("Traffic Inspector shows AgentBridge mode as always-on in capture sources", async ({
+    page,
+  }) => {
     await page.goto("/dashboard/tools/traffic-inspector");
     await page.waitForLoadState("networkidle");
     if (!(await isAuthenticated(page))) {
@@ -147,9 +155,11 @@ test.describe("AgentBridge ↔ Traffic Inspector cross-page integration", () => 
       return;
     }
     // AgentBridge capture mode should be shown as active/always-on
-    const agentBridgeToggle = page.locator(
-      "[data-testid='capture-agent-bridge'], [aria-label*='AgentBridge'], text=AgentBridge"
-    ).first();
+    const agentBridgeToggle = page
+      .locator(
+        "[data-testid='capture-agent-bridge'], [aria-label*='AgentBridge'], text=AgentBridge"
+      )
+      .first();
     await expect(agentBridgeToggle).toBeVisible({ timeout: 5000 });
   });
 });

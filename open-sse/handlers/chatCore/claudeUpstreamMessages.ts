@@ -89,8 +89,7 @@ export function normalizeClaudeUpstreamMessages(
         block.type === "document"
       ) {
         const fileData = (block.file_url ?? block.file ?? block.document) as
-          | Record<string, unknown>
-          | undefined;
+          Record<string, unknown> | undefined;
         if (
           (block.type === "file" || block.type === "document") &&
           !fileData?.url &&

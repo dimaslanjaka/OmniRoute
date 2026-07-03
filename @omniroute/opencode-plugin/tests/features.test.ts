@@ -513,8 +513,7 @@ test("config hook: features.mcpAutoEmit:true writes mcp entry with provider apiK
   const input: { provider?: Record<string, unknown>; mcp?: Record<string, unknown> } = {};
   await hook(input as never);
   const entry = input.mcp?.["opencode-omniroute"] as
-    | { type: string; url: string; enabled: boolean; headers: Record<string, string> }
-    | undefined;
+    { type: string; url: string; enabled: boolean; headers: Record<string, string> } | undefined;
   assert.ok(entry, "mcp entry written");
   assert.equal(entry.type, "remote");
   assert.equal(

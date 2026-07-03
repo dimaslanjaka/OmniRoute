@@ -17,13 +17,17 @@ test("obsidian tools — getClient helper works when token is set", async () => 
 });
 
 test("obsidian tools — missing read:obsidian denied via inline scopes", () => {
-  const result = evaluateToolScopes("obsidian_search_simple", ["read:health"], true, ["read:obsidian"]);
+  const result = evaluateToolScopes("obsidian_search_simple", ["read:health"], true, [
+    "read:obsidian",
+  ]);
   assert.equal(result.allowed, false);
   assert.ok(result.missing.includes("read:obsidian"));
 });
 
 test("obsidian tools — correct read scope allowed via inline scopes", () => {
-  const result = evaluateToolScopes("obsidian_search_simple", ["read:obsidian"], true, ["read:obsidian"]);
+  const result = evaluateToolScopes("obsidian_search_simple", ["read:obsidian"], true, [
+    "read:obsidian",
+  ]);
   assert.equal(result.allowed, true);
   assert.deepEqual(result.missing, []);
 });
@@ -34,13 +38,17 @@ test("obsidian tools — wildcard read:* covers read:obsidian", () => {
 });
 
 test("obsidian tools — write:obsidian denied for read-only caller", () => {
-  const result = evaluateToolScopes("obsidian_write_note", ["read:obsidian"], true, ["write:obsidian"]);
+  const result = evaluateToolScopes("obsidian_write_note", ["read:obsidian"], true, [
+    "write:obsidian",
+  ]);
   assert.equal(result.allowed, false);
   assert.ok(result.missing.includes("write:obsidian"));
 });
 
 test("obsidian tools — write:obsidian allowed with correct scope", () => {
-  const result = evaluateToolScopes("obsidian_write_note", ["write:obsidian"], true, ["write:obsidian"]);
+  const result = evaluateToolScopes("obsidian_write_note", ["write:obsidian"], true, [
+    "write:obsidian",
+  ]);
   assert.equal(result.allowed, true);
 });
 

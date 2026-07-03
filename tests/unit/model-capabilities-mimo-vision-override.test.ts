@@ -104,22 +104,42 @@ test("mimo-v2.5-pro stays text-only even when models.dev says attachment:true", 
   seedMimoCapabilities();
   const pro = modelCapabilities.getResolvedModelCapabilities("xiaomi-mimo/mimo-v2.5-pro");
   // attachment is the seeded synced value, but the override forces vision false.
-  assert.equal(pro.attachment, true, "synced attachment row is present (proves override, not absence)");
-  assert.equal(pro.supportsVision, false, "text-only override must beat the wrong synced attachment");
+  assert.equal(
+    pro.attachment,
+    true,
+    "synced attachment row is present (proves override, not absence)"
+  );
+  assert.equal(
+    pro.supportsVision,
+    false,
+    "text-only override must beat the wrong synced attachment"
+  );
 });
 
 test("mimo-v2-pro stays text-only even when models.dev says attachment:true", () => {
   seedMimoCapabilities();
   const pro = modelCapabilities.getResolvedModelCapabilities("xiaomi-mimo/mimo-v2-pro");
-  assert.equal(pro.supportsVision, false, "text-only override must beat the wrong synced attachment");
+  assert.equal(
+    pro.supportsVision,
+    false,
+    "text-only override must beat the wrong synced attachment"
+  );
 });
 
 test("genuinely multimodal mimo models keep vision (override is precise, not broad)", () => {
   seedMimoCapabilities();
   const v25 = modelCapabilities.getResolvedModelCapabilities("xiaomi-mimo/mimo-v2.5");
   const omni = modelCapabilities.getResolvedModelCapabilities("xiaomi-mimo/mimo-v2-omni");
-  assert.equal(v25.supportsVision, true, "mimo-v2.5 is multimodal — must NOT be caught by the override");
-  assert.equal(omni.supportsVision, true, "mimo-v2-omni is multimodal — must NOT be caught by the override");
+  assert.equal(
+    v25.supportsVision,
+    true,
+    "mimo-v2.5 is multimodal — must NOT be caught by the override"
+  );
+  assert.equal(
+    omni.supportsVision,
+    true,
+    "mimo-v2-omni is multimodal — must NOT be caught by the override"
+  );
 });
 
 test("the bare (unqualified) text-only id is also overridden", () => {

@@ -40,7 +40,11 @@ describe("cliToolState", () => {
     const initId = `init-tool-${Date.now()}`;
     const config = { foo: "bar" };
     assert.equal(saveCliToolInitialConfig(initId, config), true, "first save should return true");
-    assert.equal(saveCliToolInitialConfig(initId, { baz: "qux" }), false, "second save should return false");
+    assert.equal(
+      saveCliToolInitialConfig(initId, { baz: "qux" }),
+      false,
+      "second save should return false"
+    );
     const loaded = getCliToolInitialConfig(initId);
     assert.deepEqual(loaded, { foo: "bar" }, "should keep first config");
   });

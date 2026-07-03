@@ -67,7 +67,11 @@ for (const [collectionName, collection] of Object.entries(COLLECTIONS)) {
         `${toolDef.name}: inputSchema.parse must be callable`
       );
       // handler must be callable — the loop awaits toolDef.handler(parsedArgs)
-      assert.equal(typeof toolDef.handler, "function", `${toolDef.name}: handler must be a function`);
+      assert.equal(
+        typeof toolDef.handler,
+        "function",
+        `${toolDef.name}: handler must be a function`
+      );
       // scopes feeds the 3-arg withScopeEnforcement(name, handler, scopes)
       assert.ok(
         Array.isArray(toolDef.scopes) && toolDef.scopes.length > 0,

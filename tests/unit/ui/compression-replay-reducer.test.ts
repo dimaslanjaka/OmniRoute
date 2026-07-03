@@ -63,10 +63,13 @@ describe("replayReducer — compression replay state machine (F3.2)", () => {
   });
 
   it("SET_SPEED changes speed without touching frame/play state", () => {
-    const s = replayReducer({ frameIndex: 1, isPlaying: true, speed: 1 }, {
-      type: "SET_SPEED",
-      speed: 3,
-    });
+    const s = replayReducer(
+      { frameIndex: 1, isPlaying: true, speed: 1 },
+      {
+        type: "SET_SPEED",
+        speed: 3,
+      }
+    );
     assert.equal(s.speed, 3);
     assert.equal(s.frameIndex, 1);
     assert.equal(s.isPlaying, true);

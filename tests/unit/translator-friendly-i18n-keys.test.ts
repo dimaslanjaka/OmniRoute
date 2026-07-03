@@ -16,9 +16,10 @@ import { resolve } from "node:path";
 
 const ROOT = resolve(process.cwd());
 
-const en = JSON.parse(
-  readFileSync(resolve(ROOT, "src/i18n/messages/en.json"), "utf-8")
-) as Record<string, unknown>;
+const en = JSON.parse(readFileSync(resolve(ROOT, "src/i18n/messages/en.json"), "utf-8")) as Record<
+  string,
+  unknown
+>;
 
 const ptBR = JSON.parse(
   readFileSync(resolve(ROOT, "src/i18n/messages/pt-BR.json"), "utf-8")
@@ -109,10 +110,10 @@ const NEW_KEYS = [
 // ─── Keys that should obviously differ from English (spot check) ──────────────
 
 const OBVIOUSLY_TRANSLATED_IN_PT = [
-  "simpleAppUsesLabel",    // "My app uses" vs "Minha app usa"
-  "simpleSendToLabel",     // "Send to" vs "Enviar para"
-  "simpleModePreview",     // "Preview translation only" vs "Só ver tradução"
-  "simpleModeSend",        // "Send and see response" vs "Enviar e ver resposta"
+  "simpleAppUsesLabel", // "My app uses" vs "Minha app usa"
+  "simpleSendToLabel", // "Send to" vs "Enviar para"
+  "simpleModePreview", // "Preview translation only" vs "Só ver tradução"
+  "simpleModeSend", // "Send and see response" vs "Enviar e ver resposta"
   "conceptDiagramAppLabel", // "Your app" vs "Sua app"
   "conceptHowItWorksToggle", // "How it works" vs "Como funciona"
   "monitorOpenTranslateButton", // "Go to Translate" vs "Ir para Translate"
@@ -141,10 +142,7 @@ const OLD_KEYS_MUST_SURVIVE = [
 describe("F1 new keys — present in en.json", () => {
   for (const key of NEW_KEYS) {
     it(`en.translator.${key} exists`, () => {
-      assert.ok(
-        key in enTranslator,
-        `Missing key "translator.${key}" in en.json`
-      );
+      assert.ok(key in enTranslator, `Missing key "translator.${key}" in en.json`);
       const val = enTranslator[key];
       assert.ok(typeof val === "string" && val.length > 0, `Key "translator.${key}" is empty`);
     });
@@ -154,12 +152,12 @@ describe("F1 new keys — present in en.json", () => {
 describe("F1 new keys — present in pt-BR.json", () => {
   for (const key of NEW_KEYS) {
     it(`pt-BR.translator.${key} exists`, () => {
-      assert.ok(
-        key in ptBRTranslator,
-        `Missing key "translator.${key}" in pt-BR.json`
-      );
+      assert.ok(key in ptBRTranslator, `Missing key "translator.${key}" in pt-BR.json`);
       const val = ptBRTranslator[key];
-      assert.ok(typeof val === "string" && val.length > 0, `Key "translator.${key}" is empty in pt-BR`);
+      assert.ok(
+        typeof val === "string" && val.length > 0,
+        `Key "translator.${key}" is empty in pt-BR`
+      );
     });
   }
 });

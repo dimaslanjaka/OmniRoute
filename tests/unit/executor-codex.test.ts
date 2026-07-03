@@ -87,15 +87,13 @@ test("Codex helper functions isolate rate-limit scopes and parse quota headers",
   assert.equal(getCodexUpstreamModel("gpt-5.5-xhigh"), "gpt-5.5");
   assert.equal(getCodexUpstreamModel("gpt-5.5-medium"), "gpt-5.5");
   // With mock WS transport + codexTransport=websocket, gpt-5.5 models require WS
-  __setCodexWebSocketTransportForTesting(
-    async (): Promise<MockCodexWebSocket> => ({
-      send() {},
-      close() {},
-      onmessage: null,
-      onerror: null,
-      onclose: null,
-    })
-  );
+  __setCodexWebSocketTransportForTesting(async (): Promise<MockCodexWebSocket> => ({
+    send() {},
+    close() {},
+    onmessage: null,
+    onerror: null,
+    onclose: null,
+  }));
   assert.equal(
     isCodexResponsesWebSocketRequired("gpt-5.5-xhigh", {
       providerSpecificData: { codexTransport: "websocket" },

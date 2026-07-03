@@ -666,4 +666,3 @@ export async function validateSapProvider({ apiKey, providerSpecificData = {} }:
 
   return { valid: false, error: "Connection failed while testing SAP Generative AI Hub" };
 }
-

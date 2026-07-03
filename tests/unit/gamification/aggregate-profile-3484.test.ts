@@ -16,7 +16,8 @@ if (!process.env.API_KEY_SECRET) {
 
 const { getDbInstance, resetDbInstance } = await import("../../../src/lib/db/core.ts");
 const gami = await import("../../../src/lib/db/gamification.ts");
-const { seedBuiltinBadges, BUILTIN_BADGES } = await import("../../../src/lib/gamification/badges.ts");
+const { seedBuiltinBadges, BUILTIN_BADGES } =
+  await import("../../../src/lib/gamification/badges.ts");
 
 test.after(() => {
   try {

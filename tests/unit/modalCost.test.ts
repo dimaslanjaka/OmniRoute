@@ -15,7 +15,10 @@ test("computeImageCost: per-image flat × n", () => {
 });
 test("computeAudioCost: per-second OR per-character, else 0", () => {
   assert.equal(computeAudioCost({ input_cost_per_second: 0.0001 }, { seconds: 30 }), 0.003);
-  assert.equal(computeAudioCost({ input_cost_per_character: 0.000015 }, { characters: 1000 }), 0.015);
+  assert.equal(
+    computeAudioCost({ input_cost_per_character: 0.000015 }, { characters: 1000 }),
+    0.015
+  );
   assert.equal(computeAudioCost({ input_cost_per_second: 0.0001 }, {}), 0);
 });
 test("computeRerankCost: per search unit", () => {

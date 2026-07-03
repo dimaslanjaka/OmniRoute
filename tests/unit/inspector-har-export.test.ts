@@ -58,9 +58,7 @@ test("Bearer tokens in headers are masked", () => {
     },
   });
   const har = toHar([req]);
-  const authHeader = har.log.entries[0].request.headers.find(
-    (h) => h.name === "authorization"
-  );
+  const authHeader = har.log.entries[0].request.headers.find((h) => h.name === "authorization");
   assert.ok(authHeader);
   // Either Bearer regex (authorization:\sBearer prefix) or sk-/long-token regex must mask the value
   assert.ok(!authHeader.value.includes("supersecretvalueabc1234567890XYZ"));

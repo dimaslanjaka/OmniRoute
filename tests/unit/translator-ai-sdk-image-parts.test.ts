@@ -28,9 +28,7 @@ test("#1330: Claude maps AI SDK image string to a base64 image source block", ()
   const out = claude.openaiToClaudeRequest(
     "claude-sonnet-4-6",
     {
-      messages: [
-        { role: "user", content: [{ type: "image", image: DATA_URL }] },
-      ],
+      messages: [{ role: "user", content: [{ type: "image", image: DATA_URL }] }],
     },
     false
   ) as { messages: { content: { type: string; source?: Record<string, unknown> }[] }[] };
@@ -49,7 +47,13 @@ test("#1330: Kiro maps AI SDK image string to userInputMessage.images bytes", ()
     "kr/claude-sonnet-4.6",
     {
       messages: [
-        { role: "user", content: [{ type: "text", text: "describe" }, { type: "image", image: DATA_URL }] },
+        {
+          role: "user",
+          content: [
+            { type: "text", text: "describe" },
+            { type: "image", image: DATA_URL },
+          ],
+        },
       ],
     },
     false,

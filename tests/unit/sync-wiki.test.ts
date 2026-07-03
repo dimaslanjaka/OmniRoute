@@ -43,7 +43,8 @@ test("toWikiContent: a document without frontmatter is kept intact (plus banner)
 });
 
 test("syncHomeCounts: rewrites the cover-page provider/strategy counts", () => {
-  const home = "Connect every AI tool to 177 providers.\n**177 AI Providers** · **14 Routing Strategies**\n";
+  const home =
+    "Connect every AI tool to 177 providers.\n**177 AI Providers** · **14 Routing Strategies**\n";
   const out = syncHomeCounts(home, { providers: 226, strategies: 15, mcpTools: null, locales: 42 });
   assert.ok(out.includes("226 providers"));
   assert.ok(out.includes("**226 AI Providers**"));
@@ -53,7 +54,12 @@ test("syncHomeCounts: rewrites the cover-page provider/strategy counts", () => {
 
 test("syncHomeCounts: leaves text untouched when a count is null (best-effort MCP)", () => {
   const home = "| **MCP Server** | 87 tools |\n";
-  const out = syncHomeCounts(home, { providers: null, strategies: null, mcpTools: null, locales: null });
+  const out = syncHomeCounts(home, {
+    providers: null,
+    strategies: null,
+    mcpTools: null,
+    locales: null,
+  });
   assert.equal(out, home);
 });
 

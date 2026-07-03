@@ -22,9 +22,11 @@ export function getNotionToken(): string | null {
 export function setNotionToken(token: string): void {
   try {
     const db = getDbInstance();
-    db.prepare(
-      "INSERT OR IGNORE INTO key_value (namespace, key, value) VALUES (?, ?, ?)"
-    ).run(NOTION_NAMESPACE, NOTION_TOKEN_KEY, JSON.stringify(token));
+    db.prepare("INSERT OR IGNORE INTO key_value (namespace, key, value) VALUES (?, ?, ?)").run(
+      NOTION_NAMESPACE,
+      NOTION_TOKEN_KEY,
+      JSON.stringify(token)
+    );
   } catch {
     // Non-fatal — token still works in-memory if persistence fails.
   }

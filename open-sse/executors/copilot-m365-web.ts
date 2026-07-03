@@ -95,7 +95,9 @@ export class CopilotM365WebExecutor extends BaseExecutor {
             settled = true;
             cleanup();
             const message = sanitizeErrorMessage(reason);
-            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ error: { message } })}\n\n`));
+            controller.enqueue(
+              encoder.encode(`data: ${JSON.stringify({ error: { message } })}\n\n`)
+            );
             controller.close();
           };
 
@@ -108,7 +110,9 @@ export class CopilotM365WebExecutor extends BaseExecutor {
 
           try {
             const wsUrlParts = new URL(input.wsUrl);
-            const traceId = wsUrlParts.searchParams.get("clientrequestid") ?? crypto.randomUUID().replace(/-/g, "");
+            const traceId =
+              wsUrlParts.searchParams.get("clientrequestid") ??
+              crypto.randomUUID().replace(/-/g, "");
             const sessionId = wsUrlParts.searchParams.get("X-SessionId") ?? crypto.randomUUID();
 
             ws = new WebSocketCtor(input.wsUrl, {
@@ -234,7 +238,12 @@ export class CopilotM365WebExecutor extends BaseExecutor {
     const wsUrl = buildWsUrl(connectionParams);
 
     try {
-      const wsStream = await this.wsChat({ wsUrl, prompt, model, signal: input.signal ?? undefined });
+      const wsStream = await this.wsChat({
+        wsUrl,
+        prompt,
+        model,
+        signal: input.signal ?? undefined,
+      });
 
       if (stream) {
         return {

@@ -42,7 +42,10 @@ test("manual refresh route skips proactive refresh for the OpenAI Auth0 family B
   );
 
   const getAccessTokenIdx = src.indexOf("getAccessToken(");
-  assert.ok(getAccessTokenIdx >= 0, "refresh route still calls getAccessToken for non-rotating providers");
+  assert.ok(
+    getAccessTokenIdx >= 0,
+    "refresh route still calls getAccessToken for non-rotating providers"
+  );
 
   assert.ok(
     guardIdx < getAccessTokenIdx,

@@ -198,8 +198,9 @@ export class CursorCloudAgent extends CloudAgentBase {
         const name = (repo.name as string) || url.split("/").slice(-2).join("/");
         return { name, url };
       })
-      .filter((entry: { name: string; url: string } | null): entry is { name: string; url: string } =>
-        entry !== null
+      .filter(
+        (entry: { name: string; url: string } | null): entry is { name: string; url: string } =>
+          entry !== null
       );
   }
 }

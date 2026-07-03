@@ -68,7 +68,9 @@ export function getPluginMetrics(pluginName?: string): PluginMetricRow[] {
   try {
     const db = getDbInstance();
     const rows = pluginName
-      ? db.prepare("SELECT * FROM plugin_metrics WHERE plugin_name = ? ORDER BY event").all(pluginName)
+      ? db
+          .prepare("SELECT * FROM plugin_metrics WHERE plugin_name = ? ORDER BY event")
+          .all(pluginName)
       : db.prepare("SELECT * FROM plugin_metrics ORDER BY plugin_name, event").all();
     return (rows as Record<string, unknown>[]).map(rowToMetric);
   } catch {

@@ -1,9 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-const { openaiResponsesToOpenAIRequest } = await import(
-  "../../open-sse/translator/request/openai-responses.ts"
-);
+const { openaiResponsesToOpenAIRequest } =
+  await import("../../open-sse/translator/request/openai-responses.ts");
 
 // Regression: upstream 9router#419
 // When a client (e.g. Fabric-AI) POSTs /v1/responses with input:[] (empty array), the

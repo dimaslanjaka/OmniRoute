@@ -15,11 +15,7 @@ import {
 } from "@/shared/utils/modelCatalogSearch";
 import { resolveManagedModelAlias } from "@/shared/utils/providerModelAliases";
 import { useNotificationStore } from "@/store/notificationStore";
-import {
-  buildCompatMap,
-  providerText,
-  type CompatModelRow,
-} from "../providerPageHelpers";
+import { buildCompatMap, providerText, type CompatModelRow } from "../providerPageHelpers";
 import { ModelVisibilityToolbar } from "./ModelRow";
 import { sortModelsFreeFirst, isFreeModel } from "@/shared/utils/freeModels";
 import PassthroughModelRow, { type PassthroughModelRowProps } from "./PassthroughModelRow";
@@ -57,10 +53,7 @@ export interface CompatibleModelsSectionProps {
   effectiveModelNormalize: (alias: string) => boolean;
   effectiveModelPreserveDeveloper: (alias: string) => boolean;
   getUpstreamHeadersRecord: (modelId: string, protocol: string) => Record<string, string>;
-  saveModelCompatFlags: (
-    modelId: string,
-    flags: CompatibleModelsSaveFlags
-  ) => Promise<void>;
+  saveModelCompatFlags: (modelId: string, flags: CompatibleModelsSaveFlags) => Promise<void>;
   compatSavingModelId?: string;
   onModelsChanged?: () => void;
   isModelHidden: (modelId: string) => boolean;

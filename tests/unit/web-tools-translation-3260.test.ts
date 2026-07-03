@@ -7,9 +7,7 @@ import { parseToolCallsFromText } from "../../open-sse/translator/webTools.ts";
 // canonical `<tool>{json}</tool>`. The parser must read the REAL tool name from the JSON
 // body, never from the tag's `name="..."` attribute, and must not silently drop the call.
 
-const OPENCODE_TOOL = [
-  { type: "function", function: { name: "customize-opencode" } },
-];
+const OPENCODE_TOOL = [{ type: "function", function: { name: "customize-opencode" } }];
 
 const WEATHER_TOOL = [
   {
@@ -30,7 +28,7 @@ describe("webTools — parseToolCallsFromText <tool_call name=...> wrapper (#326
     assert.equal(
       toolCalls[0].function.name,
       "customize-opencode",
-      "name must come from the JSON body, not the tag attribute (\"skill\")"
+      'name must come from the JSON body, not the tag attribute ("skill")'
     );
     assert.equal(toolCalls[0].function.arguments, "{}", "missing arguments default to {}");
     assert.ok(!content.includes("<tool_call"), "the wrapper must be stripped from content");

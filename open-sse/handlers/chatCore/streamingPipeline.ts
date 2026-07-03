@@ -77,7 +77,9 @@ export function assembleStreamingPipeline(
   }
 
   if (progressEnabled) {
-    const progressTransform = deps.createProgressTransform({ signal: args.streamController.signal });
+    const progressTransform = deps.createProgressTransform({
+      signal: args.streamController.signal,
+    });
     // Chain: provider → transform → progress → client
     finalStream = piiStream.pipeThrough(progressTransform);
     args.responseHeaders[OMNIROUTE_RESPONSE_HEADERS.progress] = "enabled";

@@ -17,9 +17,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-const { injectCustomSystemPrompt } = await import(
-  "../../open-sse/services/systemPrompt.ts"
-);
+const { injectCustomSystemPrompt } = await import("../../open-sse/services/systemPrompt.ts");
 
 // ─── injectCustomSystemPrompt ────────────────────────────────────────────────
 
@@ -144,11 +142,7 @@ test("settings defaults include customSystemPromptEnabled=false and customSystem
     false,
     "customSystemPromptEnabled default is false"
   );
-  assert.equal(
-    settings.customSystemPrompt,
-    "",
-    "customSystemPrompt default is empty string"
-  );
+  assert.equal(settings.customSystemPrompt, "", "customSystemPrompt default is empty string");
 
   t.after(() => {
     resetDbInstance();

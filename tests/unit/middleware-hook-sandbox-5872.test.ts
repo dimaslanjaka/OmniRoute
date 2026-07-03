@@ -20,7 +20,9 @@ import {
 } from "../../src/lib/middleware/registry.ts";
 import { HookPriority, type HookConfig } from "../../src/lib/middleware/types.ts";
 
-function baseConfig(overrides: Partial<HookConfig> & Pick<HookConfig, "name" | "code">): HookConfig {
+function baseConfig(
+  overrides: Partial<HookConfig> & Pick<HookConfig, "name" | "code">
+): HookConfig {
   return {
     description: "test hook",
     priority: HookPriority.NORMAL,

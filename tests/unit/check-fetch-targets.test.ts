@@ -37,10 +37,7 @@ test("strips query string before resolving", () => {
 // ─── subcheck 1: static preferred over dynamic (expanded scope support) ──────
 
 test("resolveApiPathToRouteFile prefers static route over dynamic", () => {
-  const files = new Set([
-    "src/app/api/combos/[id]/route.ts",
-    "src/app/api/combos/test/route.ts",
-  ]);
+  const files = new Set(["src/app/api/combos/[id]/route.ts", "src/app/api/combos/test/route.ts"]);
   const rf = resolveApiPathToRouteFile("/api/combos/test", files);
   assert.equal(rf, "src/app/api/combos/test/route.ts");
 });

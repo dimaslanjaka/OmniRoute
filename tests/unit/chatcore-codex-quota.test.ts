@@ -27,11 +27,21 @@ function quotaHeaders(over: Record<string, string> = {}) {
 
 test("returns null when the response carries no codex quota headers", () => {
   assert.equal(
-    buildCodexQuotaPersistence({ headers: {}, existingProviderData: {}, modelForScope: MODEL, status: 200 }),
+    buildCodexQuotaPersistence({
+      headers: {},
+      existingProviderData: {},
+      modelForScope: MODEL,
+      status: 200,
+    }),
     null
   );
   assert.equal(
-    buildCodexQuotaPersistence({ headers: { "content-type": "application/json" }, existingProviderData: {}, modelForScope: MODEL, status: 200 }),
+    buildCodexQuotaPersistence({
+      headers: { "content-type": "application/json" },
+      existingProviderData: {},
+      modelForScope: MODEL,
+      status: 200,
+    }),
     null
   );
 });
@@ -81,7 +91,9 @@ test("429 with a near-exhausted 5h window records the per-scope cooldown + windo
 test("429 merges into an existing codexScopeRateLimitedUntil map without dropping other scopes", () => {
   const built = buildCodexQuotaPersistence({
     headers: quotaHeaders({ "x-codex-5h-usage": "100" }),
-    existingProviderData: { codexScopeRateLimitedUntil: { "other-scope": "2999-12-31T00:00:00.000Z" } },
+    existingProviderData: {
+      codexScopeRateLimitedUntil: { "other-scope": "2999-12-31T00:00:00.000Z" },
+    },
     modelForScope: MODEL,
     status: 429,
   });

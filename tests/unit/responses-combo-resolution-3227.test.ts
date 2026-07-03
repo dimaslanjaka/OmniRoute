@@ -39,7 +39,11 @@ test("a bare ChatGPT model id is still codex-preferred (Codex CLI WS→HTTP fall
 });
 
 test("provider-prefixed ids pass through unchanged", async () => {
-  const out = await resolveResponsesApiModel("anthropic/claude-opus-4-8", resolver, async () => false);
+  const out = await resolveResponsesApiModel(
+    "anthropic/claude-opus-4-8",
+    resolver,
+    async () => false
+  );
   assert.equal(out.changed, false);
   assert.equal(out.model, "anthropic/claude-opus-4-8");
 });

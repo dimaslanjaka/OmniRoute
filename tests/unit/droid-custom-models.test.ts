@@ -12,17 +12,16 @@ test("normalizeDroidModelList accepts legacy single `model` string", () => {
 });
 
 test("normalizeDroidModelList accepts `models` array (upstream #618)", () => {
-  assert.deepEqual(
-    normalizeDroidModelList({ models: ["openai/gpt-5", "anthropic/claude-4"] }),
-    ["openai/gpt-5", "anthropic/claude-4"]
-  );
+  assert.deepEqual(normalizeDroidModelList({ models: ["openai/gpt-5", "anthropic/claude-4"] }), [
+    "openai/gpt-5",
+    "anthropic/claude-4",
+  ]);
 });
 
 test("normalizeDroidModelList prefers `models` over legacy `model`", () => {
-  assert.deepEqual(
-    normalizeDroidModelList({ model: "legacy/old", models: ["openai/gpt-5"] }),
-    ["openai/gpt-5"]
-  );
+  assert.deepEqual(normalizeDroidModelList({ model: "legacy/old", models: ["openai/gpt-5"] }), [
+    "openai/gpt-5",
+  ]);
 });
 
 test("normalizeDroidModelList trims and dedupes, drops empty/non-string", () => {

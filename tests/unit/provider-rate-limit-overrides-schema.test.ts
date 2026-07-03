@@ -13,7 +13,13 @@ function parse(overrides: unknown) {
 test("rateLimitOverrides: valid object with all fields", () => {
   const r = parse({ rpm: 100, tpm: 50000, tpd: 1000000, minTime: 100, maxConcurrent: 5 });
   assert.ok(r.success, String(r.error));
-  assert.deepEqual(r.data.rateLimitOverrides, { rpm: 100, tpm: 50000, tpd: 1000000, minTime: 100, maxConcurrent: 5 });
+  assert.deepEqual(r.data.rateLimitOverrides, {
+    rpm: 100,
+    tpm: 50000,
+    tpd: 1000000,
+    minTime: 100,
+    maxConcurrent: 5,
+  });
 });
 
 test("rateLimitOverrides: partial fields", () => {

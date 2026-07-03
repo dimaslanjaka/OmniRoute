@@ -16,7 +16,9 @@ describe("systemTransforms", () => {
     it("setSystemTransformsConfig updates config", () => {
       mod.resetSystemTransformsConfig();
       const before = mod.getSystemTransformsConfig();
-      mod.setSystemTransformsConfig({ providers: { testProvider: { enabled: true, pipeline: [] } } });
+      mod.setSystemTransformsConfig({
+        providers: { testProvider: { enabled: true, pipeline: [] } },
+      });
       const after = mod.getSystemTransformsConfig();
       assert.notEqual(after.providers.testProvider, undefined);
       mod.resetSystemTransformsConfig();

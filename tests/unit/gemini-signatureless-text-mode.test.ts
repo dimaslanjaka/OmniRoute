@@ -15,9 +15,8 @@ import assert from "node:assert/strict";
 // and "native" mode emits a native functionCall with no fake signature. The
 // Antigravity/CLI bypass path is the only one that injects the
 // skip_thought_signature_validator sentinel.
-const { openaiToGeminiRequest } = await import(
-  "../../open-sse/translator/request/openai-to-gemini.ts"
-);
+const { openaiToGeminiRequest } =
+  await import("../../open-sse/translator/request/openai-to-gemini.ts");
 
 const MESSAGES = [
   { role: "user", content: "list files" },

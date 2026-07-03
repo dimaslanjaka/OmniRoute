@@ -59,7 +59,11 @@ test("#5083 fix does NOT introduce a global Next.js middleware", () => {
   } catch {
     exists = false;
   }
-  assert.equal(exists, false, "src/middleware.ts must not exist (no global middleware — see CLAUDE.md)");
+  assert.equal(
+    exists,
+    false,
+    "src/middleware.ts must not exist (no global middleware — see CLAUDE.md)"
+  );
 });
 
 test("#5083 baseline security directives remain intact in the CSP", () => {

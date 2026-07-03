@@ -100,9 +100,6 @@ describe("RTK file-read tool result — #4559 no over-truncation", () => {
       config: { maxLinesPerResult: 120, maxCharsPerResult: 12000 },
     });
 
-    assert.ok(
-      result.compressed,
-      "repetitive npm install output should still be compressed"
-    );
+    assert.ok(result.compressed, "repetitive npm install output should still be compressed");
   });
 });

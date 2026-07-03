@@ -89,9 +89,7 @@ describe("RTK — Anthropic-shape tool_result blocks", () => {
   });
 
   it("compresses an array-content tool_result (nested text blocks)", () => {
-    const result = applyRtkCompression(
-      anthropicBody([{ type: "text", text: GIT_STATUS_OUTPUT }])
-    );
+    const result = applyRtkCompression(anthropicBody([{ type: "text", text: GIT_STATUS_OUTPUT }]));
 
     assert.equal(result.compressed, true);
     const messages = result.body.messages as Array<{ role: string; content: unknown }>;

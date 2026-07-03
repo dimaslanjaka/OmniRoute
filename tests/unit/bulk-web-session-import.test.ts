@@ -149,24 +149,12 @@ describe("web-session credential helpers", () => {
       }),
       true
     );
-    assert.equal(
-      hasUsableWebSessionCredential("chatgpt-web", { cookie: "" }),
-      false
-    );
-    assert.equal(
-      hasUsableWebSessionCredential("chatgpt-web", {}),
-      false
-    );
+    assert.equal(hasUsableWebSessionCredential("chatgpt-web", { cookie: "" }), false);
+    assert.equal(hasUsableWebSessionCredential("chatgpt-web", {}), false);
   });
 
   it("hasUsableWebSessionCredential validates token data correctly", () => {
-    assert.equal(
-      hasUsableWebSessionCredential("deepseek-web", { token: "my-token" }),
-      true
-    );
-    assert.equal(
-      hasUsableWebSessionCredential("deepseek-web", { token: "   " }),
-      false
-    );
+    assert.equal(hasUsableWebSessionCredential("deepseek-web", { token: "my-token" }), true);
+    assert.equal(hasUsableWebSessionCredential("deepseek-web", { token: "   " }), false);
   });
 });

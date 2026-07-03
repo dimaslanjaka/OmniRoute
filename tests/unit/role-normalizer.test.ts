@@ -110,9 +110,7 @@ test("normalizeSystemRole still strips the system role for pre-5.1 GLM and bare 
     { role: "system", content: "policy" },
     { role: "user", content: "ok" },
   ];
-  const merged = [
-    { role: "user", content: "[System Instructions]\npolicy\n\n[User Message]\nok" },
-  ];
+  const merged = [{ role: "user", content: "[System Instructions]\npolicy\n\n[User Message]\nok" }];
   for (const model of ["glm", "glm-4.7", "glm-5", "glm-5-turbo", "glm-5.0", "glm-5.0-turbo"]) {
     assert.deepEqual(
       normalizeSystemRole(messages, "openai", model),

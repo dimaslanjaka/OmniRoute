@@ -12,11 +12,7 @@ const DEFAULT_IDEMPOTENT_METHODS = ["GET", "HEAD", "OPTIONS", "PUT", "DELETE"];
 
 export type SafeOutboundFetchGuard = OutboundUrlGuardMode;
 export type SafeOutboundFetchErrorCode =
-  | "INVALID_URL"
-  | "URL_GUARD_BLOCKED"
-  | "TIMEOUT"
-  | "REDIRECT_BLOCKED"
-  | "NETWORK_ERROR";
+  "INVALID_URL" | "URL_GUARD_BLOCKED" | "TIMEOUT" | "REDIRECT_BLOCKED" | "NETWORK_ERROR";
 
 export interface SafeOutboundFetchRetryOptions {
   attempts?: number;

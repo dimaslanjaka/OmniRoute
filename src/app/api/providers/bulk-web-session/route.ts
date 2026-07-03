@@ -59,10 +59,7 @@ export async function POST(request: Request) {
   for (let i = 0; i < entries.length; i++) {
     const entry = entries[i];
     try {
-      const providerSpecificData = buildProviderSpecificData(
-        requirement,
-        entry.credential
-      );
+      const providerSpecificData = buildProviderSpecificData(requirement, entry.credential);
 
       if (!hasUsableWebSessionCredential(provider, providerSpecificData)) {
         throw new Error(

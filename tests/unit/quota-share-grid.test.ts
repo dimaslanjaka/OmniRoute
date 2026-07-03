@@ -5,8 +5,13 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 test("pool list uses a responsive multi-column grid", () => {
-  const p = join(fileURLToPath(import.meta.url), "..", "..", "..",
-    "src/app/(dashboard)/dashboard/costs/quota-share/QuotaSharePageClient.tsx");
+  const p = join(
+    fileURLToPath(import.meta.url),
+    "..",
+    "..",
+    "..",
+    "src/app/(dashboard)/dashboard/costs/quota-share/QuotaSharePageClient.tsx"
+  );
   const src = readFileSync(p, "utf8");
   // Pool cards render in a responsive grid that scales 1 → 2 → 3 columns
   // (feat 3c8e84d70: "3-col cards"). Keep this aligned with the component.

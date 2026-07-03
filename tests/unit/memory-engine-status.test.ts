@@ -153,11 +153,7 @@ test("engineStatus(): detail strings are English, not mixed Portuguese (#5596)",
     "degradado",
     "selecionado",
   ];
-  for (const reason of [
-    status.embedding.reason,
-    status.vectorStore.reason,
-    status.rerank.reason,
-  ]) {
+  for (const reason of [status.embedding.reason, status.vectorStore.reason, status.rerank.reason]) {
     for (const w of ptWords) {
       assert.ok(!reason.includes(w), `reason "${reason}" still contains Portuguese "${w}"`);
     }

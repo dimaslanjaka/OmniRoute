@@ -1,6 +1,10 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { resolveCrushTarget, buildCrushProvider, mergeCrushConfig } from "../../../bin/cli/commands/setup-crush.mjs";
+import {
+  resolveCrushTarget,
+  buildCrushProvider,
+  mergeCrushConfig,
+} from "../../../bin/cli/commands/setup-crush.mjs";
 
 test("resolveCrushTarget ensures /v1", () => {
   assert.equal(resolveCrushTarget({ remote: "http://vps:20128" }).baseUrl, "http://vps:20128/v1");
@@ -18,7 +22,10 @@ test("buildCrushProvider emits openai-compat + env-ref key + curated models w/ c
   assert.ok(p.models[0].context_window > 0);
 });
 test("mergeCrushConfig adds providers.omniroute, preserves the rest", () => {
-  const m = mergeCrushConfig({ options: { tui: true }, providers: { local: {} } }, buildCrushProvider(["glm/glm-5.2"], "http://x/v1"));
+  const m = mergeCrushConfig(
+    { options: { tui: true }, providers: { local: {} } },
+    buildCrushProvider(["glm/glm-5.2"], "http://x/v1")
+  );
   assert.deepEqual(m.options, { tui: true });
   assert.ok(m.providers.local);
   assert.ok(m.providers.omniroute);

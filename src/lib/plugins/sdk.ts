@@ -7,12 +7,7 @@
  * @module plugins/sdk
  */
 
-import type {
-  Plugin,
-  PluginContext,
-  PluginResult,
-  BlockingHookResult,
-} from "./hooks.ts";
+import type { Plugin, PluginContext, PluginResult, BlockingHookResult } from "./hooks.ts";
 
 export type { Plugin, PluginContext, PluginResult, BlockingHookResult };
 

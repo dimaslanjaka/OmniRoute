@@ -53,7 +53,7 @@ describe("payloadRules", () => {
     it("filters out invalid mutation rules", () => {
       const input = {
         default: [
-          { models: [], params: {} },  // empty models → filtered
+          { models: [], params: {} }, // empty models → filtered
           { models: [{ name: "valid" }], params: { k: "v" } },
         ],
       };

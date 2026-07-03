@@ -28,12 +28,16 @@ test("scanOpenAiSseText detects the terminal [DONE] marker", () => {
 });
 
 test("scanOpenAiSseText detects a finish_reason as terminal", () => {
-  const r = scanOpenAiSseText('data: {"choices":[{"delta":{"content":"x"},"finish_reason":"stop"}]}\n\n');
+  const r = scanOpenAiSseText(
+    'data: {"choices":[{"delta":{"content":"x"},"finish_reason":"stop"}]}\n\n'
+  );
   assert.equal(r.terminal, true);
 });
 
 test("scanOpenAiSseText flags tool_call deltas (never continue those)", () => {
-  const r = scanOpenAiSseText('data: {"choices":[{"delta":{"tool_calls":[{"index":0,"function":{"name":"f"}}]}}]}\n\n');
+  const r = scanOpenAiSseText(
+    'data: {"choices":[{"delta":{"tool_calls":[{"index":0,"function":{"name":"f"}}]}}]}\n\n'
+  );
   assert.equal(r.sawToolCall, true);
 });
 
@@ -42,7 +46,11 @@ test("scanOpenAiSseText reports non-OpenAI bodies as not parsed (e.g. Anthropic 
     "event: content_block_delta\n" +
     'data: {"type":"content_block_delta","delta":{"type":"text_delta","text":"hi"}}\n\n';
   const r = scanOpenAiSseText(anthropic);
-  assert.equal(r.parsedOpenAi, false, "Anthropic format yields no OpenAI delta → not continuable here");
+  assert.equal(
+    r.parsedOpenAi,
+    false,
+    "Anthropic format yields no OpenAI delta → not continuable here"
+  );
   assert.equal(r.text, "");
 });
 

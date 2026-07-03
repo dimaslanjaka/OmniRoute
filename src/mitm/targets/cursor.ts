@@ -27,7 +27,6 @@ export const CURSOR_TARGET: MitmTarget = {
     ],
     detection: { command: "which cursor", platform: "all" },
   },
-  handler: () =>
-    import("../handlers/cursor").then((m) => ({ default: m.CursorHandler })),
+  handler: () => import("../handlers/cursor").then((m) => ({ default: m.CursorHandler })),
   riskNoticeKey: "providers.riskNotice.oauth",
 };

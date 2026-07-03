@@ -1,9 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-const { estimateSizeFast, isSmallEnoughForSemanticCache } = await import(
-  "../../open-sse/utils/estimateSize.ts"
-);
+const { estimateSizeFast, isSmallEnoughForSemanticCache } =
+  await import("../../open-sse/utils/estimateSize.ts");
 
 test("estimateSizeFast returns 0 for null/undefined", () => {
   assert.equal(estimateSizeFast(null), 0);

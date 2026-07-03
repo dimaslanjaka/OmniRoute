@@ -1,15 +1,11 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-const { resolveAutoUpdateMode, isUnderNodeModules } = await import(
-  "../../src/lib/system/autoUpdate.ts"
-);
+const { resolveAutoUpdateMode, isUnderNodeModules } =
+  await import("../../src/lib/system/autoUpdate.ts");
 
 test("non-npm modes pass through untouched (operator choice wins)", () => {
-  assert.equal(
-    resolveAutoUpdateMode("source", { isGitRepo: false, currentDir: "/x" }),
-    "source"
-  );
+  assert.equal(resolveAutoUpdateMode("source", { isGitRepo: false, currentDir: "/x" }), "source");
   assert.equal(
     resolveAutoUpdateMode("docker-compose", {
       isGitRepo: true,

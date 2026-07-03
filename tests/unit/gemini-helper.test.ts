@@ -20,7 +20,7 @@ test("DEFAULT_SAFETY_SETTINGS is an array", () => {
 
 test("tryParseJSON parses valid JSON", () => {
   assert.deepEqual(gemini.tryParseJSON('{"a":1}'), { a: 1 });
-  assert.deepEqual(gemini.tryParseJSON('[1,2,3]'), [1, 2, 3]);
+  assert.deepEqual(gemini.tryParseJSON("[1,2,3]"), [1, 2, 3]);
   assert.equal(gemini.tryParseJSON('"hello"'), "hello");
   assert.equal(gemini.tryParseJSON("42"), 42);
   assert.equal(gemini.tryParseJSON("true"), true);

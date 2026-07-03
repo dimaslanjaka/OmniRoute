@@ -14,12 +14,8 @@ const {
   seedConnection,
   settingsDb,
 } = harness;
-const { preScreenTargets } = await import(
-  "../../open-sse/services/combo.ts"
-);
-const { getCircuitBreaker } = await import(
-  "../../src/shared/utils/circuitBreaker.ts"
-);
+const { preScreenTargets } = await import("../../open-sse/services/combo.ts");
+const { getCircuitBreaker } = await import("../../src/shared/utils/circuitBreaker.ts");
 
 test.beforeEach(async () => {
   await resetStorage();

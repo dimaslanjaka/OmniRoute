@@ -47,7 +47,9 @@ test("PollinationsExecutor enhances 401 errors for premium models with actionabl
   // Mock super.execute (BaseExecutor.prototype.execute) to throw a 401
   const origBaseExec = Object.getPrototypeOf(Object.getPrototypeOf(executor)).execute;
   Object.getPrototypeOf(Object.getPrototypeOf(executor)).execute = async function () {
-    const err = new Error("Authentication required. Please provide an API key via Authorization header (Bearer token) or ?key= query parameter.");
+    const err = new Error(
+      "Authentication required. Please provide an API key via Authorization header (Bearer token) or ?key= query parameter."
+    );
     (err as any).status = 401;
     throw err;
   };

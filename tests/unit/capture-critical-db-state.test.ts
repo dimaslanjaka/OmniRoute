@@ -80,9 +80,9 @@ test("getDbInstance creates tables from SCHEMA_SQL (proves initialization succee
     // The preservedCriticalState sentinel is captureSucceeded: true on fresh DB
     // (no existing file = no corruption path = initialized with default sentinel).
     // Verify this indirectly: the DB is fully functional and migrations ran.
-    const migrationCount = db
-      .prepare("SELECT COUNT(*) as c FROM _omniroute_migrations")
-      .get() as { c: number };
+    const migrationCount = db.prepare("SELECT COUNT(*) as c FROM _omniroute_migrations").get() as {
+      c: number;
+    };
     assert.ok(migrationCount.c >= 1, "at least one migration should be recorded");
   } finally {
     cleanup();

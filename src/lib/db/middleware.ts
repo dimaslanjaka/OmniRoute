@@ -89,8 +89,7 @@ export function getComboMiddlewareHooks(comboId: string): HookConfig[] {
 export function getMiddlewareHook(name: string): HookConfig | undefined {
   const db = getDbInstance() as any;
   const row = db.prepare("SELECT * FROM middleware_hooks WHERE name = ?").get(name) as
-    | HookConfigRow
-    | undefined;
+    HookConfigRow | undefined;
   return row ? rowToHookConfig(row) : undefined;
 }
 

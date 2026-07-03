@@ -11,11 +11,11 @@ import { ESLINT_ARGS } from "../../../scripts/check/check-complexity.mjs";
 test("check-complexity scans the full documented scope (src, open-sse, electron, bin)", () => {
   assert.ok(
     ESLINT_ARGS.includes("bin"),
-    "ESLINT_ARGS must include 'bin' — a new god-function under bin/ must not pass the gate green",
+    "ESLINT_ARGS must include 'bin' — a new god-function under bin/ must not pass the gate green"
   );
   assert.ok(
     ESLINT_ARGS.includes("electron"),
-    "ESLINT_ARGS must include 'electron' to match eslint.complexity.config.mjs `files` and the baseline scope",
+    "ESLINT_ARGS must include 'electron' to match eslint.complexity.config.mjs `files` and the baseline scope"
   );
   assert.ok(ESLINT_ARGS.includes("src"), "ESLINT_ARGS must include 'src'");
   assert.ok(ESLINT_ARGS.includes("open-sse"), "ESLINT_ARGS must include 'open-sse'");

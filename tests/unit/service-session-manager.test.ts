@@ -22,7 +22,10 @@ describe("sessionManager", () => {
     });
 
     it("returns a hex string for body with model", () => {
-      const id = mod.generateSessionId({ model: "gpt-4", messages: [{ role: "user", content: "hi" }] });
+      const id = mod.generateSessionId({
+        model: "gpt-4",
+        messages: [{ role: "user", content: "hi" }],
+      });
       assert.notEqual(id, null);
       assert.match(id!, /^[a-f0-9]+$/);
     });

@@ -369,7 +369,10 @@ export default function MemorySkillsTab() {
             role="note"
             data-testid="memory-token-cost-warning"
           >
-            <span className="material-symbols-outlined text-[18px] leading-none mt-0.5" aria-hidden="true">
+            <span
+              className="material-symbols-outlined text-[18px] leading-none mt-0.5"
+              aria-hidden="true"
+            >
               info
             </span>
             <p className="text-xs leading-relaxed">

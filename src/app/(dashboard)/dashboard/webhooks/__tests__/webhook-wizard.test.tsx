@@ -67,8 +67,7 @@ function t(key: string): string {
 function getButton(text: string): HTMLButtonElement | null {
   return (
     (Array.from(document.querySelectorAll("button")).find((b) => b.textContent?.includes(text)) as
-      | HTMLButtonElement
-      | undefined) ?? null
+      HTMLButtonElement | undefined) ?? null
   );
 }
 

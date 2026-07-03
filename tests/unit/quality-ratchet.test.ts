@@ -15,9 +15,13 @@ function run(baseline: unknown, metrics: unknown, extraArgs: string[] = []) {
   fs.writeFileSync(mPath, JSON.stringify(metrics));
   // spawnSync so we can always capture both stdout and stderr
   // (warnings via console.warn go to stderr; we need them in the `out` field).
-  const result = spawnSync("node", [SCRIPT, "--baseline", bPath, "--metrics", mPath, ...extraArgs], {
-    encoding: "utf8",
-  });
+  const result = spawnSync(
+    "node",
+    [SCRIPT, "--baseline", bPath, "--metrics", mPath, ...extraArgs],
+    {
+      encoding: "utf8",
+    }
+  );
   const code = result.status ?? 1;
   const out = (result.stdout || "") + (result.stderr || "");
   return { code, out, dir, bPath };

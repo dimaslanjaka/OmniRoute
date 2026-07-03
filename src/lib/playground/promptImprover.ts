@@ -87,7 +87,7 @@ export function buildImproveChatBody(req: ImprovePromptRequest): {
 export function parseImprovedContent(
   raw: string,
   hadSystem: boolean,
-  hadPrompt: boolean,
+  hadPrompt: boolean
 ): { improvedSystem?: string; improvedPrompt?: string } {
   const result: { improvedSystem?: string; improvedPrompt?: string } = {};
 

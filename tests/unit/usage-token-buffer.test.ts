@@ -153,7 +153,11 @@ test("invalidateBufferTokensCache — still resets to null (returns DEFAULT on n
 
   // Then invalidate — next sync call reverts to DEFAULT (2000) while async reload happens
   invalidateBufferTokensCache();
-  const afterInvalidate = addBufferToUsage({ prompt_tokens: 10, completion_tokens: 5, total_tokens: 15 });
+  const afterInvalidate = addBufferToUsage({
+    prompt_tokens: 10,
+    completion_tokens: 5,
+    total_tokens: 15,
+  });
   assert.equal(afterInvalidate.prompt_tokens, 2010); // DEFAULT=2000 applied (race window)
 
   resetEnv(saved);

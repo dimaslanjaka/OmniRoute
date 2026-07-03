@@ -19,7 +19,9 @@ function mount(ui: React.ReactElement): HTMLElement {
 }
 
 beforeEach(() => {
-  (globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
+  (
+    globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT?: boolean }
+  ).IS_REACT_ACT_ENVIRONMENT = true;
 });
 afterEach(async () => {
   await act(async () => {
@@ -31,12 +33,18 @@ afterEach(async () => {
 
 describe("RiskGateBadge", () => {
   it("renders the count + categories when spans were protected", () => {
-    const c = mount(<RiskGateBadge stats={{ spansProtected: 2, categories: { private_key: 1, secret_assignment: 1 } }} />);
+    const c = mount(
+      <RiskGateBadge
+        stats={{ spansProtected: 2, categories: { private_key: 1, secret_assignment: 1 } }}
+      />
+    );
     expect(c.textContent).toContain("2");
     expect(c.textContent).toContain("private_key");
   });
   it("renders nothing when no spans / no stats", () => {
     expect(mount(<RiskGateBadge stats={null} />).textContent).toBe("");
-    expect(mount(<RiskGateBadge stats={{ spansProtected: 0, categories: {} }} />).textContent).toBe("");
+    expect(mount(<RiskGateBadge stats={{ spansProtected: 0, categories: {} }} />).textContent).toBe(
+      ""
+    );
   });
 });

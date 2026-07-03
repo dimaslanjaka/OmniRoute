@@ -385,7 +385,7 @@ test("selectMessagesForSummary filters falsy values and preserves system/develop
     messages as contextHandoff.MessageLike[],
     2
   );
-  
+
   assert.equal(selected.length, 4);
   assert.equal(selected[0].role, "system");
   assert.equal(selected[1].role, "developer");

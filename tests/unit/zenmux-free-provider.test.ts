@@ -115,7 +115,7 @@ test("ZenmuxFreeExecutor returns 401 when ctoken is missing from cookies", async
   } as Parameters<typeof executor.execute>[0]);
   assert.ok(result.response instanceof Response);
   assert.equal(result.response.status, 401);
-  const body = await result.response.json() as Record<string, unknown>;
+  const body = (await result.response.json()) as Record<string, unknown>;
   const errMsg = (body?.error as Record<string, unknown>)?.message as string;
   assert.ok(errMsg && typeof errMsg === "string", "error.message must be present");
   assert.ok(errMsg.includes("ctoken"), "error must mention ctoken");
@@ -162,10 +162,7 @@ test("ZenmuxFreeExecutor injects Cookie header from credentials when ctoken is p
     const req = intercepted[0];
 
     // URL must include ctoken as query param
-    assert.ok(
-      req.url.includes("ctoken=my-ctoken-value"),
-      "ctoken must appear in the request URL"
-    );
+    assert.ok(req.url.includes("ctoken=my-ctoken-value"), "ctoken must appear in the request URL");
     // Cookie header must carry the full cookie string
     assert.ok(req.headers["cookie"], "Cookie header must be set");
     assert.ok(
@@ -200,7 +197,7 @@ test("ZenmuxFreeExecutor handles upstream 401 and returns clean error (not raw m
     } as Parameters<typeof executor.execute>[0]);
     assert.ok(result.response instanceof Response);
     assert.equal(result.response.status, 401);
-    const body = await result.response.json() as Record<string, unknown>;
+    const body = (await result.response.json()) as Record<string, unknown>;
     const errMsg = ((body?.error as Record<string, unknown>)?.message as string) || "";
     // Hard Rule #12 — no stack traces
     assert.ok(!errMsg.includes("at /"), "error must not contain stack trace path");

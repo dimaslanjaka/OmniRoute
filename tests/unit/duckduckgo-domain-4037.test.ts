@@ -23,7 +23,10 @@ describe("DuckDuckGo AI Chat domain consistency (#4037)", () => {
         STATUS_URL.startsWith(`${DUCKDUCKGO_BASE}/`),
         `STATUS_URL should start with ${DUCKDUCKGO_BASE}, got ${STATUS_URL}`
       );
-      assert.ok(!STATUS_URL.includes("duck.ai"), `STATUS_URL must not reference duck.ai: ${STATUS_URL}`);
+      assert.ok(
+        !STATUS_URL.includes("duck.ai"),
+        `STATUS_URL must not reference duck.ai: ${STATUS_URL}`
+      );
     });
 
     it("CHAT_URL uses duckduckgo.com", () => {
@@ -70,8 +73,7 @@ describe("DuckDuckGo AI Chat domain consistency (#4037)", () => {
     });
 
     it("still matches a 40-hex-tail token (backward compatible)", () => {
-      const fortyHexToken =
-        "serp_20260424_180649_ET-0bdc33b2a02ebf8f235def65d887787f694720a1";
+      const fortyHexToken = "serp_20260424_180649_ET-0bdc33b2a02ebf8f235def65d887787f694720a1";
       assert.equal(
         FE_VERSION_PATTERN.test(fortyHexToken),
         true,

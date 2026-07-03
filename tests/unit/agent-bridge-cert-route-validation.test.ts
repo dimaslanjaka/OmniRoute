@@ -7,9 +7,7 @@ import assert from "node:assert/strict";
 // safeParse. These tests pin that schema's contract so the route keeps both its
 // validation gate compliance and its lenient fallback behavior.
 
-const { CertTrustBodySchema } = await import(
-  "../../src/app/api/tools/agent-bridge/cert/route.ts"
-);
+const { CertTrustBodySchema } = await import("../../src/app/api/tools/agent-bridge/cert/route.ts");
 
 test("accepts a body with a string sudoPassword", () => {
   const parsed = CertTrustBodySchema.safeParse({ sudoPassword: "hunter2" });

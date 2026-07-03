@@ -34,16 +34,11 @@ export interface ComputeMetricsArgs {
 export function computeMetrics(args: ComputeMetricsArgs): StreamMetrics {
   const { startedAt, firstChunkAt, finishedAt, tokensIn, tokensOut, pricing } = args;
 
-  const ttftMs =
-    firstChunkAt != null && startedAt != null ? firstChunkAt - startedAt : null;
+  const ttftMs = firstChunkAt != null && startedAt != null ? firstChunkAt - startedAt : null;
 
-  const totalMs =
-    finishedAt != null && startedAt != null ? finishedAt - startedAt : null;
+  const totalMs = finishedAt != null && startedAt != null ? finishedAt - startedAt : null;
 
-  const tps =
-    totalMs != null && totalMs > 0 && tokensOut > 0
-      ? tokensOut / (totalMs / 1000)
-      : null;
+  const tps = totalMs != null && totalMs > 0 && tokensOut > 0 ? tokensOut / (totalMs / 1000) : null;
 
   const costUsd =
     pricing != null

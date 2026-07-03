@@ -9,9 +9,8 @@ import path from "node:path";
 const TEST_DATA_DIR = fs.mkdtempSync(path.join(os.tmpdir(), "omniroute-telemetry-"));
 process.env.DATA_DIR = TEST_DATA_DIR;
 
-const { forwardDashboardEventToLiveWs, maybeSyncClaudeExtraUsageState } = await import(
-  "../../open-sse/handlers/chatCore/telemetryHelpers.ts"
-);
+const { forwardDashboardEventToLiveWs, maybeSyncClaudeExtraUsageState } =
+  await import("../../open-sse/handlers/chatCore/telemetryHelpers.ts");
 const core = await import("../../src/lib/db/core.ts");
 
 const originalFetch = globalThis.fetch;

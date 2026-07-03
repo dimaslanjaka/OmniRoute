@@ -13,9 +13,8 @@ import assert from "node:assert/strict";
 //       NOT scanned (proves the bound is active and CPU is saved).
 // ─────────────────────────────────────────────────────────────────────
 
-const { detectInjection, MAX_INJECTION_SCAN_BYTES } = await import(
-  "../../src/shared/utils/inputSanitizer.ts"
-);
+const { detectInjection, MAX_INJECTION_SCAN_BYTES } =
+  await import("../../src/shared/utils/inputSanitizer.ts");
 const { evaluatePromptInjection } = await import("../../src/lib/guardrails/promptInjection.ts");
 
 // A real high-severity pattern from INJECTION_PATTERNS (system_override).

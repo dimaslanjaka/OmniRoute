@@ -14,9 +14,8 @@ vi.mock("next-intl", () => ({
   useTranslations: () => (key: string) => key,
 }));
 
-const { default: ComboDefaultsTab } = await import(
-  "../../../src/app/(dashboard)/dashboard/settings/components/ComboDefaultsTab"
-);
+const { default: ComboDefaultsTab } =
+  await import("../../../src/app/(dashboard)/dashboard/settings/components/ComboDefaultsTab");
 
 function okJson(data: unknown) {
   return Promise.resolve({ ok: true, json: () => Promise.resolve(data) } as Response);

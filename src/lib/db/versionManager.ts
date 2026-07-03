@@ -170,8 +170,7 @@ export async function getVersionManagerStatus(): Promise<VersionManagerTool[]> {
 export async function getVersionManagerTool(tool: string): Promise<VersionManagerTool | null> {
   const db = getDbInstance();
   const row = db.prepare("SELECT * FROM version_manager WHERE tool = ?").get(tool) as
-    | VersionManagerRow
-    | undefined;
+    VersionManagerRow | undefined;
   if (!row) return null;
   return rowToVersionManager(row);
 }

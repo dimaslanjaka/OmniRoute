@@ -28,7 +28,11 @@ test("acquireProviderDefaultSlot isolates connections of the same provider", () 
   __setProviderDefaultRateLimitsForTests({ p: { requests: 1, windowMs: 60000 } });
   try {
     assert.equal(acquireProviderDefaultSlot("p", "a"), 0);
-    assert.equal(acquireProviderDefaultSlot("p", "b"), 0, "a different connection has its own window");
+    assert.equal(
+      acquireProviderDefaultSlot("p", "b"),
+      0,
+      "a different connection has its own window"
+    );
     assert.ok(acquireProviderDefaultSlot("p", "a") > 0, "the first connection is now saturated");
   } finally {
     __setProviderDefaultRateLimitsForTests(null);

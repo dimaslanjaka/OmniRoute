@@ -19,7 +19,10 @@ test("#3516 detects the Playwright missing-executable launch error", () => {
 });
 
 test("#3516 detects the 'npx playwright install' guidance variant", () => {
-  assert.equal(isMissingBrowserExecutable("Please run the following command: npx playwright install"), true);
+  assert.equal(
+    isMissingBrowserExecutable("Please run the following command: npx playwright install"),
+    true
+  );
 });
 
 test("#3516 does NOT classify a normal upstream/network error as missing-executable", () => {

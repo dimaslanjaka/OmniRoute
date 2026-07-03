@@ -12,9 +12,8 @@ import assert from "node:assert/strict";
 // still fell through the catch-all and produced `name: ""`.)
 // Fix: skip any Responses tool that reaches the catch-all without a non-empty
 // string name; named tools are unaffected.
-const { openaiResponsesToOpenAIRequest } = await import(
-  "../../open-sse/translator/request/openai-responses.ts"
-);
+const { openaiResponsesToOpenAIRequest } =
+  await import("../../open-sse/translator/request/openai-responses.ts");
 
 test("#222: a Responses tool reaching the catch-all without a name is dropped, not emitted nameless", () => {
   const body = {

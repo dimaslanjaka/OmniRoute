@@ -168,11 +168,7 @@ function handleHttp(req: http.IncomingMessage, res: http.ServerResponse): void {
   })();
 }
 
-function handleConnect(
-  req: http.IncomingMessage,
-  clientSocket: net.Socket,
-  head: Buffer
-): void {
+function handleConnect(req: http.IncomingMessage, clientSocket: net.Socket, head: Buffer): void {
   const target = req.url ?? "";
   const [host, rawPort] = target.split(":");
   const port = Number(rawPort) || 443;

@@ -15,9 +15,7 @@ function jsonChunks(payloads: unknown[]): SseEvent[] {
 }
 
 test("detectApiFormat — message_start → anthropic", () => {
-  const chunks = jsonChunks([
-    { type: "message_start", message: { id: "msg_1" } },
-  ]);
+  const chunks = jsonChunks([{ type: "message_start", message: { id: "msg_1" } }]);
   assert.equal(detectApiFormat(chunks), "anthropic");
 });
 
@@ -29,16 +27,12 @@ test("detectApiFormat — content_block_delta → anthropic", () => {
 });
 
 test("detectApiFormat — choices[].delta → openai", () => {
-  const chunks = jsonChunks([
-    { choices: [{ index: 0, delta: { content: "Hi" } }] },
-  ]);
+  const chunks = jsonChunks([{ choices: [{ index: 0, delta: { content: "Hi" } }] }]);
   assert.equal(detectApiFormat(chunks), "openai");
 });
 
 test("detectApiFormat — candidates → gemini", () => {
-  const chunks = jsonChunks([
-    { candidates: [{ content: { parts: [{ text: "Hello" }] } }] },
-  ]);
+  const chunks = jsonChunks([{ candidates: [{ content: { parts: [{ text: "Hello" }] } }] }]);
   assert.equal(detectApiFormat(chunks), "gemini");
 });
 
@@ -57,7 +51,11 @@ test("rebuildAnthropic — concat text_delta by index", () => {
   ]);
   const merged = rebuildAnthropic(chunks);
   assert.equal(merged.format, "anthropic");
-  const msg = merged.message as { content: Array<{ text: string }>; stop_reason: string; usage: { output_tokens: number } };
+  const msg = merged.message as {
+    content: Array<{ text: string }>;
+    stop_reason: string;
+    usage: { output_tokens: number };
+  };
   assert.equal(msg.content[0].text, "Hello world");
   assert.equal(msg.stop_reason, "end_turn");
   assert.equal(msg.usage.output_tokens, 7);
@@ -71,12 +69,22 @@ test("rebuildAnthropic — input_json_delta merges and JSON.parses", () => {
       index: 0,
       content_block: { type: "tool_use", id: "tu_1", name: "search" },
     },
-    { type: "content_block_delta", index: 0, delta: { type: "input_json_delta", partial_json: '{"q":' } },
-    { type: "content_block_delta", index: 0, delta: { type: "input_json_delta", partial_json: '"hi"}' } },
+    {
+      type: "content_block_delta",
+      index: 0,
+      delta: { type: "input_json_delta", partial_json: '{"q":' },
+    },
+    {
+      type: "content_block_delta",
+      index: 0,
+      delta: { type: "input_json_delta", partial_json: '"hi"}' },
+    },
     { type: "content_block_stop", index: 0 },
   ]);
   const merged = rebuildAnthropic(chunks);
-  const msg = merged.message as { content: Array<{ type: string; input: { q: string }; name: string }> };
+  const msg = merged.message as {
+    content: Array<{ type: string; input: { q: string }; name: string }>;
+  };
   assert.equal(msg.content[0].type, "tool_use");
   assert.equal(msg.content[0].name, "search");
   assert.deepEqual(msg.content[0].input, { q: "hi" });
@@ -86,7 +94,11 @@ test("rebuildAnthropic — thinking_delta accumulates", () => {
   const chunks = jsonChunks([
     { type: "content_block_start", index: 0, content_block: { type: "thinking" } },
     { type: "content_block_delta", index: 0, delta: { type: "thinking_delta", thinking: "I am " } },
-    { type: "content_block_delta", index: 0, delta: { type: "thinking_delta", thinking: "thinking..." } },
+    {
+      type: "content_block_delta",
+      index: 0,
+      delta: { type: "thinking_delta", thinking: "thinking..." },
+    },
   ]);
   const merged = rebuildAnthropic(chunks);
   const msg = merged.message as { content: Array<{ thinking: string }> };
@@ -95,7 +107,11 @@ test("rebuildAnthropic — thinking_delta accumulates", () => {
 
 test("rebuildOpenAI — concat delta.content per choice index", () => {
   const chunks = jsonChunks([
-    { id: "c1", model: "gpt-4", choices: [{ index: 0, delta: { role: "assistant", content: "Hel" } }] },
+    {
+      id: "c1",
+      model: "gpt-4",
+      choices: [{ index: 0, delta: { role: "assistant", content: "Hel" } }],
+    },
     { choices: [{ index: 0, delta: { content: "lo" }, finish_reason: null }] },
     { choices: [{ index: 0, delta: {}, finish_reason: "stop" }] },
     { usage: { prompt_tokens: 3, completion_tokens: 1 } },
@@ -123,7 +139,14 @@ test("rebuildOpenAI — merges tool_calls per (choice, tool) index", () => {
         {
           index: 0,
           delta: {
-            tool_calls: [{ index: 0, id: "tc_1", type: "function", function: { name: "search", arguments: '{"q":' } }],
+            tool_calls: [
+              {
+                index: 0,
+                id: "tc_1",
+                type: "function",
+                function: { name: "search", arguments: '{"q":' },
+              },
+            ],
           },
         },
       ],
@@ -171,10 +194,7 @@ test("rebuildGemini — merges parts across candidates", () => {
 });
 
 test("mergeStream — unknown format returns raw fallback (no crash)", () => {
-  const chunks: SseEvent[] = [
-    { data: "garbage" },
-    { data: "{}", json: { foo: 1 } },
-  ];
+  const chunks: SseEvent[] = [{ data: "garbage" }, { data: "{}", json: { foo: 1 } }];
   const merged = mergeStream(chunks);
   assert.equal(merged.format, "unknown");
   assert.ok(Array.isArray(merged.raw));
@@ -182,10 +202,7 @@ test("mergeStream — unknown format returns raw fallback (no crash)", () => {
 });
 
 test("parseSseStream — parses event/data blocks separated by blank lines", () => {
-  const raw =
-    "event: foo\ndata: 1\n\n" +
-    'data: {"x":1}\n\n' +
-    "data: [DONE]\n\n";
+  const raw = "event: foo\ndata: 1\n\n" + 'data: {"x":1}\n\n' + "data: [DONE]\n\n";
   const events = parseSseStream(raw);
   assert.equal(events.length, 3);
   assert.equal(events[0].event, "foo");

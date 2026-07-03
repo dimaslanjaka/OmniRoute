@@ -13,9 +13,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import {
-  makeManagementSessionRequest,
-} from "../helpers/managementSession.ts";
+import { makeManagementSessionRequest } from "../helpers/managementSession.ts";
 
 const TEST_DATA_DIR = fs.mkdtempSync(path.join(os.tmpdir(), "omniroute-reindex-"));
 process.env.DATA_DIR = TEST_DATA_DIR;
@@ -25,9 +23,7 @@ const core = await import("../../src/lib/db/core.ts");
 const localDb = await import("../../src/lib/localDb.ts");
 const memoryStore = await import("../../src/lib/memory/store.ts");
 
-const reindexRoute = await import(
-  "../../src/app/api/memory/reindex/route.ts"
-);
+const reindexRoute = await import("../../src/app/api/memory/reindex/route.ts");
 const { POST } = reindexRoute;
 
 // ── Helpers ──

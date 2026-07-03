@@ -18,9 +18,17 @@ test("agent-bridge: sanitized targets (no handler) are fully serializable for Cl
   assert.ok(views.length > 0, "expected at least one MITM target");
   for (const v of views) {
     const id = (v as { id?: string }).id ?? "<unknown>";
-    assert.equal("handler" in v, false, `${id}: handler must be stripped before crossing to a Client Component`);
+    assert.equal(
+      "handler" in v,
+      false,
+      `${id}: handler must be stripped before crossing to a Client Component`
+    );
     for (const [key, value] of Object.entries(v)) {
-      assert.notEqual(typeof value, "function", `${id}.${key} must not be a function (non-serializable)`);
+      assert.notEqual(
+        typeof value,
+        "function",
+        `${id}.${key} must not be a function (non-serializable)`
+      );
     }
     assert.doesNotThrow(() => JSON.parse(JSON.stringify(v)), `${id} must be JSON-serializable`);
   }

@@ -42,7 +42,10 @@ function rowToEntry(row: Record<string, unknown>): ModelIntelligenceEntry {
 
 // ──────────────── CRUD ────────────────
 
-export function getModelIntelligence(model: string, category: string): ModelIntelligenceEntry | null {
+export function getModelIntelligence(
+  model: string,
+  category: string
+): ModelIntelligenceEntry | null {
   const db = getDbInstance();
   const row = db
     .prepare(
@@ -119,17 +122,13 @@ export function deleteExpiredIntelligence(source?: string): number {
   }
 
   const where = conditions.join(" AND ");
-  const result = db
-    .prepare(`DELETE FROM model_intelligence WHERE ${where}`)
-    .run(...params);
+  const result = db.prepare(`DELETE FROM model_intelligence WHERE ${where}`).run(...params);
   return result.changes ?? 0;
 }
 
 export function deleteModelIntelligenceBySource(source: string): number {
   const db = getDbInstance();
-  const result = db
-    .prepare(`DELETE FROM model_intelligence WHERE source = ?`)
-    .run(source);
+  const result = db.prepare(`DELETE FROM model_intelligence WHERE source = ?`).run(source);
   return result.changes ?? 0;
 }
 
@@ -158,7 +157,9 @@ export function listModelIntelligence(filters?: {
   return rows.map(rowToEntry);
 }
 
-export function bulkUpsertModelIntelligence(entries: Array<Omit<ModelIntelligenceEntry, "syncedAt">>): number {
+export function bulkUpsertModelIntelligence(
+  entries: Array<Omit<ModelIntelligenceEntry, "syncedAt">>
+): number {
   if (entries.length === 0) return 0;
 
   const db = getDbInstance();
@@ -201,11 +202,7 @@ export function getResolvedTaskFitness(model: string, category: string): number 
  * @param category - Task category
  * @param score - Fitness score [0..1]
  */
-export function setUserFitnessOverrideEntry(
-  model: string,
-  category: string,
-  score: number,
-): void {
+export function setUserFitnessOverrideEntry(model: string, category: string, score: number): void {
   upsertModelIntelligence({
     model: model.toLowerCase(),
     source: "user_override",
@@ -224,9 +221,6 @@ export function setUserFitnessOverrideEntry(
  * @param category - Task category
  * @returns true if an entry was deleted
  */
-export function deleteUserFitnessOverrideEntry(
-  model: string,
-  category: string,
-): boolean {
+export function deleteUserFitnessOverrideEntry(model: string, category: string): boolean {
   return deleteModelIntelligence(model.toLowerCase(), "user_override", category.toLowerCase());
 }

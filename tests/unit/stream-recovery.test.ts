@@ -137,7 +137,7 @@ test("isRetryableStreamError: client aborts and unknown errors are NOT retryable
 test("hasTerminalMarker detects OpenAI and Anthropic stream terminators", () => {
   assert.equal(hasTerminalMarker(enc("data: {...}\n\ndata: [DONE]\n\n")), true);
   assert.equal(hasTerminalMarker(enc("event: message_stop\ndata: {}\n\n")), true);
-  assert.equal(hasTerminalMarker(enc("data: {\"choices\":[]}\n\n")), false);
+  assert.equal(hasTerminalMarker(enc('data: {"choices":[]}\n\n')), false);
   assert.equal(hasTerminalMarker(enc("")), false);
 });
 

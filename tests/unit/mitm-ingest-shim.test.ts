@@ -4,7 +4,11 @@ import { createRequire } from "node:module";
 import { InterceptedRequestSchema } from "@/mitm/inspector/types";
 
 const require = createRequire(import.meta.url);
-const { buildIngestEntry, postIngestEntry, INGEST_PATH } = require("../../src/mitm/_internal/ingest.cjs");
+const {
+  buildIngestEntry,
+  postIngestEntry,
+  INGEST_PATH,
+} = require("../../src/mitm/_internal/ingest.cjs");
 
 test("buildIngestEntry produces a schema-valid agent-bridge entry", () => {
   const entry = buildIngestEntry({
@@ -82,15 +86,10 @@ test("postIngestEntry posts to the ingest path with a bearer token and returns t
 
 test("postIngestEntry returns false without a token and never calls fetch", async () => {
   let called = false;
-  const ok = await postIngestEntry(
-    "http://localhost:20128",
-    "",
-    { id: "x" },
-    async () => {
-      called = true;
-      return { ok: true };
-    }
-  );
+  const ok = await postIngestEntry("http://localhost:20128", "", { id: "x" }, async () => {
+    called = true;
+    return { ok: true };
+  });
   assert.equal(ok, false);
   assert.equal(called, false);
 });

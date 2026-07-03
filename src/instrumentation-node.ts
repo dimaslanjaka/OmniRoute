@@ -212,9 +212,8 @@ export async function registerNodejs(): Promise<void> {
     // without this the dashboard mode (auto/custom/adaptive) silently reverts to
     // the passthrough default on every restart. Previously this was only wired into
     // the unused `server-init.ts`, so it never ran in production.
-    const { hydrateThinkingBudgetConfig } = await import(
-      "@omniroute/open-sse/services/thinkingBudget.ts"
-    );
+    const { hydrateThinkingBudgetConfig } =
+      await import("@omniroute/open-sse/services/thinkingBudget.ts");
     if (hydrateThinkingBudgetConfig(settings)) {
       console.log("[STARTUP] Thinking-Budget config restored from settings");
     }

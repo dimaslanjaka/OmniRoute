@@ -44,12 +44,17 @@ describe("adaptBodyForCompression openai-responses format (#1998)", () => {
     // compressable and include it in the messages array.
     assert.ok(adapter.adapted, "adapter must be adapted (not a pass-through)");
 
-    const messages = (adapter.body as Record<string, unknown>).messages as Array<Record<string, unknown>>;
+    const messages = (adapter.body as Record<string, unknown>).messages as Array<
+      Record<string, unknown>
+    >;
     assert.ok(Array.isArray(messages) && messages.length > 0, "messages must be non-empty");
 
     // At least one tool/assistant message must be present for compression engines.
     const hasToolMsg = messages.some((m) => m.role === "tool" || m.role === "assistant");
-    assert.ok(hasToolMsg, "messages must include a tool/assistant entry from the function_call pair");
+    assert.ok(
+      hasToolMsg,
+      "messages must include a tool/assistant entry from the function_call pair"
+    );
   });
 
   it("keeps body.input Responses-shaped after compress/restore round-trip for type:message items", () => {
@@ -86,11 +91,7 @@ describe("adaptBodyForCompression openai-responses format (#1998)", () => {
     );
     // Content must still carry the Responses input_text structure.
     const firstContentPart = (item.content as Array<Record<string, unknown>>)[0];
-    assert.equal(
-      firstContentPart.type,
-      "input_text",
-      "content part must preserve type:input_text"
-    );
+    assert.equal(firstContentPart.type, "input_text", "content part must preserve type:input_text");
     assert.ok(
       typeof firstContentPart.text === "string" && firstContentPart.text.length > 0,
       "content part must preserve the text value"
@@ -127,7 +128,10 @@ describe("adaptBodyForCompression openai-responses format (#1998)", () => {
     const items = restored.input as Array<Record<string, unknown>>;
     assert.equal(items.length, 2, "both function_call and function_call_output must be present");
 
-    const outputItem = items.find((i) => i.type === "function_call_output") as Record<string, unknown>;
+    const outputItem = items.find((i) => i.type === "function_call_output") as Record<
+      string,
+      unknown
+    >;
     assert.ok(outputItem, "function_call_output item must be in restored.input");
     assert.equal(outputItem.call_id, "c2", "call_id must be preserved");
     assert.ok(

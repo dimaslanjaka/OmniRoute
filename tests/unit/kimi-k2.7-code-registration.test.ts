@@ -7,12 +7,10 @@ import assert from "node:assert/strict";
 // both the OAuth coding endpoint (api.kimi.com/coding, Anthropic format — the
 // path validated live on the test VPS) and the OpenAI endpoint
 // (api.moonshot.ai/v1). Two ids: `kimi-k2.7-code` and `kimi-k2.7-code-highspeed`.
-const { getRegistryEntry, getUnsupportedParams } = await import(
-  "../../open-sse/config/providerRegistry.ts"
-);
-const { getResolvedModelCapabilities, supportsReasoning } = await import(
-  "../../src/lib/modelCapabilities.ts"
-);
+const { getRegistryEntry, getUnsupportedParams } =
+  await import("../../open-sse/config/providerRegistry.ts");
+const { getResolvedModelCapabilities, supportsReasoning } =
+  await import("../../src/lib/modelCapabilities.ts");
 
 const K27 = "kimi-k2.7-code";
 const K27_HS = "kimi-k2.7-code-highspeed";

@@ -88,13 +88,23 @@ describe("emitHookBlocking", () => {
   });
 
   it("chains body/metadata through hooks", async () => {
-    registerHook("onRequest", "p1", (payload: any) => ({
-      body: { ...payload.body, added: true },
-      metadata: { p1: true },
-    }), 10);
-    registerHook("onRequest", "p2", (payload: any) => ({
-      metadata: { ...payload.metadata, p2: true },
-    }), 20);
+    registerHook(
+      "onRequest",
+      "p1",
+      (payload: any) => ({
+        body: { ...payload.body, added: true },
+        metadata: { p1: true },
+      }),
+      10
+    );
+    registerHook(
+      "onRequest",
+      "p2",
+      (payload: any) => ({
+        metadata: { ...payload.metadata, p2: true },
+      }),
+      20
+    );
     const result = await emitHookBlocking("onRequest", makeCtx());
     assert.equal(result.blocked, undefined);
     assert.equal((result.body as any).added, true);
@@ -102,7 +112,9 @@ describe("emitHookBlocking", () => {
   });
 
   it("swallows hook errors", async () => {
-    registerHook("onRequest", "p1", () => { throw new Error("boom"); });
+    registerHook("onRequest", "p1", () => {
+      throw new Error("boom");
+    });
     const result = await emitHookBlocking("onRequest", makeCtx());
     assert.equal(result.blocked, undefined);
   });
@@ -125,13 +137,23 @@ describe("runOnRequest", () => {
   });
 
   it("chains body/metadata through hooks", async () => {
-    registerHook("onRequest", "p1", (payload: any) => ({
-      body: { ...payload.body, added: true },
-      metadata: { p1: true },
-    }), 10);
-    registerHook("onRequest", "p2", (payload: any) => ({
-      metadata: { ...payload.metadata, p2: true },
-    }), 20);
+    registerHook(
+      "onRequest",
+      "p1",
+      (payload: any) => ({
+        body: { ...payload.body, added: true },
+        metadata: { p1: true },
+      }),
+      10
+    );
+    registerHook(
+      "onRequest",
+      "p2",
+      (payload: any) => ({
+        metadata: { ...payload.metadata, p2: true },
+      }),
+      20
+    );
     const result = await runOnRequest(makeCtx());
     assert.equal(result.blocked, undefined);
     assert.equal((result.body as any).added, true);
@@ -139,7 +161,9 @@ describe("runOnRequest", () => {
   });
 
   it("swallows hook errors", async () => {
-    registerHook("onRequest", "p1", () => { throw new Error("boom"); });
+    registerHook("onRequest", "p1", () => {
+      throw new Error("boom");
+    });
     const result = await runOnRequest(makeCtx());
     assert.equal(result.blocked, undefined);
   });
@@ -164,7 +188,9 @@ describe("runOnResponse", () => {
   });
 
   it("swallows hook errors", async () => {
-    registerHook("onResponse", "p1", () => { throw new Error("boom"); });
+    registerHook("onResponse", "p1", () => {
+      throw new Error("boom");
+    });
     const result = await runOnResponse(makeCtx(), { original: true });
     assert.deepEqual(result, { original: true });
   });

@@ -14,7 +14,6 @@ import {
 } from "@/shared/constants/upstreamHeaders";
 import { MAX_TIMER_TIMEOUT_MS } from "@/shared/utils/runtimeTimeouts";
 
-
 export const payloadRuleModelSpecSchema = z
   .object({
     name: z.string().trim().min(1),

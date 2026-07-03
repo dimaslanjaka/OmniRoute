@@ -100,8 +100,14 @@ export function normalizeMemorySettings(rawSettings: Record<string, unknown> = {
       rawSettings.memoryTransformersEnabled,
       DEFAULT_MEMORY_SETTINGS.transformersEnabled
     ),
-    staticEnabled: toBoolean(rawSettings.memoryStaticEnabled, DEFAULT_MEMORY_SETTINGS.staticEnabled),
-    rerankEnabled: toBoolean(rawSettings.memoryRerankEnabled, DEFAULT_MEMORY_SETTINGS.rerankEnabled),
+    staticEnabled: toBoolean(
+      rawSettings.memoryStaticEnabled,
+      DEFAULT_MEMORY_SETTINGS.staticEnabled
+    ),
+    rerankEnabled: toBoolean(
+      rawSettings.memoryRerankEnabled,
+      DEFAULT_MEMORY_SETTINGS.rerankEnabled
+    ),
     rerankProviderModel: normalizeNullableString(
       rawSettings.memoryRerankProviderModel,
       DEFAULT_MEMORY_SETTINGS.rerankProviderModel

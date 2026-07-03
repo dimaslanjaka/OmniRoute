@@ -37,7 +37,10 @@ test.describe("Translator friendly redesign (plano 19)", () => {
   test("clicking the Monitor tab swaps content and pushes ?tab=monitor", async ({ page }) => {
     await gotoDashboardRoute(page, "/dashboard/translator", { timeoutMs: TIMEOUT_MS });
 
-    await page.getByRole("tab", { name: /^monitor$/i }).first().click();
+    await page
+      .getByRole("tab", { name: /^monitor$/i })
+      .first()
+      .click();
     await expect(page).toHaveURL(/tab=monitor/, { timeout: 10_000 });
 
     // MonitorTab origin hint or stats card should now be visible.
@@ -84,9 +87,9 @@ test.describe("Translator friendly redesign (plano 19)", () => {
 
     // narratedSuccess / narratedDetected use the keys "translated"/"detected" in EN
     // and "traduzido"/"detectado" in PT-BR.
-    await expect(
-      page.getByText(/translated|traduzido|detected|detectado/i).first()
-    ).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByText(/translated|traduzido|detected|detectado/i).first()).toBeVisible({
+      timeout: 15_000,
+    });
   });
 
   test("deep-link ?advanced=streamtransform expands the Stream Transformer accordion", async ({
@@ -96,19 +99,15 @@ test.describe("Translator friendly redesign (plano 19)", () => {
       timeoutMs: TIMEOUT_MS,
     });
 
-    await expect(
-      page.getByText(/stream transformer/i).first()
-    ).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByText(/stream transformer/i).first()).toBeVisible({ timeout: 15_000 });
   });
 
   test("deep-link ?tab=translate&advanced=testbench expands Test Bench accordion", async ({
     page,
   }) => {
-    await gotoDashboardRoute(
-      page,
-      "/dashboard/translator?tab=translate&advanced=testbench",
-      { timeoutMs: TIMEOUT_MS }
-    );
+    await gotoDashboardRoute(page, "/dashboard/translator?tab=translate&advanced=testbench", {
+      timeoutMs: TIMEOUT_MS,
+    });
 
     await expect(page.getByText(/test bench/i).first()).toBeVisible({ timeout: 15_000 });
   });

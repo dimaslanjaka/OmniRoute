@@ -20,7 +20,8 @@ describe("riskPatterns catalog", () => {
     for (const c of ["private_key", "secret_assignment", "stack_trace", "db_migration", "legal"]) {
       assert.ok(categories.includes(c as never), `missing pattern for ${c}`);
     }
-    for (const p of RISK_PATTERNS) assert.ok(p.regex.flags.includes("g"), `${p.category} regex must be global`);
+    for (const p of RISK_PATTERNS)
+      assert.ok(p.regex.flags.includes("g"), `${p.category} regex must be global`);
   });
 
   it("marks private_key as self-evident and secret_assignment as guarded", () => {
@@ -41,8 +42,7 @@ describe("riskPatterns catalog", () => {
 
 describe("detectRiskSpans — guards", () => {
   it("promotes a self-evident PEM block on a single hit, even in a long message", () => {
-    const pem =
-      "-----BEGIN PRIVATE KEY-----\nMIIBVQ...short...body\n-----END PRIVATE KEY-----";
+    const pem = "-----BEGIN PRIVATE KEY-----\nMIIBVQ...short...body\n-----END PRIVATE KEY-----";
     const text = "prose ".repeat(60) + pem + " trailing ".repeat(60);
     const spans = detectRiskSpans(text, ALL);
     assert.equal(spans.length, 1);
@@ -91,8 +91,7 @@ describe("detectRiskSpans — guards", () => {
   });
 
   it("detects a k8s Secret block structurally", () => {
-    const text =
-      "apiVersion: v1\nkind: Secret\nmetadata:\n  name: s\ndata:\n  token: aGVsbG8=\n";
+    const text = "apiVersion: v1\nkind: Secret\nmetadata:\n  name: s\ndata:\n  token: aGVsbG8=\n";
     const spans = detectRiskSpans(text, ALL);
     assert.equal(spans.length, 1);
     assert.equal(spans[0].category, "k8s_secret");

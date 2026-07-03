@@ -17,10 +17,7 @@ test("ZenMux is registered as an API-key provider with the canonical identity", 
 });
 
 test("ZenMux exposes the OpenAI-compatible chat completions URL", () => {
-  assert.equal(
-    PROVIDER_ENDPOINTS.zenmux,
-    "https://zenmux.ai/api/v1/chat/completions"
-  );
+  assert.equal(PROVIDER_ENDPOINTS.zenmux, "https://zenmux.ai/api/v1/chat/completions");
 });
 
 test("ZenMux registry entry uses OpenAI format with bearer apikey auth", () => {

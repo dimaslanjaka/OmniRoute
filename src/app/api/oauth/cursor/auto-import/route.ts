@@ -40,9 +40,7 @@ export interface CursorInstallProbe {
  * Port of decolua/9router#313 — only the linux probe is added; macOS/Windows
  * keep their existing behavior (no install probe).
  */
-export async function verifyLinuxCursorInstalled(
-  probe: CursorInstallProbe = {}
-): Promise<boolean> {
+export async function verifyLinuxCursorInstalled(probe: CursorInstallProbe = {}): Promise<boolean> {
   const exec = probe.execFile ?? execFileAsync;
   const canAccess = probe.access ?? access;
   const home = probe.home ?? homedir();

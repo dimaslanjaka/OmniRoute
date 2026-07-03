@@ -78,7 +78,7 @@ test("Agent Card includes all 5 original skills", async () => {
   for (const id of originalIds) {
     assert.ok(
       body.skills.some((s) => s.id === id),
-      `Original skill '${id}' must be present in Agent Card`,
+      `Original skill '${id}' must be present in Agent Card`
     );
   }
 });

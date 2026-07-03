@@ -17,11 +17,20 @@ import { invalidate as invalidateCache } from "../../src/lib/memory/embedding/ca
 // Row 2 (world):  [0.0, 1.0, 0.0, 0.0]
 
 function makeMockModel(): PotionModel {
-  const vocab: Record<string, number> = { "[UNK]": 0, "hello": 1, "world": 2 };
+  const vocab: Record<string, number> = { "[UNK]": 0, hello: 1, world: 2 };
   const matrix = new Float32Array([
-    0.0, 0.0, 0.0, 0.0,  // row 0 = [UNK]
-    1.0, 0.0, 0.0, 0.0,  // row 1 = hello
-    0.0, 1.0, 0.0, 0.0,  // row 2 = world
+    0.0,
+    0.0,
+    0.0,
+    0.0, // row 0 = [UNK]
+    1.0,
+    0.0,
+    0.0,
+    0.0, // row 1 = hello
+    0.0,
+    1.0,
+    0.0,
+    0.0, // row 2 = world
   ]);
   return { vocab, matrix, dim: 4, vocabSize: 3, unkIdx: 0 };
 }
@@ -130,9 +139,7 @@ describe("memory-embedding-static-potion embedStatic with mock", () => {
     const prevCacheDir = process.env.MEMORY_STATIC_CACHE_DIR;
     process.env.MEMORY_STATIC_CACHE_DIR = `/dev/null/potion-load-fail-${process.pid}-${Date.now()}`;
     try {
-      const { embedStatic } = await import(
-        "../../src/lib/memory/embedding/staticPotion"
-      );
+      const { embedStatic } = await import("../../src/lib/memory/embedding/staticPotion");
       const result = await embedStatic("hello world");
       assert.ok(
         !("vector" in result),

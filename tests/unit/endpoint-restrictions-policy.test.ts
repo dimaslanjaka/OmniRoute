@@ -137,10 +137,7 @@ test("chat-only key blocks /v1/embeddings", async () => {
   assert.ok(result.rejection, "Should reject the request");
   assert.equal(result.rejection.status, 403);
   const msg = await readErrorMessage(result.rejection);
-  assert.ok(
-    msg.includes("embeddings"),
-    `Error message should mention 'embeddings', got: ${msg}`
-  );
+  assert.ok(msg.includes("embeddings"), `Error message should mention 'embeddings', got: ${msg}`);
 });
 
 test("search-only key blocks /v1/images/generations", async () => {

@@ -183,9 +183,15 @@ test("validateJsonl: byteSize matches UTF-8 byte length of input", () => {
 // ── Errors cap ────────────────────────────────────────────────────────────────
 
 test("validateJsonl: errors capped at 50 even with many invalid lines", () => {
-  const lines = Array.from({ length: 100 }, (_, i) => `{"custom_id":"req-${i}","method":"GET","url":"${ENDPOINT}","body":{}}`);
+  const lines = Array.from(
+    { length: 100 },
+    (_, i) => `{"custom_id":"req-${i}","method":"GET","url":"${ENDPOINT}","body":{}}`
+  );
   const result = validateJsonl(makeJsonl(lines), { endpoint: ENDPOINT });
-  assert.ok(result.errors.length <= 50, `errors should be capped at 50, got ${result.errors.length}`);
+  assert.ok(
+    result.errors.length <= 50,
+    `errors should be capped at 50, got ${result.errors.length}`
+  );
 });
 
 // ── body must be object (not array) — Array.isArray guard ─────────────────────
@@ -196,7 +202,7 @@ test("validateJsonl: rejects body that is an array (typeof []==='object' guard)"
   assert.ok(!result.ok, "should be invalid");
   assert.ok(
     result.errors.some((e) => e.field === "body"),
-    `should flag body field; errors=${JSON.stringify(result.errors)}`,
+    `should flag body field; errors=${JSON.stringify(result.errors)}`
   );
 });
 

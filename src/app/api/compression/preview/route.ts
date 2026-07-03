@@ -183,8 +183,18 @@ export async function POST(req: Request) {
     );
   }
 
-  const { messages, mode, engineId, pipeline, config, fidelityGate, fuzzyDedup, riskGate, quantumLock, heatmap: heatmapMode } =
-    parsed.data;
+  const {
+    messages,
+    mode,
+    engineId,
+    pipeline,
+    config,
+    fidelityGate,
+    fuzzyDedup,
+    riskGate,
+    quantumLock,
+    heatmap: heatmapMode,
+  } = parsed.data;
   const effectiveMode: CompressionMode =
     engineId || pipeline ? "stacked" : (mode as CompressionMode);
   const originalText = messagesToText(messages);

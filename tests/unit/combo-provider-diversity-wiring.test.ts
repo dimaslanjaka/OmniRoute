@@ -13,9 +13,8 @@ import assert from "node:assert/strict";
 
 test("recordComboRequest feeds the provider-diversity report on success", async () => {
   const { recordComboRequest } = await import("../../open-sse/services/comboMetrics.ts");
-  const { getDiversityReport, resetDiversity } = await import(
-    "../../open-sse/services/autoCombo/providerDiversity.ts"
-  );
+  const { getDiversityReport, resetDiversity } =
+    await import("../../open-sse/services/autoCombo/providerDiversity.ts");
   resetDiversity();
 
   recordComboRequest("combo-diversity-x", "openai/gpt-4", {
@@ -46,9 +45,8 @@ test("recordComboRequest feeds the provider-diversity report on success", async 
 
 test("recordComboRequest does NOT pollute diversity on failure", async () => {
   const { recordComboRequest } = await import("../../open-sse/services/comboMetrics.ts");
-  const { getDiversityReport, resetDiversity } = await import(
-    "../../open-sse/services/autoCombo/providerDiversity.ts"
-  );
+  const { getDiversityReport, resetDiversity } =
+    await import("../../open-sse/services/autoCombo/providerDiversity.ts");
   resetDiversity();
 
   recordComboRequest("combo-diversity-y", "openai/gpt-4", {

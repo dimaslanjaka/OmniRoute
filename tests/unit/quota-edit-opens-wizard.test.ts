@@ -124,7 +124,10 @@ test("PoolWizard.tsx: pre-fill uses editPoolExclusive ?? false (not setExclusive
   const editFillIdx = wizardSrc.indexOf("} else if (editPool)");
   assert.ok(editFillIdx >= 0, "Expected '} else if (editPool)' block in PoolWizard");
   const closingBrace = wizardSrc.indexOf("\n    }", editFillIdx);
-  const editFillBlock = wizardSrc.slice(editFillIdx, closingBrace > 0 ? closingBrace + 6 : editFillIdx + 1200);
+  const editFillBlock = wizardSrc.slice(
+    editFillIdx,
+    closingBrace > 0 ? closingBrace + 6 : editFillIdx + 1200
+  );
   assert.ok(
     !editFillBlock.includes("setExclusive(false)"),
     "setExclusive(false) must not appear in the editPool pre-fill block — must use editPoolExclusive"

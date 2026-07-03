@@ -21,7 +21,10 @@ describe("buildCompressionPreviewDiff — heatmap", () => {
 
     // All scores 0–1
     for (const t of tokens) {
-      assert.ok(t.score >= 0 && t.score <= 1, `score ${t.score} out of [0,1] for token "${t.text}"`);
+      assert.ok(
+        t.score >= 0 && t.score <= 1,
+        `score ${t.score} out of [0,1] for token "${t.text}"`
+      );
     }
 
     // "the" is a stopword — should score low (0.1)

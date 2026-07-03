@@ -101,7 +101,12 @@ export async function validateEmbeddingApiProvider({
   }
 }
 
-export async function validateRerankApiProvider({ apiKey, providerSpecificData = {}, url, modelId }: any) {
+export async function validateRerankApiProvider({
+  apiKey,
+  providerSpecificData = {},
+  url,
+  modelId,
+}: any) {
   if (!url) {
     return { valid: false, error: "Missing rerank endpoint" };
   }

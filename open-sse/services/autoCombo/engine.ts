@@ -82,12 +82,15 @@ class ScoreTierRotator {
     const tiers = groupIntoTiers(candidates);
     const best = candidates[0].score;
     const worst = candidates[candidates.length - 1].score;
-    if (tiers.top.length > 0 && (best - worst) >= CLEAR_WINNER_THRESHOLD) {
+    if (tiers.top.length > 0 && best - worst >= CLEAR_WINNER_THRESHOLD) {
       return this.pickFromPool(tiers.top);
     }
     const prefs = tierPreferencesForName(this.comboName);
-    const chosen = chooseTierWeighted(tiers, prefs, (pool) => this.pickFromPool(pool), () =>
-      this.advance(tiers, prefs, candidates)
+    const chosen = chooseTierWeighted(
+      tiers,
+      prefs,
+      (pool) => this.pickFromPool(pool),
+      () => this.advance(tiers, prefs, candidates)
     );
     return chosen;
   }

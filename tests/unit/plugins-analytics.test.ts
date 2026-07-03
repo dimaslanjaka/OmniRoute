@@ -42,8 +42,9 @@ describe("plugin analytics", () => {
     recordPluginExecution("order-plugin", "onRequest", 10, true);
     // Force different timestamp by inserting directly
     const db = getDbInstance();
-    db.prepare("INSERT INTO plugin_analytics (plugin_name, hook, duration_ms, success, created_at) VALUES (?, ?, ?, ?, ?)")
-      .run("order-plugin", "onResponse", 20, 1, "2099-01-01T00:00:00");
+    db.prepare(
+      "INSERT INTO plugin_analytics (plugin_name, hook, duration_ms, success, created_at) VALUES (?, ?, ?, ?, ?)"
+    ).run("order-plugin", "onResponse", 20, 1, "2099-01-01T00:00:00");
     const rows = getPluginAnalytics("order-plugin");
     assert.strictEqual(rows[0].hook, "onResponse");
     assert.strictEqual(rows[1].hook, "onRequest");

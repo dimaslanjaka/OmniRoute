@@ -8,12 +8,10 @@ import assert from "node:assert/strict";
 // stream. After the fix, reasoning is closed at the top of the content/
 // tool_calls handlers and the message is routed to `reasoningIndex + 1`.
 
-const { createResponsesApiTransformStream } = await import(
-  "../../open-sse/transformer/responsesTransformer.ts"
-);
-const { openaiToOpenAIResponsesResponse } = await import(
-  "../../open-sse/translator/response/openai-responses.ts"
-);
+const { createResponsesApiTransformStream } =
+  await import("../../open-sse/transformer/responsesTransformer.ts");
+const { openaiToOpenAIResponsesResponse } =
+  await import("../../open-sse/translator/response/openai-responses.ts");
 const { initState } = await import("../../open-sse/translator/index.ts");
 const { FORMATS } = await import("../../open-sse/translator/formats.ts");
 

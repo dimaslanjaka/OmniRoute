@@ -9,11 +9,7 @@
 import { afterEach, describe, it } from "node:test";
 import assert from "node:assert/strict";
 
-import {
-  acquire,
-  getStats,
-  resetAll,
-} from "../../open-sse/services/rateLimitSemaphore.ts";
+import { acquire, getStats, resetAll } from "../../open-sse/services/rateLimitSemaphore.ts";
 
 afterEach(() => {
   resetAll();

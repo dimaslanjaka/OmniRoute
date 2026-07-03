@@ -5,7 +5,10 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import DatabaseSync from "better-sqlite3";
 
-import { SELF_ACCOUNT_QUOTA_SCOPE, SELF_USAGE_SCOPE } from "../../src/shared/constants/selfServiceScopes.ts";
+import {
+  SELF_ACCOUNT_QUOTA_SCOPE,
+  SELF_USAGE_SCOPE,
+} from "../../src/shared/constants/selfServiceScopes.ts";
 import { buildApiKeySelfServiceStatus } from "../../src/lib/usage/apiKeySelfService.ts";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
@@ -47,10 +50,7 @@ test("self-service scope migration backfills own usage once and preserves explic
   assert.deepEqual(scopesById.get("legacy-empty"), [SELF_USAGE_SCOPE]);
   assert.deepEqual(scopesById.get("legacy-null"), [SELF_USAGE_SCOPE]);
   assert.deepEqual(scopesById.get("custom"), ["custom:scope", SELF_USAGE_SCOPE]);
-  assert.deepEqual(scopesById.get("quota-opt-in"), [
-    SELF_ACCOUNT_QUOTA_SCOPE,
-    SELF_USAGE_SCOPE,
-  ]);
+  assert.deepEqual(scopesById.get("quota-opt-in"), [SELF_ACCOUNT_QUOTA_SCOPE, SELF_USAGE_SCOPE]);
   assert.deepEqual(scopesById.get("already-disabled-after-migration"), ["custom:scope"]);
 });
 
@@ -221,7 +221,11 @@ test("self-service status reports all explicitly allowed provider account quotas
         usage: {
           plan: "Claude Max",
           quotas: {
-            daily: { usedPercentage: 35, remainingPercentage: 65, resetAt: "2026-05-30T00:00:00.000Z" },
+            daily: {
+              usedPercentage: 35,
+              remainingPercentage: 65,
+              resetAt: "2026-05-30T00:00:00.000Z",
+            },
           },
         },
         cache: { quotas: null, plan: null, message: null, fetchedAt: "" },
@@ -258,7 +262,10 @@ test("self-service status reports all active provider account quotas for unrestr
       { id: "conn-disabled", provider: "claude", isActive: false },
     ],
     fetchAndPersistProviderLimits: async (connectionId: string) => ({
-      connection: { id: connectionId, provider: connectionId === "conn-codex" ? "codex" : "cursor" },
+      connection: {
+        id: connectionId,
+        provider: connectionId === "conn-codex" ? "codex" : "cursor",
+      },
       usage: {
         plan: connectionId === "conn-codex" ? "ChatGPT Plus" : "Cursor Pro",
         quotas: {

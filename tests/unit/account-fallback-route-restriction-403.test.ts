@@ -24,7 +24,11 @@ test("#2929 route-restriction 403 does NOT cool down the connection", () => {
     null,
     "fireworks"
   );
-  assert.equal(result.shouldFallback, false, "route-restriction 403 must not trigger fallback/cooldown");
+  assert.equal(
+    result.shouldFallback,
+    false,
+    "route-restriction 403 must not trigger fallback/cooldown"
+  );
   assert.equal(result.cooldownMs, 0, "route-restriction 403 must not impose a cooldown");
 });
 
