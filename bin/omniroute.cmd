@@ -75,10 +75,11 @@ if "!NEED_SETUP!"=="1" (
     if exist "%INSTALL_DIR%" rmdir /s /q "%INSTALL_DIR%"
     mkdir "%INSTALL_DIR%"
 
-    REM --- Install tarball properly with all dependencies ---
-    pushd "%INSTALL_DIR%"
-    echo [npm] Installing omniroute with dependencies...
+    REM --- Install tarball properly all dependencies --- pushd "%INSTALL_DIR%"
+    echo [npm] Installing omniroute dependencies...
     call npm install "!TARBALL!" --legacy-peer-deps --no-audit --no-fund --loglevel=error
+    echo [npm] rebuilding better-sqlite3...
+    call npm rebuild better-sqlite3
     popd
 
     if not exist "!PKG_DIR!\package.json" (

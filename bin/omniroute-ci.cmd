@@ -67,9 +67,9 @@ if "!NEED_SETUP!"=="1" (
     pushd "%INSTALL_DIR%"
     echo [npm] installing dependencies...
     call npm install "%TARBALL%" --legacy-peer-deps --no-audit --no-fund --loglevel=error
-    popd
-
-    echo [npm] setup complete
+    echo [npm] rebuilding better-sqlite3...
+    call npm rebuild better-sqlite3
+    popd echo [npm] setup complete
 )
 
 REM --- Find entry point ---
