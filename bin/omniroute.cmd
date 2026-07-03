@@ -114,4 +114,4 @@ if not defined ENTRY (
 )
 
 echo [debug] Executing: node "!ENTRY!" %*
-node "!ENTRY!" %*
+node "!ENTRY!" --no-open %*
