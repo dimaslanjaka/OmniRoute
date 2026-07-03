@@ -3,17 +3,6 @@ name: CI
 on:
   push:
     branches: [main]
-    paths:
-      - ".github/workflows/ci.yml"
-      - "package*.json"
-      - "src/**"
-      - "open-sse/**"
-      - "config/**"
-      - "scripts/**"
-      - "next.config.mjs"
-      - "tsconfig*.json"
-      - "postcss.config.*"
-      - "tailwind.config.*"
   pull_request:
     branches: [main]
     types: [opened, synchronize, reopened, ready_for_review]
@@ -101,7 +90,6 @@ jobs:
           } >> "$GITHUB_OUTPUT"
 
   lint:
-    if: false
     name: Lint
     runs-on: ubuntu-latest
     env:
@@ -413,7 +401,6 @@ jobs:
 
   i18n-ui-coverage:
     name: i18n UI Coverage
-    if: false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -428,7 +415,6 @@ jobs:
 
   i18n-matrix:
     name: Build language matrix
-    if: false
     runs-on: ubuntu-latest
     outputs:
       langs: ${{ steps.langs.outputs.langs }}
@@ -444,7 +430,6 @@ jobs:
 
   i18n:
     name: i18n Validation
-    if: false
     runs-on: ubuntu-latest
     continue-on-error: true
     strategy:
@@ -527,9 +512,9 @@ jobs:
         uses: actions/cache@2c8a9bd7457de244a408f35966fab2fb45fda9c8
         with:
           path: .build/next/cache
-          key: nextjs-${{ runner.os }}-${{ hashFiles('package-lock.json', 'src/**/*.{js,ts,tsx,mjs,cjs}', 'open-sse/**/*.{js,ts,mjs,cjs}', 'scripts/**/*.{js,ts,mjs,cjs}', 'db/**/*', 'next.config.mjs', 'tsconfig*.json', 'postcss.config.*', 'tailwind.config.*') }}
+          key: nextjs-${{ runner.os }}-node-${{ env.CI_NODE_VERSION }}-${{ hashFiles('package-lock.json') }}-${{ hashFiles('src/**/*', 'open-sse/**/*', 'db/**/*', 'next.config.mjs', 'tsconfig*.json', 'postcss.config.*', 'tailwind.config.*') }}
           restore-keys: |
-            nextjs-${{ runner.os }}-
+            nextjs-${{ runner.os }}-node-${{ env.CI_NODE_VERSION }}-${{ hashFiles('package-lock.json') }}-
       - run: npm run build
       - name: Archive Next.js build for downstream jobs
         # Use tar so the archive preserves paths relative to CWD (.build/next/...).
@@ -716,9 +701,9 @@ jobs:
         uses: actions/cache@2c8a9bd7457de244a408f35966fab2fb45fda9c8
         with:
           path: .build/next/cache
-          key: nextjs-${{ runner.os }}-${{ hashFiles('package-lock.json', 'src/**/*.{js,ts,tsx,mjs,cjs}', 'open-sse/**/*.{js,ts,mjs,cjs}', 'scripts/**/*.{js,ts,mjs,cjs}', 'db/**/*', 'next.config.mjs', 'tsconfig*.json', 'postcss.config.*', 'tailwind.config.*') }}
+          key: nextjs-${{ runner.os }}-node-${{ env.CI_NODE_26_VERSION }}-${{ hashFiles('package-lock.json') }}-${{ hashFiles('src/**/*', 'open-sse/**/*', 'db/**/*', 'next.config.mjs', 'tsconfig*.json', 'postcss.config.*', 'tailwind.config.*') }}
           restore-keys: |
-            nextjs-${{ runner.os }}-
+            nextjs-${{ runner.os }}-node-${{ env.CI_NODE_26_VERSION }}-${{ hashFiles('package-lock.json') }}-
       - run: npm run build
 
   node-26-compat:
