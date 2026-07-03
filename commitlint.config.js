@@ -84,8 +84,8 @@ const Configuration = {
 
     // Body rules
     "header-trim": [1, "always"],
-    "header-max-length": [1, "always", 140],
-    "body-max-line-length": [1, "always", 120],
+    "header-max-length": [0],
+    "body-max-line-length": [0],
 
     // Type rules
     "type-enum": [
@@ -115,7 +115,7 @@ const Configuration = {
 
     // Footer rules
     "footer-leading-blank": [2, "always"],
-    "footer-max-line-length": [2, "always", 100],
+    "footer-max-line-length": [0],
 
     // Referenced issues
     // 'references-empty': [0, 'never']

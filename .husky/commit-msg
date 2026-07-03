@@ -1,3 +1,6 @@
 #!/bin/sh
 
-commitlint --edit $1
+# Pipe the file contents directly to stdin so commitlint reads it without opening an editor
+# cat "$1" | npx --no commitlint
+# npx --no -- commitlint --edit "\${1}"
+npx --no -- commitlint --config commitlint.config.js --edit "$1"
