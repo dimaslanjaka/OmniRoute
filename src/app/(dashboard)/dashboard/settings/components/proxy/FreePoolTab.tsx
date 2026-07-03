@@ -36,7 +36,6 @@ export default function FreePoolTab() {
 
   // Load persisted disabled-sources from localStorage on mount
   useEffect(() => {
-     
     setDisabledSources(loadDisabledSources());
   }, []);
 
@@ -80,7 +79,6 @@ export default function FreePoolTab() {
   }, [disabledSources, filterProtocol, filterCountry, minQuality]);
 
   useEffect(() => {
-     
     loadData();
   }, [loadData]);
 
@@ -279,7 +277,7 @@ export default function FreePoolTab() {
       )}
 
       <div className="overflow-x-auto rounded border border-border bg-surface">
-        <table className="w-full text-sm">
+        <table className="w-full min-w-[860px] text-sm table-fixed">
           <thead className="bg-surface-alt text-text-muted text-xs">
             <tr>
               <th className="px-3 py-2 text-left w-8" scope="col"></th>

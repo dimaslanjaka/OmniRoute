@@ -110,7 +110,7 @@ export default function GlobalConfigTab() {
   };
 
   return (
-    <>
+    <div className="flex flex-col gap-4">
       <Card className="p-0 overflow-hidden">
         <div className="p-6">
           <div className="flex items-center gap-2 mb-4">
@@ -268,6 +268,6 @@ export default function GlobalConfigTab() {
         levelLabel={t("globalLabel")}
         onSaved={loadGlobalProxy}
       />
-    </>
+    </div>
   );
 }
