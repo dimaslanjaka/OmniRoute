@@ -112,14 +112,16 @@ export function utcForTimezone(utc, timezone) {
   // The difference between `asUtc` and the wall clock in UTC ms gives the
   // timezone offset (in ms). Adding that offset to the wall-clock-interpreted-
   // as-UTC time gives the real UTC instant.
-  const offsetMs = asUtc - Date.UTC(
-    utc.getUTCFullYear(),
-    utc.getUTCMonth(),
-    utc.getUTCDate(),
-    utc.getUTCHours(),
-    utc.getUTCMinutes(),
-    utc.getUTCSeconds()
-  );
+  const offsetMs =
+    asUtc -
+    Date.UTC(
+      utc.getUTCFullYear(),
+      utc.getUTCMonth(),
+      utc.getUTCDate(),
+      utc.getUTCHours(),
+      utc.getUTCMinutes(),
+      utc.getUTCSeconds()
+    );
   return asUtc - offsetMs;
 }
 
@@ -157,7 +159,8 @@ export function shiftFor(utcMs, rotation) {
   const shiftIndex = Math.floor(elapsed / shiftMs);
   const shiftStart = startMs + shiftIndex * shiftMs;
   const shiftEnd = shiftStart + shiftMs;
-  const memberIndex = ((shiftIndex % rotation.members.length) + rotation.members.length) % rotation.members.length;
+  const memberIndex =
+    ((shiftIndex % rotation.members.length) + rotation.members.length) % rotation.members.length;
   return {
     startsAt: new Date(shiftStart).toISOString(),
     endsAt: new Date(shiftEnd).toISOString(),
@@ -306,7 +309,9 @@ function main() {
   if (cmd.command === "current") {
     const nowMs = Date.now();
     const shift = shiftFor(nowMs, rotation);
-    process.stdout.write(`${JSON.stringify({ now: new Date(nowMs).toISOString(), ...shift }, null, 2)}\n`);
+    process.stdout.write(
+      `${JSON.stringify({ now: new Date(nowMs).toISOString(), ...shift }, null, 2)}\n`
+    );
     return;
   }
   if (cmd.command === "handoff") {
@@ -320,7 +325,9 @@ function main() {
       process.exit(2);
     }
     const shift = shiftFor(atMs, rotation);
-    process.stdout.write(`${JSON.stringify({ at: new Date(atMs).toISOString(), ...shift }, null, 2)}\n`);
+    process.stdout.write(
+      `${JSON.stringify({ at: new Date(atMs).toISOString(), ...shift }, null, 2)}\n`
+    );
     return;
   }
   if (cmd.command === "range") {
@@ -339,7 +346,12 @@ function main() {
       startsAt: rotation.startsAt,
       members: rotation.members,
       firstShift: shiftFor(Date.parse(rotation.startsAt), rotation),
-      lastShift: shiftFor(Date.parse(rotation.startsAt) + rotation.members.length * rotation.shiftHours * 3600_000 - 1, rotation),
+      lastShift: shiftFor(
+        Date.parse(rotation.startsAt) +
+          rotation.members.length * rotation.shiftHours * 3600_000 -
+          1,
+        rotation
+      ),
     };
     process.stdout.write(`${JSON.stringify(summary, null, 2)}\n`);
     return;

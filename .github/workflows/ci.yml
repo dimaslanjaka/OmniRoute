@@ -563,6 +563,18 @@ jobs:
       - name: Assert dist/server.js exists
         run: test -f dist/server.js || (echo "dist/server.js missing — build:cli did not assemble correctly" && exit 1)
       - run: npm run check:pack-artifact
+      - name: Pack omniroute.tgz
+        run: |
+          mkdir -p release
+          npm pack --silent --pack-destination ./release
+          mv "release/omniroute-$(node -p "require('./package.json').version").tgz" release/omniroute.tgz
+          sha256sum release/omniroute.tgz > release/checksum.txt
+      - name: Upload omniroute.tgz
+        uses: actions/upload-artifact@v7
+        with:
+          name: omniroute-tarball
+          path: release/omniroute.tgz
+          if-no-files-found: error
 
   electron-package-smoke:
     name: Electron Package Smoke
