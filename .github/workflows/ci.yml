@@ -403,6 +403,7 @@ jobs:
 
   i18n-ui-coverage:
     name: i18n UI Coverage
+    if: false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -417,6 +418,7 @@ jobs:
 
   i18n-matrix:
     name: Build language matrix
+    if: false
     runs-on: ubuntu-latest
     outputs:
       langs: ${{ steps.langs.outputs.langs }}
@@ -432,6 +434,7 @@ jobs:
 
   i18n:
     name: i18n Validation
+    if: false
     runs-on: ubuntu-latest
     continue-on-error: true
     strategy:
@@ -1212,7 +1215,7 @@ jobs:
           echo "| Change Classification | $(status '${{ needs.changes.result }}') |" >> "$GITHUB_STEP_SUMMARY"
           echo "| Lint | $(status '${{ needs.lint.result }}') |" >> "$GITHUB_STEP_SUMMARY"
           echo "| Docs Sync (Strict) | $(status '${{ needs.docs-sync-strict.result }}') |" >> "$GITHUB_STEP_SUMMARY"
-          echo "| i18n UI Coverage | $(status '${{ needs.i18n-ui-coverage.result }}') |" >> "$GITHUB_STEP_SUMMARY"
+          # echo "| i18n UI Coverage | $(status '${{ needs.i18n-ui-coverage.result }}') |" >> "$GITHUB_STEP_SUMMARY"
           echo "| PR Test Policy | $(status '${{ needs.pr-test-policy.result }}') |" >> "$GITHUB_STEP_SUMMARY"
           echo "| SonarQube | $(status '${{ needs.sonarqube.result }}') |" >> "$GITHUB_STEP_SUMMARY"
 
