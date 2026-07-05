@@ -577,6 +577,8 @@ jobs:
     name: Package Artifact
     runs-on: ubuntu-latest
     needs: build
+    permissions:
+      contents: write
     env:
       JWT_SECRET: ci-build-secret-with-sufficient-length-for-validation
     steps:
