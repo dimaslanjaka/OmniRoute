@@ -529,7 +529,7 @@ jobs:
         continue-on-error: true
         run: |
           set -euo pipefail
-          mkdir -p /tmp
+          mkdir -p .build
           NOW=$(date +%s)
           LAST=0
           if [ -f .build/last-clean.txt ]; then
