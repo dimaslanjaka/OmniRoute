@@ -20,9 +20,22 @@ const npmCommand: string = process.platform === "win32" ? "npm.cmd" : "npm";
 
 function runNpm(args: string[], stdio: "inherit" | "pipe" = "pipe"): string {
   const npmExecPath = process.env.npm_execpath;
-  const isBunRuntime = "Bun" in globalThis;
-  const command = npmExecPath && !isBunRuntime ? process.execPath : npmCommand;
-  const commandArgs = npmExecPath && !isBunRuntime ? [npmExecPath, ...args] : args;
+
+  let command: string;
+  let commandArgs: string[];
+
+  if (npmExecPath) {
+    // npm_execpath is set (e.g. by "npm run script") - delegate to node
+    command = process.execPath;
+    commandArgs = [npmExecPath, ...args];
+  } else if (process.platform === "win32") {
+    // execFileSync cannot run .cmd files; route through cmd.exe /c
+    command = "cmd.exe";
+    commandArgs = ["/c", npmCommand, ...args];
+  } else {
+    command = npmCommand;
+    commandArgs = args;
+  }
 
   return execFileSync(command, commandArgs, {
     cwd: ROOT,
