@@ -115,4 +115,4 @@ if not defined ENTRY (
     exit /b 1
 )
 
-node "!ENTRY!" %* --no-open
+node "!ENTRY!" %*
