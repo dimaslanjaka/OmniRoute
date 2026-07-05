@@ -645,7 +645,8 @@ jobs:
             --notes "Automated build from commit [${{ github.sha }}](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }})
 
             Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
-            ./release/omniroute.tgz
+            ./release/omniroute.tgz \
+            ./release/checksum.txt
 
   electron-package-smoke:
     name: Electron Package Smoke
