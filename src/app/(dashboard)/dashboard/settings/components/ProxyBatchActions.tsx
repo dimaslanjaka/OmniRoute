@@ -6,17 +6,13 @@ import { Button } from "@/shared/components";
 interface ProxyBatchActionsProps {
   selectedCount: number;
   batchDeleting: boolean;
-  autoTesting: boolean;
   onBatchDelete: () => void;
-  onAutoTestAll: () => void;
 }
 
 export function ProxyBatchActions({
   selectedCount,
   batchDeleting,
-  autoTesting,
   onBatchDelete,
-  onAutoTestAll,
 }: ProxyBatchActionsProps) {
   const t = useTranslations("proxyRegistry");
 
@@ -40,16 +36,6 @@ export function ProxyBatchActions({
           </Button>
         </>
       )}
-      <Button
-        size="sm"
-        variant="secondary"
-        icon="network_check"
-        onClick={onAutoTestAll}
-        loading={autoTesting}
-        data-testid="proxy-registry-test-all"
-      >
-        {t("testAll")}
-      </Button>
     </>
   );
 }

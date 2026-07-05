@@ -270,11 +270,9 @@ export default function ProxyRegistryManager() {
     selectedIds,
     setSelectedIds,
     batchDeleting,
-    autoTesting,
     toggleSelectAll: hookToggleSelectAll,
     toggleSelect,
     handleBatchDelete: hookHandleBatchDelete,
-    handleAutoTestAll: hookHandleAutoTestAll,
   } = useProxyBatchOperations(load);
 
   const allSelected = items.length > 0 && items.every((item) => selectedIds.has(item.id));
@@ -282,10 +280,6 @@ export default function ProxyRegistryManager() {
   const handleBatchDelete = useCallback(() => {
     hookHandleBatchDelete(setError);
   }, [hookHandleBatchDelete, setError]);
-
-  const handleAutoTestAll = useCallback(() => {
-    hookHandleAutoTestAll(setError, setTestById);
-  }, [hookHandleAutoTestAll, setError, setTestById]);
 
   useEffect(() => {
     void load();
@@ -761,9 +755,7 @@ export default function ProxyRegistryManager() {
             <ProxyBatchActions
               selectedCount={selectedIds.size}
               batchDeleting={batchDeleting}
-              autoTesting={autoTesting}
               onBatchDelete={handleBatchDelete}
-              onAutoTestAll={handleAutoTestAll}
             />
             <Button
               size="sm"
