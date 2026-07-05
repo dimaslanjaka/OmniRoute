@@ -517,6 +517,31 @@ jobs:
           key: nextjs-${{ runner.os }}-node-${{ env.CI_NODE_VERSION }}-${{ hashFiles('package-lock.json') }}-${{ hashFiles('src/**/*', 'open-sse/**/*', 'db/**/*', 'next.config.mjs', 'tsconfig*.json', 'postcss.config.*', 'tailwind.config.*') }}
           restore-keys: |
             nextjs-${{ runner.os }}-node-${{ env.CI_NODE_VERSION }}-${{ hashFiles('package-lock.json') }}-
+
+      - name: "🧹 Daily cleanup (dist/ .build/ — once per 24h)"
+        if: ${{ !cancelled() }}
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp
+          NOW=$(date +%s)
+          LAST=0
+          if [ -f /tmp/last-clean.txt ]; then
+            LAST=$(cat /tmp/last-clean.txt 2>/dev/null || echo 0)
+          fi
+          ELAPSED=$((NOW - LAST))
+          THRESHOLD=86400
+          echo "[clean] last=$(date -u -d "@${LAST}" +%Y-%m-%dT%H:%M:%SZ 2>/dev/null || echo never) elapsed=${ELAPSED}s threshold=${THRESHOLD}s"
+          if [ "${ELAPSED}" -lt "${THRESHOLD}" ]; then
+            echo "[clean] skipped (within 24h of last clean)"
+            exit 0
+          fi
+          echo "[clean] running — purging dist/, .build/, node_modules/.cache"
+          rm -rf dist/ .build/ node_modules/.cache 2>/dev/null || true
+          rm -rf open-sse/dist open-sse/.build 2>/dev/null || true
+          echo "${NOW}" > /tmp/last-clean.txt
+          echo "[clean] done — next eligible clean in 24h"
+
       - run: npm run build
       - name: Archive Next.js build for downstream jobs
         # Use tar so the archive preserves paths relative to CWD (.build/next/...).
@@ -534,6 +559,13 @@ jobs:
           name: next-build
           path: /tmp/e2e-build.tar.gz
           retention-days: 1
+
+      - name: "🧹 Remove last github cache entry"
+        continue-on-error: true
+        if: ${{ !cancelled() }}
+        run: npx --legacy-peer-deps -y
+          binary-collections@https://github.com/dimaslanjaka/bin/raw/9688287aecab1a125de2d63fdd30651017a9862e/releases/bin.tgz clean-github-actions-cache
+          --repo "${{ github.repository }}" --sha "${{ github.sha }}"
 
   package-artifact:
     name: Package Artifact
