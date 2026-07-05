@@ -73,7 +73,7 @@ export async function runServe(opts = {}) {
   const port = parsePort(opts.port ?? process.env.PORT ?? "20128", 20128);
   const apiPort = parsePort(process.env.API_PORT ?? String(port), port);
   const dashboardPort = parsePort(process.env.DASHBOARD_PORT ?? String(port), port);
-  const noOpen = opts.open === false;
+  const noOpen = opts.open !== true;
 
   console.log(`
 \x1b[36m   ____                  _ ____              _
