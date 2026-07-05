@@ -10,104 +10,145 @@ export interface ProviderRiskNoticeFields {
   isEmbeddedService?: boolean;
 }
 
-import { NOAUTH_PROVIDERS } from "./providers/noauth";
-import { OAUTH_PROVIDERS } from "./providers/oauth";
-import { WEB_COOKIE_PROVIDERS } from "./providers/web-cookie";
-import { APIKEY_PROVIDERS } from "./providers/apikey";
-import { LOCAL_PROVIDERS } from "./providers/local";
-import { SEARCH_PROVIDERS } from "./providers/search";
-import { AUDIO_ONLY_PROVIDERS } from "./providers/audio";
-import { UPSTREAM_PROXY_PROVIDERS } from "./providers/upstream-proxy";
-import { CLOUD_AGENT_PROVIDERS } from "./providers/cloud-agent";
-import { SYSTEM_PROVIDERS } from "./providers/system";
+import { NOAUTH_PROVIDERS as ALL_NOAUTH_PROVIDERS } from "./providers/noauth";
+import { OAUTH_PROVIDERS as ALL_OAUTH_PROVIDERS } from "./providers/oauth";
+import { WEB_COOKIE_PROVIDERS as ALL_WEB_COOKIE_PROVIDERS } from "./providers/web-cookie";
+import { APIKEY_PROVIDERS as ALL_APIKEY_PROVIDERS } from "./providers/apikey";
+import { LOCAL_PROVIDERS as ALL_LOCAL_PROVIDERS } from "./providers/local";
+import { SEARCH_PROVIDERS as ALL_SEARCH_PROVIDERS } from "./providers/search";
+import { AUDIO_ONLY_PROVIDERS as ALL_AUDIO_ONLY_PROVIDERS } from "./providers/audio";
+import { UPSTREAM_PROXY_PROVIDERS as ALL_UPSTREAM_PROXY_PROVIDERS } from "./providers/upstream-proxy";
+import { CLOUD_AGENT_PROVIDERS as ALL_CLOUD_AGENT_PROVIDERS } from "./providers/cloud-agent";
+import { SYSTEM_PROVIDERS as ALL_SYSTEM_PROVIDERS } from "./providers/system";
+
+// ── Build-time / runtime provider allowlist filter ──
+import { filterProviderMap, filterProviderIdSet, filterProviderIds } from "../utils/providerFilter";
+
+// Apply filter so all downstream consumers see only enabled providers.
+export const NOAUTH_PROVIDERS = filterProviderMap(
+  ALL_NOAUTH_PROVIDERS
+) as typeof ALL_NOAUTH_PROVIDERS;
+export const OAUTH_PROVIDERS = filterProviderMap(ALL_OAUTH_PROVIDERS) as typeof ALL_OAUTH_PROVIDERS;
+export const APIKEY_PROVIDERS = filterProviderMap(
+  ALL_APIKEY_PROVIDERS
+) as typeof ALL_APIKEY_PROVIDERS;
+export const WEB_COOKIE_PROVIDERS = filterProviderMap(
+  ALL_WEB_COOKIE_PROVIDERS
+) as typeof ALL_WEB_COOKIE_PROVIDERS;
+export const LOCAL_PROVIDERS = filterProviderMap(ALL_LOCAL_PROVIDERS) as typeof ALL_LOCAL_PROVIDERS;
+export const SEARCH_PROVIDERS = filterProviderMap(
+  ALL_SEARCH_PROVIDERS
+) as typeof ALL_SEARCH_PROVIDERS;
+export const AUDIO_ONLY_PROVIDERS = filterProviderMap(
+  ALL_AUDIO_ONLY_PROVIDERS
+) as typeof ALL_AUDIO_ONLY_PROVIDERS;
+export const UPSTREAM_PROXY_PROVIDERS = filterProviderMap(
+  ALL_UPSTREAM_PROXY_PROVIDERS
+) as typeof ALL_UPSTREAM_PROXY_PROVIDERS;
+export const CLOUD_AGENT_PROVIDERS = filterProviderMap(
+  ALL_CLOUD_AGENT_PROVIDERS
+) as typeof ALL_CLOUD_AGENT_PROVIDERS;
+export const SYSTEM_PROVIDERS = filterProviderMap(
+  ALL_SYSTEM_PROVIDERS
+) as typeof ALL_SYSTEM_PROVIDERS;
 
 export const FREE_PROVIDERS = {};
 
 // No-auth Providers
 
-export const FREE_APIKEY_PROVIDER_IDS = new Set([
-  "qoder",
-  "mimocode",
-  "opencode",
-  // codebuddy-cn is OAuth-primary but the Tencent gateway also accepts a direct
-  // API key (Authorization: Bearer). Admit it through the same managed-provider
-  // gate so POST /api/providers accepts the dual-auth shape.
-  "codebuddy-cn",
-]);
+export const FREE_APIKEY_PROVIDER_IDS = filterProviderIdSet(
+  new Set([
+    "qoder",
+    "mimocode",
+    "opencode",
+    // codebuddy-cn is OAuth-primary but the Tencent gateway also accepts a direct
+    // API key (Authorization: Bearer). Admit it through the same managed-provider
+    // gate so POST /api/providers accepts the dual-auth shape.
+    "codebuddy-cn",
+    // auggie is a fully local, credential-less CLI passthrough (auth handled by
+    // `auggie login` outside OmniRoute). Admitted here purely so POST /api/providers
+    // accepts an optional connection row for display/priority/testStatus tracking —
+    // no apiKey is ever required or sent upstream.
+    "auggie",
+  ])
+);
 
 export function supportsApiKeyOnFreeProvider(providerId: unknown): boolean {
   return typeof providerId === "string" && FREE_APIKEY_PROVIDER_IDS.has(providerId);
 }
+
+// OAuth Providers
 
 // Web / Cookie Providers
 
 // API Key Providers
 
 // Sub-categories within APIKEY_PROVIDERS (used by dashboard and catalog views).
-export const IMAGE_ONLY_PROVIDER_IDS = new Set([
-  "nanobanana",
-  "fal-ai",
-  "stability-ai",
-  "black-forest-labs",
-  "recraft",
-  "topaz",
-]);
+export const IMAGE_ONLY_PROVIDER_IDS = filterProviderIdSet(
+  new Set(["nanobanana", "fal-ai", "stability-ai", "black-forest-labs", "recraft", "topaz"])
+);
 
-export const AGGREGATOR_PROVIDER_IDS = new Set([
-  "openrouter",
-  "synthetic",
-  "kilo-gateway",
-  "aimlapi",
-  "novita",
-  "piapi",
-  "getgoapi",
-  "laozhang",
-  "vercel-ai-gateway",
-  "agentrouter",
-  "glhf",
-  "cablyai",
-  "thebai",
-  "fenayai",
-  "empower",
-  "poe",
-  "chutes",
-  "hackclub",
-]);
+export const AGGREGATOR_PROVIDER_IDS = filterProviderIdSet(
+  new Set([
+    "openrouter",
+    "synthetic",
+    "kilo-gateway",
+    "aimlapi",
+    "novita",
+    "piapi",
+    "getgoapi",
+    "laozhang",
+    "vercel-ai-gateway",
+    "agentrouter",
+    "glhf",
+    "cablyai",
+    "thebai",
+    "fenayai",
+    "empower",
+    "poe",
+    "chutes",
+    "hackclub",
+  ])
+);
 
-export const ENTERPRISE_CLOUD_PROVIDER_IDS = new Set([
-  "azure-openai",
-  "azure-ai",
-  "bedrock",
-  "watsonx",
-  "oci",
-  "sap",
-  "vertex",
-  "vertex-partner",
-  "databricks",
-  "datarobot",
-  "clarifai",
-  "snowflake",
-  "heroku",
-  "modal",
-]);
+export const ENTERPRISE_CLOUD_PROVIDER_IDS = filterProviderIdSet(
+  new Set([
+    "azure-openai",
+    "azure-ai",
+    "bedrock",
+    "watsonx",
+    "oci",
+    "sap",
+    "vertex",
+    "vertex-partner",
+    "databricks",
+    "datarobot",
+    "clarifai",
+    "snowflake",
+    "heroku",
+    "modal",
+  ])
+);
 
-export const VIDEO_PROVIDER_IDS = new Set([
-  "runwayml",
-  "veoaifree-web",
-  "pollinations",
-  "minimax",
-  "together",
-  "replicate",
-  "haiper",
-  "leonardo",
-]);
+export const VIDEO_PROVIDER_IDS = filterProviderIdSet(
+  new Set([
+    "runwayml",
+    "veoaifree-web",
+    "pollinations",
+    "minimax",
+    "together",
+    "replicate",
+    "haiper",
+    "leonardo",
+  ])
+);
 
 // IDE Providers: editors with built-in AI subscription (separate section in UI).
 // These providers live in OAUTH_PROVIDERS but render under "IDE Providers"
 // instead of "OAuth Providers" to avoid visual duplication.
-export const IDE_PROVIDER_IDS = new Set(["cursor", "zed", "trae"]);
+export const IDE_PROVIDER_IDS = filterProviderIdSet(new Set(["cursor", "zed", "trae"]));
 
-export const EMBEDDING_RERANK_PROVIDER_IDS = new Set(["voyage-ai", "jina-ai"]);
+export const EMBEDDING_RERANK_PROVIDER_IDS = filterProviderIdSet(new Set(["voyage-ai", "jina-ai"]));
 
 // Local / Self-Hosted Providers
 
@@ -138,18 +179,20 @@ export function isLocalProvider(providerId: unknown): boolean {
   );
 }
 
-export const SELF_HOSTED_CHAT_PROVIDER_IDS = new Set([
-  "ollama-local",
-  "lm-studio",
-  "vllm",
-  "lemonade",
-  "llamafile",
-  "llama-cpp",
-  "triton",
-  "docker-model-runner",
-  "xinference",
-  "oobabooga",
-]);
+export const SELF_HOSTED_CHAT_PROVIDER_IDS = filterProviderIdSet(
+  new Set([
+    "ollama-local",
+    "lm-studio",
+    "vllm",
+    "lemonade",
+    "llamafile",
+    "llama-cpp",
+    "triton",
+    "docker-model-runner",
+    "xinference",
+    "oobabooga",
+  ])
+);
 
 export function isSelfHostedChatProvider(providerId: unknown): boolean {
   return typeof providerId === "string" && SELF_HOSTED_CHAT_PROVIDER_IDS.has(providerId);
@@ -385,7 +428,7 @@ export const ID_TO_ALIAS = new Proxy({} as Record<string, string>, {
 });
 
 // Providers that support usage/quota API
-export const USAGE_SUPPORTED_PROVIDERS = [
+export const USAGE_SUPPORTED_PROVIDERS = filterProviderIds([
   "antigravity",
   "agy",
   "kiro",
@@ -411,32 +454,20 @@ export const USAGE_SUPPORTED_PROVIDERS = [
   "vertex",
   "vertex-partner",
   "codebuddy-cn",
-];
+]);
 
 // ── Zod validation at module load (Phase 7.2) ──
 
-// Re-export the extracted data catalogs so external importers of providers.ts are unchanged.
-export {
-  NOAUTH_PROVIDERS,
-  OAUTH_PROVIDERS,
-  WEB_COOKIE_PROVIDERS,
-  APIKEY_PROVIDERS,
-  LOCAL_PROVIDERS,
-  SEARCH_PROVIDERS,
-  AUDIO_ONLY_PROVIDERS,
-  UPSTREAM_PROXY_PROVIDERS,
-  CLOUD_AGENT_PROVIDERS,
-  SYSTEM_PROVIDERS,
-};
-
+// Validate the RAW catalogs so a structural error is never silently hidden by
+// the build-time filter.
 import { validateProviders } from "../validation/providerSchema";
 
-validateProviders(NOAUTH_PROVIDERS, "NOAUTH_PROVIDERS");
-validateProviders(OAUTH_PROVIDERS, "OAUTH_PROVIDERS");
-validateProviders(APIKEY_PROVIDERS, "APIKEY_PROVIDERS");
-validateProviders(WEB_COOKIE_PROVIDERS, "WEB_COOKIE_PROVIDERS");
-validateProviders(LOCAL_PROVIDERS, "LOCAL_PROVIDERS");
-validateProviders(SEARCH_PROVIDERS, "SEARCH_PROVIDERS");
-validateProviders(AUDIO_ONLY_PROVIDERS, "AUDIO_ONLY_PROVIDERS");
-validateProviders(UPSTREAM_PROXY_PROVIDERS, "UPSTREAM_PROXY_PROVIDERS");
-validateProviders(CLOUD_AGENT_PROVIDERS, "CLOUD_AGENT_PROVIDERS");
+validateProviders(ALL_NOAUTH_PROVIDERS, "NOAUTH_PROVIDERS");
+validateProviders(ALL_OAUTH_PROVIDERS, "OAUTH_PROVIDERS");
+validateProviders(ALL_APIKEY_PROVIDERS, "APIKEY_PROVIDERS");
+validateProviders(ALL_WEB_COOKIE_PROVIDERS, "WEB_COOKIE_PROVIDERS");
+validateProviders(ALL_LOCAL_PROVIDERS, "LOCAL_PROVIDERS");
+validateProviders(ALL_SEARCH_PROVIDERS, "SEARCH_PROVIDERS");
+validateProviders(ALL_AUDIO_ONLY_PROVIDERS, "AUDIO_ONLY_PROVIDERS");
+validateProviders(ALL_UPSTREAM_PROXY_PROVIDERS, "UPSTREAM_PROXY_PROVIDERS");
+validateProviders(ALL_CLOUD_AGENT_PROVIDERS, "CLOUD_AGENT_PROVIDERS");
