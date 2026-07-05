@@ -51,7 +51,7 @@ if exist "%VERSION_FILE%" (
             echo [npm] Cache incomplete, re-setup required.
         )
     ) else (
-        echo [npm] Version changed (!LOCAL_VERSION! -> !REMOTE_VERSION!)
+        echo [npm] Version changed (!LOCAL_VERSION! ^> !REMOTE_VERSION!)
     )
 ) else (
     echo [npm] No version file found
