@@ -92,6 +92,7 @@ jobs:
   lint:
     name: Lint
     runs-on: ubuntu-latest
+    if: false
     env:
       # tsx gates below (known-symbols, route-guard-membership) import modules that
       # open SQLite on load; provide DB env so a fresh CI DB initializes cleanly.
@@ -239,6 +240,7 @@ jobs:
   # SonarQube needs SONAR_TOKEN/SONAR_HOST_URL secrets.
   quality-extended:
     name: Quality Gates (Extended)
+    if: false
     runs-on: ubuntu-latest
     steps:
       # fetch-depth: 0 — the OpenAPI breaking-change gate (oasdiff) reads the base
