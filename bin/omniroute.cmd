@@ -4,14 +4,11 @@ setlocal enabledelayedexpansion
 set "NODE_OPTIONS=--max-old-space-size=6048 --expose-gc --max-semi-space-size=512"
 set "NODE_ENV=production"
 
-REM Centralized cache location
-set "CACHE_ROOT=%TEMP%\npm\omniroute"
-set "RELEASE_DIR=%CACHE_ROOT%\downloads"
-set "INSTALL_DIR=%CACHE_ROOT%\installed"
-set "VERSION_FILE=%CACHE_ROOT%\omniroute.version"
+set "NPM_ROOT=%TEMP%\npm"
+set "PKG_DIR=%NPM_ROOT%\node_modules\omniroute"
+set "VERSION_FILE=%NPM_ROOT%\omniroute.version"
 
-if not exist "%RELEASE_DIR%" mkdir "%RELEASE_DIR%"
-if not exist "%INSTALL_DIR%" mkdir "%INSTALL_DIR%"
+if not exist "%NPM_ROOT%" mkdir "%NPM_ROOT%"
 
 REM --- Fetch latest metadata ---
 for /f "usebackq tokens=*" %%i in (`
@@ -30,8 +27,7 @@ for /f "tokens=1,2 delims=|" %%a in ("!LATEST!") do (
     set "REMOTE_URL=%%b"
 )
 
-set "TARBALL=%RELEASE_DIR%\omniroute-!REMOTE_VERSION!.tgz"
-set "PKG_DIR=%INSTALL_DIR%\node_modules\omniroute"
+set "TARBALL=%NPM_ROOT%\omniroute-!REMOTE_VERSION!.tgz"
 
 echo [npm] Latest version: !REMOTE_VERSION!
 
@@ -41,64 +37,67 @@ if exist "%VERSION_FILE%" (
     set /p LOCAL_VERSION=<"%VERSION_FILE%"
     if "!LOCAL_VERSION!"=="!REMOTE_VERSION!" (
         if exist "!PKG_DIR!\package.json" (
-            if exist "%INSTALL_DIR%\node_modules\update-notifier" (
-                echo [npm] Cached version valid, skipping setup.
-                set "NEED_SETUP=0"
-            ) else (
-                echo [npm] Dependencies missing, re-setup required.
-            )
-        ) else (
-            echo [npm] Cache incomplete, re-setup required.
+            echo [npm] Cached version valid, skipping setup.
+            set "NEED_SETUP=0"
         )
-    ) else (
-        echo [npm] Version changed (!LOCAL_VERSION! ^> !REMOTE_VERSION!)
     )
-) else (
-    echo [npm] No version file found
 )
 
 if "!NEED_SETUP!"=="1" (
-    REM --- Download tarball if missing ---
-    if not exist "!TARBALL!" (
-        echo [npm] Downloading tarball...
-        curl -fL "!REMOTE_URL!" -o "!TARBALL!.tmp"
-        if errorlevel 1 (
-            echo [npm] Download failed.
-            del "!TARBALL!.tmp" 2>nul
-            exit /b 1
-        )
-        move /y "!TARBALL!.tmp" "!TARBALL!" >nul
-        echo [npm] Download complete.
-    )
-
-    REM --- Clean old install ---
-    if exist "%INSTALL_DIR%" rmdir /s /q "%INSTALL_DIR%"
-    mkdir "%INSTALL_DIR%"
-
-    REM --- Install tarball properly all dependencies --- pushd "%INSTALL_DIR%"
-    echo [npm] Installing omniroute dependencies...
-    call npm install "!TARBALL!" --legacy-peer-deps --no-audit --no-fund --loglevel=error
-    echo [npm] approving better-sqlite3 build scripts...
-    call npx -y npm-approve-scripts better-sqlite3 2>nul || ver>nul
-    echo [npm] rebuilding better-sqlite3...
-    call npm rebuild better-sqlite3
-    popd
-
-    if not exist "!PKG_DIR!\package.json" (
-        echo [npm] Installation failed - package not found in node_modules
+    echo [npm] Downloading tarball...
+    curl -fL "!REMOTE_URL!" -o "!TARBALL!.tmp"
+    if errorlevel 1 (
+        del "!TARBALL!.tmp" 2>nul
         exit /b 1
     )
+    move /y "!TARBALL!.tmp" "!TARBALL!" >nul
+
+    pushd "%NPM_ROOT%"
+
+    if not exist "package.json" (
+        echo [npm] Initializing project...
+        call npm init -y
+    )
+
+    if exist "node_modules\omniroute" rmdir /s /q "node_modules\omniroute" 2>nul
+
+    echo [npm] Installing omniroute...
+    call npm install "!TARBALL!" ^
+        --legacy-peer-deps ^
+        --no-audit ^
+        --no-fund ^
+        --loglevel=error
+    if errorlevel 1 (
+        popd
+        echo [npm] Install failed
+        exit /b 1
+    )
+
+    echo [npm] Approving scripts...
+    call npx -y npm-approve-scripts better-sqlite3 2>nul || ver>nul
+
+    echo [npm] Rebuilding native modules...
+    call npm rebuild better-sqlite3
+    if errorlevel 1 (
+        popd
+        echo [npm] Rebuild failed
+        exit /b 1
+    )
+
+    popd
 
     echo !REMOTE_VERSION!>"%VERSION_FILE%"
     echo [npm] Setup complete.
 )
 
-REM --- Find entry point from package.json ---
+REM --- Resolve entry point ---
 set "ENTRY="
 
-for /f "usebackq tokens=*" %%i in (`powershell -NoProfile -Command "$pkg = Get-Content '!PKG_DIR!\package.json' | ConvertFrom-Json; if ($pkg.bin -is [string]) { $pkg.bin } else { $pkg.bin.PSObject.Properties.Value | Select-Object -First 1 }"`) do (
+pushd "%PKG_DIR%"
+for /f "usebackq tokens=*" %%i in (`node -p "const p=require('./package.json'); typeof p.bin==='string'?p.bin:(p.bin?Object.values(p.bin)[0]:'')"`) do (
     set "ENTRY_REL=%%i"
 )
+popd
 
 if defined ENTRY_REL (
     set "ENTRY=!PKG_DIR!\!ENTRY_REL!"
@@ -116,5 +115,4 @@ if not defined ENTRY (
     exit /b 1
 )
 
-echo [debug] Executing: node "!ENTRY!" %*
-node "!ENTRY!" --no-open %*
+node "!ENTRY!" %* --no-open

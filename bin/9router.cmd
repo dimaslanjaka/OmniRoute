@@ -4,16 +4,13 @@ setlocal enabledelayedexpansion
 set "NODE_OPTIONS=--max-old-space-size=6048 --expose-gc --max-semi-space-size=512"
 set "NODE_ENV=production"
 
-REM Centralized cache for 9router
-set "CACHE_ROOT=%TEMP%\npm\9router"
-set "RELEASE_DIR=%CACHE_ROOT%\downloads"
-set "INSTALL_DIR=%CACHE_ROOT%\installed"
-set "VERSION_FILE=%CACHE_ROOT%\9router.version"
+set "NPM_ROOT=%TEMP%\npm"
+set "PKG_DIR=%NPM_ROOT%\node_modules\9router"
+set "VERSION_FILE=%NPM_ROOT%\9router.version"
 
-if not exist "%RELEASE_DIR%" mkdir "%RELEASE_DIR%"
-if not exist "%INSTALL_DIR%" mkdir "%INSTALL_DIR%"
+if not exist "%NPM_ROOT%" mkdir "%NPM_ROOT%"
 
-REM --- Fetch latest metadata from npm ---
+REM --- Fetch latest metadata ---
 for /f "usebackq tokens=*" %%i in (`
     curl -s https://registry.npmjs.org/9router/latest ^
     ^| powershell -NoProfile -Command ^
@@ -30,23 +27,19 @@ for /f "tokens=1,2 delims=|" %%a in ("!LATEST!") do (
     set "REMOTE_URL=%%b"
 )
 
-set "TARBALL=%RELEASE_DIR%\9router-!REMOTE_VERSION!.tgz"
-set "PKG_DIR=%INSTALL_DIR%\node_modules\9router"
+set "TARBALL=%NPM_ROOT%\9router-!REMOTE_VERSION!.tgz"
 
 echo [npm] Latest version: !REMOTE_VERSION!
 
 REM --- Check cache ---
 set "NEED_SETUP=1"
+
 if exist "%VERSION_FILE%" (
     set /p LOCAL_VERSION=<"%VERSION_FILE%"
     if "!LOCAL_VERSION!"=="!REMOTE_VERSION!" (
         if exist "!PKG_DIR!\package.json" (
-            if exist "%INSTALL_DIR%\node_modules\9router" (
-                echo [npm] Cached version valid, skipping setup.
-                set "NEED_SETUP=0"
-            ) else (
-                echo [npm] node_modules missing, re-setup required.
-            )
+            echo [npm] Cached version valid, skipping setup.
+            set "NEED_SETUP=0"
         ) else (
             echo [npm] Cache incomplete, re-setup required.
         )
@@ -58,52 +51,58 @@ if exist "%VERSION_FILE%" (
 )
 
 if "!NEED_SETUP!"=="1" (
-    REM --- Download tarball if missing ---
     if not exist "!TARBALL!" (
         echo [npm] Downloading tarball...
         curl -fL "!REMOTE_URL!" -o "!TARBALL!.tmp"
         if errorlevel 1 (
-            echo [npm] Download failed.
             del "!TARBALL!.tmp" 2>nul
             exit /b 1
         )
         move /y "!TARBALL!.tmp" "!TARBALL!" >nul
-        echo [npm] Download complete.
     ) else (
         echo [npm] Tarball already cached.
     )
 
-    REM --- Clean old install ---
-    if exist "%INSTALL_DIR%\node_modules" rmdir /s /q "%INSTALL_DIR%\node_modules" 2>nul
-    mkdir "%INSTALL_DIR%\node_modules" 2>nul
+    pushd "%NPM_ROOT%"
 
-    REM --- Install with dependencies ---
-    pushd "%INSTALL_DIR%"
-    echo [npm] Installing 9router with dependencies...
-    call npm install "!TARBALL!" --legacy-peer-deps --no-audit --no-fund --loglevel=error
-    popd
+    if not exist "package.json" (
+        echo [npm] Initializing project...
+        call npm init -y
+    )
 
-    if not exist "!PKG_DIR!\package.json" (
-        echo [npm] Installation failed - package not found in node_modules
+    if exist "node_modules\9router" rmdir /s /q "node_modules\9router" 2>nul
+
+    echo [npm] Installing 9router...
+    call npm install "!TARBALL!" ^
+        --legacy-peer-deps ^
+        --no-audit ^
+        --no-fund ^
+        --loglevel=error
+    if errorlevel 1 (
+        popd
+        echo [npm] Install failed
         exit /b 1
     )
+
+    popd
 
     echo !REMOTE_VERSION!>"%VERSION_FILE%"
     echo [npm] Setup complete.
 )
 
-REM --- Find entry point from package.json bin field ---
+REM --- Resolve entry point ---
 set "ENTRY="
 
-for /f "usebackq tokens=*" %%i in (`powershell -NoProfile -Command "$pkg = Get-Content '!PKG_DIR!\package.json' | ConvertFrom-Json; if ($pkg.bin -is [string]) { $pkg.bin } else { $pkg.bin.PSObject.Properties.Value | Select-Object -First 1 }"`) do (
+pushd "%PKG_DIR%"
+for /f "usebackq tokens=*" %%i in (`node -p "const p=require('./package.json'); typeof p.bin==='string'?p.bin:(p.bin?Object.values(p.bin)[0]:'')"`) do (
     set "ENTRY_REL=%%i"
 )
+popd
 
 if defined ENTRY_REL (
     set "ENTRY=!PKG_DIR!\!ENTRY_REL!"
 )
 
-REM Fallbacks if bin field didn't resolve
 if not defined ENTRY (
     if exist "!PKG_DIR!\bin\9router.mjs" set "ENTRY=!PKG_DIR!\bin\9router.mjs"
     if exist "!PKG_DIR!\bin\9router.js" set "ENTRY=!PKG_DIR!\bin\9router.js"
