@@ -122,8 +122,38 @@ export default function FreePoolTab() {
       const data = await res.json().catch(() => null);
       if (res.ok && data?.success) {
         setProxies((prev) => prev.map((p) => (p.id === id ? { ...p, inPool: true } : p)));
+      } else {
+        // Store test result (success or failure) so user can see why it failed
+        setProxies((prev) =>
+          prev.map((p) =>
+            p.id === id
+              ? {
+                  ...p,
+                  testResult: {
+                    success: false,
+                    latencyMs: data?.latencyMs,
+                    error: data?.error || "Proxy test failed",
+                  },
+                }
+              : p
+          )
+        );
       }
-    } catch {}
+    } catch (error) {
+      setProxies((prev) =>
+        prev.map((p) =>
+          p.id === id
+            ? {
+                ...p,
+                testResult: {
+                  success: false,
+                  error: error instanceof Error ? error.message : "Network error",
+                },
+              }
+            : p
+        )
+      );
+    }
     setAddingIds((prev) => {
       const next = new Set(prev);
       next.delete(id);
@@ -143,23 +173,61 @@ export default function FreePoolTab() {
   const handleBulkAdd = async (ids: string[]) => {
     if (!ids.length || bulkAdding) return;
     setBulkAdding(true);
-    setBulkProgress(`Testing ${ids.length} proxies...`);
+    setBulkProgress(`Testing 1/${ids.length}...`);
+    let succeeded = 0;
+    let failed = 0;
+
     try {
-      const res = await fetch("/api/settings/free-proxies/bulk-add-to-pool", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ids }),
-      });
-      const data = await res.json().catch(() => null);
-      if (!res.ok) {
-        setBulkProgress(data?.error?.message || data?.message || "Bulk add failed");
-        return;
+      for (let i = 0; i < ids.length; i++) {
+        const id = ids[i];
+        setBulkProgress(`Testing ${i + 1}/${ids.length}...`);
+
+        try {
+          const res = await fetch(`/api/settings/free-proxies/${id}/add-to-pool`, {
+            method: "POST",
+          });
+          const data = await res.json().catch(() => null);
+
+          if (res.ok && data?.success) {
+            succeeded++;
+            setProxies((prev) => prev.map((p) => (p.id === id ? { ...p, inPool: true } : p)));
+          } else {
+            failed++;
+            setProxies((prev) =>
+              prev.map((p) =>
+                p.id === id
+                  ? {
+                      ...p,
+                      testResult: {
+                        success: false,
+                        latencyMs: data?.latencyMs,
+                        error: data?.error || "Proxy test failed",
+                      },
+                    }
+                  : p
+              )
+            );
+          }
+        } catch (error) {
+          failed++;
+          setProxies((prev) =>
+            prev.map((p) =>
+              p.id === id
+                ? {
+                    ...p,
+                    testResult: {
+                      success: false,
+                      error: error instanceof Error ? error.message : "Network error",
+                    },
+                  }
+                : p
+            )
+          );
+        }
       }
-      setBulkProgress(`${data?.succeeded ?? 0} added, ${data?.failed ?? 0} failed`);
-      await loadData();
+
+      setBulkProgress(`Complete: ${succeeded} added, ${failed} failed`);
       setSelected(new Set());
-    } catch {
-      setBulkProgress("Bulk add failed");
     } finally {
       setBulkAdding(false);
       setTimeout(() => setBulkProgress(null), 4000);
@@ -299,19 +367,22 @@ export default function FreePoolTab() {
               <th className="px-3 py-2 text-left" scope="col">
                 {t("proxyFreePoolLatency")}
               </th>
+              <th className="px-3 py-2 text-left" scope="col">
+                Result
+              </th>
               <th className="px-3 py-2 text-left" scope="col"></th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={8} className="px-3 py-8 text-center text-text-muted">
+                <td colSpan={9} className="px-3 py-8 text-center text-text-muted">
                   {t("loading")}
                 </td>
               </tr>
             ) : proxies.length === 0 ? (
               <tr>
-                <td colSpan={8} className="px-3 py-8 text-center text-text-muted">
+                <td colSpan={9} className="px-3 py-8 text-center text-text-muted">
                   {t("proxyFreePoolEmpty")}
                 </td>
               </tr>
