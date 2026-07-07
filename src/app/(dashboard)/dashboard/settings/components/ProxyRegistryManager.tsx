@@ -8,6 +8,11 @@ import { ProxyStatusBadge } from "./ProxyStatusBadge";
 import { ProxyHealthCell } from "./ProxyHealthCell";
 import { ProxyBatchActions } from "./ProxyBatchActions";
 import { ProxyCheckboxCell } from "./ProxyCheckboxCell";
+import {
+  parseBulkImportText,
+  type ParsedProxyEntry,
+  type ParseError,
+} from "./parseBulkProxyImport";
 
 type ProxyItem = {
   id: string;
@@ -44,23 +49,6 @@ type TestResult = {
   error?: string;
 };
 
-type ParsedProxyEntry = {
-  name: string;
-  host: string;
-  port: number;
-  username: string;
-  password: string;
-  type: string;
-  region: string;
-  status: string;
-  notes: string;
-};
-
-type ParseError = {
-  line: number;
-  reason: string;
-};
-
 const EMPTY_FORM = {
   id: "",
   name: "",
@@ -89,70 +77,6 @@ const BULK_IMPORT_TEMPLATE = `# Proxy Bulk Import
 # http-proxy|10.0.0.50|8080|||http||active|Internal HTTP proxy
 # https-proxy|proxy.example.com|443|admin|secret123|https|US|active
 `;
-
-const VALID_TYPES = new Set(["http", "https", "socks5"]);
-const VALID_STATUSES = new Set(["active", "inactive"]);
-
-function parseBulkImportText(text: string): {
-  entries: ParsedProxyEntry[];
-  errors: ParseError[];
-  skipped: number;
-} {
-  const lines = text.split("\n");
-  const entries: ParsedProxyEntry[] = [];
-  const errors: ParseError[] = [];
-  let skipped = 0;
-
-  for (let i = 0; i < lines.length; i++) {
-    const raw = lines[i].trim();
-    if (!raw || raw.startsWith("#")) {
-      skipped++;
-      continue;
-    }
-
-    const parts = raw.split("|").map((p) => p.trim());
-    const [name, host, portStr, username, password, type, region, status, notes] = parts;
-    const lineNum = i + 1;
-
-    if (!name) {
-      errors.push({ line: lineNum, reason: "bulkImportErrorMissingName" });
-      continue;
-    }
-    if (!host) {
-      errors.push({ line: lineNum, reason: "bulkImportErrorMissingHost" });
-      continue;
-    }
-    const port = Number(portStr);
-    if (!portStr || isNaN(port) || port < 1 || port > 65535) {
-      errors.push({ line: lineNum, reason: "bulkImportErrorInvalidPort" });
-      continue;
-    }
-    const normalizedType = (type || "socks5").toLowerCase();
-    if (!VALID_TYPES.has(normalizedType)) {
-      errors.push({ line: lineNum, reason: "bulkImportErrorInvalidType" });
-      continue;
-    }
-    const normalizedStatus = (status || "active").toLowerCase();
-    if (!VALID_STATUSES.has(normalizedStatus)) {
-      errors.push({ line: lineNum, reason: "bulkImportErrorInvalidStatus" });
-      continue;
-    }
-
-    entries.push({
-      name,
-      host,
-      port,
-      username: username || "",
-      password: password || "",
-      type: normalizedType,
-      region: region || "",
-      status: normalizedStatus,
-      notes: notes || "",
-    });
-  }
-
-  return { entries, errors, skipped };
-}
 
 export default function ProxyRegistryManager() {
   const t = useTranslations("proxyRegistry");
