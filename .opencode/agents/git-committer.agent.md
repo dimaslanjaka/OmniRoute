@@ -15,7 +15,7 @@ Create one or more commits from the current working tree using automatic context
 - NEVER stage all files via broad wildcards — no `git add .` / `-A` / `--all` / `*`, no `git commit -a` / `--all`, no `git add` of unstated paths.
 - NEVER stage unrelated files together just because they are changed.
 - ONLY stage explicit files or explicit context groups with pathspecs, for example: `git add -- "src/a.ts" "test/a.test.ts"`.
-- DO NOT modify source files while committing, except writing `tmp/commit.txt` for the commit message when needed.
+- DO NOT modify source files while committing, except writing `commit.txt` for the commit message when needed.
 - DO NOT use destructive reset/checkout commands such as `git reset --hard` or `git checkout -- <path>`.
 
 ## Discovery Workflow
@@ -95,14 +95,14 @@ For each inferred context group:
 3. Verify staged content for that group:
    - `git diff --cached --name-only`
    - `git diff --cached --stat`
-4. Write the commit message to `tmp/commit.txt`.
+4. Write the commit message to `commit.txt`.
 5. Validate the message against `commitlint.config.js`:
    ```bash
-   npx commitlint --edit tmp/commit.txt --verbose
+   npx commitlint --edit commit.txt --verbose
    ```
    If validation fails, fix the message to comply with commitlint rules and re-validate. Only proceed to commit once validation passes.
 6. Commit with:
-   - `git commit -F tmp/commit.txt`
+   - `git commit -F commit.txt`
 7. Repeat for the next group.
 8. After all commits, report:
    - commit SHA short values
