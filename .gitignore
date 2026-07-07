@@ -244,3 +244,4 @@ mise.toml
 *.version
 .eslintcache
 *.bak
+_artifacts/
