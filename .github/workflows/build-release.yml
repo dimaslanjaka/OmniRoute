@@ -1,0 +1,164 @@
+# Build → Package → Release pipeline.
+#
+# Standalone workflow for producing and publishing omniroute.tgz to a
+# ci-build GitHub Release.  Extracted from the main CI pipeline so it
+# can be triggered independently (e.g. on release tags, manual dispatch)
+# without running the full test matrix.
+#
+# Flow:  build (Next.js standalone) → package-artifact (tgz + GitHub Release)
+
+name: Build & Release
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*.*.*"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  CI_NODE_VERSION: "24"
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    env:
+      ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN || secrets.GITHUB_TOKEN }}
+      GH_TOKEN: ${{ secrets.ACCESS_TOKEN || secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.CI_NODE_VERSION }}
+          cache: npm
+      - uses: ./.github/actions/npm-ci-retry
+      - run: npm run check:node-runtime
+      - name: Cache Next.js build cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: .build/next/cache
+          key: nextjs-${{ runner.os }}-node-${{ env.CI_NODE_VERSION }}-${{ hashFiles('package-lock.json') }}-${{ hashFiles('src/**/*', 'open-sse/**/*', 'db/**/*', 'next.config.mjs', 'tsconfig*.json', 'postcss.config.*', 'tailwind.config.*') }}
+          restore-keys: |
+            nextjs-${{ runner.os }}-node-${{ env.CI_NODE_VERSION }}-${{ hashFiles('package-lock.json') }}-
+
+      - name: "🧹 Daily cleanup (dist/ .build/ — once per 24h)"
+        if: ${{ !cancelled() }}
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          mkdir -p .build
+          NOW=$(date +%s)
+          LAST=0
+          if [ -f .build/last-clean.txt ]; then
+            LAST=$(cat .build/last-clean.txt 2>/dev/null || echo 0)
+          fi
+          ELAPSED=$((NOW - LAST))
+          THRESHOLD=86400
+          echo "[clean] last=$(date -u -d "@${LAST}" +%Y-%m-%dT%H:%M:%SZ 2>/dev/null || echo never) elapsed=${ELAPSED}s threshold=${THRESHOLD}s"
+          if [ "${ELAPSED}" -lt "${THRESHOLD}" ]; then
+            echo "[clean] skipped (within 24h of last clean)"
+            exit 0
+          fi
+          echo "[clean] running — purging dist/, .build/, node_modules/.cache"
+          rm -rf dist/ .build/ node_modules/.cache 2>/dev/null || true
+          rm -rf open-sse/dist open-sse/.build 2>/dev/null || true
+          echo "${NOW}" > .build/last-clean.txt
+          echo "[clean] done — next eligible clean in 24h"
+
+      - run: npm run build
+      - name: Archive Next.js build for downstream jobs
+        run: |
+          tar -czf /tmp/e2e-build.tar.gz \
+            --exclude='.build/next/cache' \
+            .build/next
+      - name: Upload Next.js build for downstream jobs
+        uses: actions/upload-artifact@v7
+        with:
+          name: next-build
+          path: /tmp/e2e-build.tar.gz
+          retention-days: 1
+
+      - name: "🧹 Remove last github cache entry"
+        continue-on-error: true
+        if: ${{ !cancelled() }}
+        run: npx --legacy-peer-deps -y
+          binary-collections@https://github.com/dimaslanjaka/bin/raw/9688287aecab1a125de2d63fdd30651017a9862e/releases/bin.tgz clean-github-actions-cache
+          --repo "${{ github.repository }}" --sha "${{ github.sha }}"
+
+  package-artifact:
+    name: Package Artifact
+    runs-on: ubuntu-latest
+    needs: build
+    permissions:
+      contents: write
+    env:
+      JWT_SECRET: ci-build-secret-with-sufficient-length-for-validation
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.CI_NODE_VERSION }}
+          cache: npm
+      - uses: ./.github/actions/npm-ci-retry
+      - run: npm run check:node-runtime
+      - name: Download Next.js build artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: next-build
+          path: /tmp/
+      - name: Extract Next.js build artifact
+        run: |
+          tar -xzf /tmp/e2e-build.tar.gz
+      - run: npm run build:cli
+      - name: Assert dist/server.js exists
+        run: test -f dist/server.js || (echo "dist/server.js missing — build:cli did not assemble correctly" && exit 1)
+      - run: npm run check:pack-artifact
+        continue-on-error: true
+      - name: Pack omniroute.tgz
+        run: |
+          mkdir -p release
+          npm pack --silent --pack-destination ./release
+          mv "release/omniroute-$(node -p "require('./package.json').version").tgz" release/omniroute.tgz
+          sha256sum release/omniroute.tgz > release/checksum.txt
+      - name: Verify tarball contents
+        run: |
+          ls -la release/
+          tar -tzf release/omniroute.tgz | head -20
+      - name: Verify tarball install CLI
+        run: |
+          set -euo pipefail
+          npm exec --yes --package ./release/omniroute.tgz omniroute --help 2>&1 | tee /tmp/omniroute-help.txt
+          grep -qi "usage" /tmp/omniroute-help.txt
+      - name: Create/update GitHub Release
+        env:
+          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN || secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.ACCESS_TOKEN || secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="ci-build"
+
+          # Delete previous release and associated tag.
+          # Safe because release is purely an artifact.
+          # (Ignore errors on first run when release doesn't exist)
+          gh release delete "$TAG" --cleanup-tag --yes 2>/dev/null || true
+
+          # Extra safety: ensure tag is gone even if it existed without a release
+          git push origin ":refs/tags/$TAG" 2>/dev/null || true
+
+          # Recreate release at current commit with new tarball.
+          # Download URL will be:
+          # https://github.com/OWNER/REPO/releases/download/ci-build/omniroute.tgz
+          gh release create "$TAG" \
+            --target "${{ github.sha }}" \
+            --title "CI Build ($(date +%Y-%m-%d))" \
+            --notes "Automated build from commit [${{ github.sha }}](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }})
+
+            Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            ./release/omniroute.tgz \
+            ./release/checksum.txt
