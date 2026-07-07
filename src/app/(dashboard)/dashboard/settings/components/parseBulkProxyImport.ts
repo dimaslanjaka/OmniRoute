@@ -97,7 +97,7 @@ export function parseBulkImportText(text: string): {
           continue;
         }
         entries.push({
-          name: `Imported ${host}:${portStr}`,
+          name: `${type}://${host}:${portStr}`,
           host,
           port,
           username,
@@ -129,7 +129,7 @@ export function parseBulkImportText(text: string): {
           continue;
         }
         entries.push({
-          name: `Imported ${host}:${portStr}`,
+          name: `http://${host}:${portStr}`,
           host,
           port,
           username: "",
