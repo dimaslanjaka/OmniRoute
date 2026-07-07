@@ -6059,7 +6059,8 @@
     "modelLockoutExponentialBackoff": "__MISSING__:Exponential Backoff",
     "modelLockoutExponentialBackoffDescription": "__MISSING__:When enabled, each consecutive failure increases the cooldown duration exponentially.",
     "modelLockoutMaxBackoffSteps": "__MISSING__:Max Backoff Steps",
-    "modelLockoutMaxBackoffStepsDescription": "__MISSING__:Maximum number of backoff steps before the cooldown stops growing. The Max Cooldown cap is reached first in most configurations, making this a safety ceiling for when Max Cooldown is raised."
+    "modelLockoutMaxBackoffStepsDescription": "__MISSING__:Maximum number of backoff steps before the cooldown stops growing. The Max Cooldown cap is reached first in most configurations, making this a safety ceiling for when Max Cooldown is raised.",
+    "stop": "Zatrzymaj się"
   },
   "contextRtk": {
     "title": "RTK Engine",

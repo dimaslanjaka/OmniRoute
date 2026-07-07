@@ -5505,7 +5505,8 @@
     "homeQuickStart": "Швидкий старт",
     "homeQuickStartDesc": "Показувати панель швидкого старту на головній сторінці.",
     "homeProviderTopology": "Топологія провайдерів",
-    "homeProviderTopologyDesc": "Показувати топологію провайдерів на головній сторінці."
+    "homeProviderTopologyDesc": "Показувати топологію провайдерів на головній сторінці.",
+    "stop": "Стоп"
   },
   "contextRtk": {
     "title": "Двигун RTK",

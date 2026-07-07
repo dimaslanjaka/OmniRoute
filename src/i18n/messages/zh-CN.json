@@ -5882,7 +5882,8 @@
     "responsesStateModeStrip": "剥离",
     "responsesStateModePreserve": "保留",
     "responsesStateHint": "自动模式会剥离 previous_response_id，除非连接明确启用 OpenAI 响应存储。对于无状态客户端（如 VS Code 自定义端点），剥离模式最安全；上下文取决于客户端发送完整历史记录。",
-    "responsesStateSaveError": "更新响应状态设置失败"
+    "responsesStateSaveError": "更新响应状态设置失败",
+    "stop": "停止"
   },
   "contextRtk": {
     "title": "RTK 引擎",
