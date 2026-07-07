@@ -3,12 +3,14 @@ import { OneproxyProvider } from "./oneproxy";
 import { ProxiflyProvider } from "./proxifly";
 import { IplocateProvider } from "./iplocate";
 import { WebshareProvider } from "./webshare";
+import { PubliclistsProvider } from "./publiclists";
 
 const ALL_PROVIDERS: FreeProxyProvider[] = [
   new OneproxyProvider(),
   new ProxiflyProvider(),
   new IplocateProvider(),
   new WebshareProvider(),
+  new PubliclistsProvider(),
 ];
 
 export function getProvider(id: FreeProxySourceId): FreeProxyProvider | undefined {
