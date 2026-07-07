@@ -364,7 +364,7 @@ const PROVIDER_PAGE_FETCH_TIMEOUT_MS = 20_000;
  * page paints from whatever data arrived (matching the fast `/api/providers`).
  */
 export async function loadProviderPageData(
-  fetchImpl: typeof fetch = (globalThis.fetch as typeof fetch),
+  fetchImpl: typeof fetch = globalThis.fetch as typeof fetch,
   timeoutMs: number = PROVIDER_PAGE_FETCH_TIMEOUT_MS
 ): Promise<ProviderPageData> {
   const safeJson = async (url: string, init?: RequestInit): Promise<any | null> => {

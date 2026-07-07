@@ -1082,17 +1082,21 @@ export function createMcpServer(): McpServer {
         // @ts-ignore: dynamic zod access
         inputSchema: toolDef.inputSchema,
       },
-      withScopeEnforcement(toolDef.name, async (args) => {
-        try {
-          const parsedArgs = toolDef.inputSchema.parse(args ?? {});
-          // @ts-expect-error - handler type lost through dynamic Object.values() access
-          const result = await toolDef.handler(parsedArgs);
-          return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
-        } catch (err) {
-          const msg = err instanceof Error ? err.message : String(err);
-          return { content: [{ type: "text" as const, text: `Error: ${msg}` }], isError: true };
-        }
-      }, toolDef.scopes)
+      withScopeEnforcement(
+        toolDef.name,
+        async (args) => {
+          try {
+            const parsedArgs = toolDef.inputSchema.parse(args ?? {});
+            // @ts-expect-error - handler type lost through dynamic Object.values() access
+            const result = await toolDef.handler(parsedArgs);
+            return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
+          } catch (err) {
+            const msg = err instanceof Error ? err.message : String(err);
+            return { content: [{ type: "text" as const, text: `Error: ${msg}` }], isError: true };
+          }
+        },
+        toolDef.scopes
+      )
     );
   });
 

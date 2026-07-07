@@ -73,9 +73,7 @@ export default function FreeProviderRankingsPage() {
         if (opts?.configuredOnly) params.set("configuredOnly", "1");
         if (opts?.availableOnly) params.set("availableOnly", "1");
         const qs = params.toString();
-        const url = qs
-          ? `/api/free-provider-rankings?${qs}`
-          : "/api/free-provider-rankings";
+        const url = qs ? `/api/free-provider-rankings?${qs}` : "/api/free-provider-rankings";
         const res = await fetch(url);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();

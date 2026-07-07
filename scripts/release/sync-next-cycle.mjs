@@ -139,7 +139,9 @@ function main() {
   const merged = insertNextSection(mainChangelog + "\n", nextSection, NEXT);
   // Assertions: main's latest section intact + next section present.
   if (!merged.includes(`## [${prevVersion}]`)) {
-    console.error(`[sync-next-cycle] ABORT: main's ## [${prevVersion}] section missing after re-insertion`);
+    console.error(
+      `[sync-next-cycle] ABORT: main's ## [${prevVersion}] section missing after re-insertion`
+    );
     process.exit(1);
   }
   if (!merged.includes(`## [${NEXT}]`)) {
@@ -182,11 +184,20 @@ function main() {
     process.exit(1);
   }
 
-  git(["commit", "-m", `chore(release): sync main (v${prevVersion} close) into ${BRANCH} — parallel-cycle sync-back`], { cwd: WT });
+  git(
+    [
+      "commit",
+      "-m",
+      `chore(release): sync main (v${prevVersion} close) into ${BRANCH} — parallel-cycle sync-back`,
+    ],
+    { cwd: WT }
+  );
   git(["push", "origin", BRANCH], { cwd: WT });
 
   const left = git(["rev-list", "--count", `${BRANCH}..origin/main`], { cwd: WT });
-  console.log(`[sync-next-cycle] pushed. origin/main commits not in ${BRANCH}: ${left} (expected 0)`);
+  console.log(
+    `[sync-next-cycle] pushed. origin/main commits not in ${BRANCH}: ${left} (expected 0)`
+  );
 
   git(["worktree", "remove", "--force", WT], { cwd: ROOT });
   console.log("[sync-next-cycle] done — worktree removed.");

@@ -65,7 +65,13 @@ function resolveBaseRef() {
   if (process.env.GITHUB_BASE_REF) return `origin/${process.env.GITHUB_BASE_REF}`;
   // Local fallback: the highest release/v* on origin (the active development base).
   try {
-    const branches = git(["branch", "-r", "--list", "origin/release/v*", "--format=%(refname:short)"])
+    const branches = git([
+      "branch",
+      "-r",
+      "--list",
+      "origin/release/v*",
+      "--format=%(refname:short)",
+    ])
       .split("\n")
       .map((s) => s.trim())
       .filter(Boolean)
@@ -110,7 +116,9 @@ function main() {
       "\nre-run with ALLOW_CHANGELOG_REMOVALS=1 and justify in the PR body."
   );
   if (process.env.ALLOW_CHANGELOG_REMOVALS === "1") {
-    console.error("[changelog-integrity] ALLOW_CHANGELOG_REMOVALS=1 — reporting only, not failing.");
+    console.error(
+      "[changelog-integrity] ALLOW_CHANGELOG_REMOVALS=1 — reporting only, not failing."
+    );
     return 0;
   }
   return 1;

@@ -49,13 +49,19 @@ function isOpencodeClient(
 
   if (headers instanceof Headers) {
     for (const [key, value] of headers as unknown as Iterable<[string, string]>) {
-      if (matchesHeaderKey(key) || (key.toLowerCase() === "user-agent" && matchesUserAgent(value))) {
+      if (
+        matchesHeaderKey(key) ||
+        (key.toLowerCase() === "user-agent" && matchesUserAgent(value))
+      ) {
         return true;
       }
     }
   } else if (headers && typeof headers === "object") {
     for (const [key, value] of Object.entries(headers)) {
-      if (matchesHeaderKey(key) || (key.toLowerCase() === "user-agent" && matchesUserAgent(value))) {
+      if (
+        matchesHeaderKey(key) ||
+        (key.toLowerCase() === "user-agent" && matchesUserAgent(value))
+      ) {
         return true;
       }
     }

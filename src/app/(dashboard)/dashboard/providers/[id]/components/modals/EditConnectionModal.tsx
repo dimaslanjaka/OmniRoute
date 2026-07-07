@@ -165,8 +165,7 @@ export default function EditConnectionModal({
       typeof connection?.providerSpecificData?.baseUrl === "string" &&
       connection.providerSpecificData.baseUrl.trim().length > 0
   );
-  const usesBaseUrl =
-    isConfigurableBaseUrl || (isBaseUrlOverrideEligible && showBaseUrlOverride);
+  const usesBaseUrl = isConfigurableBaseUrl || (isBaseUrlOverrideEligible && showBaseUrlOverride);
   const defaultBaseUrl = getProviderBaseUrlDefault(provider);
   const isVertex = provider === "vertex" || provider === "vertex-partner";
   const isBedrock = provider === "bedrock";
