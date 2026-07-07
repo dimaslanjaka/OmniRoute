@@ -3,13 +3,36 @@
  * Ensures a supervisor is created on demand (e.g. if bootstrap hasn't run yet).
  */
 
+import path from "node:path";
+
+import { getServiceRow, upsertVersionManagerTool } from "@/lib/db/versionManager";
 import { getSupervisor, registerSupervisor } from "@/lib/services/registry";
 import { ServiceSupervisor } from "@/lib/services/ServiceSupervisor";
-import { resolveSpawnArgs } from "@/lib/services/installers/ninerouter";
+import {
+  getInstalledVersion,
+  NINEROUTER_INSTALL_DIR,
+  resolveSpawnArgs,
+} from "@/lib/services/installers/ninerouter";
 import { getOrCreateApiKey } from "@/lib/services/apiKey";
 
 const TOOL = "9router";
 const PORT = 20130;
+
+export async function ensureInstalledRow(): Promise<boolean> {
+  const row = await getServiceRow(TOOL);
+  if (row && row.status !== "not_installed") return true;
+
+  const installedVersion = await getInstalledVersion();
+  if (!installedVersion) return false;
+
+  await upsertVersionManagerTool({
+    tool: TOOL,
+    installedVersion,
+    binaryPath: path.join(NINEROUTER_INSTALL_DIR, "node_modules", "9router", "app", "server.js"),
+    status: "stopped",
+  });
+  return true;
+}
 
 // Module-level in-flight guard. Without this, two concurrent requests that
 // both observe `getSupervisor() === null` and then await getOrCreateApiKey

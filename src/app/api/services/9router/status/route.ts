@@ -1,3 +1,4 @@
+import { ensureInstalledRow } from "../_lib";
 import { getSupervisor } from "@/lib/services/registry";
 import { getServiceRow } from "@/lib/db/versionManager";
 import { getInstalledVersion, getLatestVersion } from "@/lib/services/installers/ninerouter";
@@ -13,19 +14,21 @@ export async function GET(request: Request = new Request("http://localhost/")): 
     const url = new URL(request.url);
     const reveal = url.searchParams.get("reveal");
 
+    await ensureInstalledRow();
+
     const sup = getSupervisor(TOOL);
     const row = await getServiceRow(TOOL);
 
     const liveStatus = sup?.getStatus() ?? null;
     const installedVersion = await getInstalledVersion();
     const latestVersion = await getLatestVersion();
+    const installed = !!installedVersion || (row !== null && row.status !== "not_installed");
 
-    const apiKey =
-      row?.status !== "not_installed" ? await getOrCreateApiKey(TOOL).catch(() => null) : null;
+    const apiKey = installed ? await getOrCreateApiKey(TOOL).catch(() => null) : null;
 
     const base = {
       tool: TOOL,
-      state: liveStatus?.state ?? row?.status ?? "unknown",
+      state: liveStatus?.state ?? (installed ? (row?.status ?? "stopped") : "unknown"),
       pid: liveStatus?.pid ?? null,
       port: liveStatus?.port ?? row?.port ?? 20130,
       health: liveStatus?.health ?? "unknown",

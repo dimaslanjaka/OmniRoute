@@ -26,7 +26,8 @@ db.prepare(
    VALUES ('9router', 'stopped', 20130, 0, 1, 1)`
 ).run();
 
-const { updateVersionManagerTool } = await import("../../../../src/lib/db/versionManager.ts");
+const { getServiceRow, updateVersionManagerTool } =
+  await import("../../../../src/lib/db/versionManager.ts");
 await updateVersionManagerTool("9router", {
   installedVersion: "0.4.59",
   status: "stopped",
@@ -57,6 +58,33 @@ describe("GET /api/services/9router/status", () => {
     const body = await res.json();
     assert.ok("apiKeyMasked" in body, "should have apiKeyMasked");
     assert.ok(!("apiKeyPlain" in body), "should NOT have apiKeyPlain");
+  });
+
+  it("repairs stale not_installed state when package exists on disk", async () => {
+    const packageDir = path.join(TEST_DATA_DIR, "services", "9router", "node_modules", "9router");
+    fs.mkdirSync(packageDir, { recursive: true });
+    fs.writeFileSync(
+      path.join(packageDir, "package.json"),
+      JSON.stringify({ name: "9router", version: "9.8.7" }),
+      "utf8"
+    );
+
+    await updateVersionManagerTool("9router", {
+      installedVersion: null,
+      status: "not_installed",
+    });
+
+    const req = makeRequest("http://localhost/api/services/9router/status");
+    const res = await GET(req);
+    assert.equal(res.status, 200);
+    const body = await res.json();
+    assert.equal(body.state, "stopped");
+    assert.equal(body.installedVersion, "9.8.7");
+
+    const row = await getServiceRow("9router");
+    assert.equal(row?.status, "stopped");
+    assert.equal(row?.installedVersion, "9.8.7");
+    assert.match(row?.binaryPath ?? "", /node_modules[\\/]9router[\\/]app[\\/]server\.js$/);
   });
 
   it("?reveal=key without X-Reveal-Confirm returns 403", async () => {
