@@ -4,11 +4,18 @@ setlocal enabledelayedexpansion
 set "NODE_OPTIONS=--max-old-space-size=6048 --expose-gc --max-semi-space-size=512"
 set "NODE_ENV=production"
 
-set "NPM_ROOT=%TEMP%\npm"
-set "PKG_DIR=%NPM_ROOT%\node_modules\9router"
-set "VERSION_FILE=%NPM_ROOT%\9router.version"
+REM --- Use same installation folder as ninerouter.ts ---
+if not defined OMNIROUTE_DATA_DIR (
+    set "OMNIROUTE_DATA_DIR=%USERPROFILE%\.omniroute"
+)
+set "NINEROUTER_INSTALL_DIR=%OMNIROUTE_DATA_DIR%\services\9router"
+set "PKG_DIR=%NINEROUTER_INSTALL_DIR%\node_modules\9router"
+set "TARBALL_CACHE=%TEMP%\npm"
+set "VERSION_FILE=%TARBALL_CACHE%\9router.version"
+set "NPM_ROOT=%NINEROUTER_INSTALL_DIR%"
 
 if not exist "%NPM_ROOT%" mkdir "%NPM_ROOT%"
+if not exist "%TARBALL_CACHE%" mkdir "%TARBALL_CACHE%"
 
 REM --- Fetch latest metadata ---
 for /f "usebackq tokens=*" %%i in (`
@@ -27,7 +34,7 @@ for /f "tokens=1,2 delims=|" %%a in ("!LATEST!") do (
     set "REMOTE_URL=%%b"
 )
 
-set "TARBALL=%NPM_ROOT%\9router-!REMOTE_VERSION!.tgz"
+set "TARBALL=%TARBALL_CACHE%\9router-!REMOTE_VERSION!.tgz"
 
 echo [npm] Latest version: !REMOTE_VERSION!
 
@@ -73,7 +80,7 @@ if "!NEED_SETUP!"=="1" (
     if exist "node_modules\9router" rmdir /s /q "node_modules\9router" 2>nul
 
     echo [npm] Installing 9router...
-    call npm install "!TARBALL!" ^
+    call npm install "9router@!TARBALL!" ^
         --legacy-peer-deps ^
         --no-audit ^
         --no-fund ^

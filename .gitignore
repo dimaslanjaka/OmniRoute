@@ -245,3 +245,4 @@ mise.toml
 .eslintcache
 *.bak
 _artifacts/
+.opencode/memory/
