@@ -68,6 +68,25 @@ test("serviceKindFilter composes with the search query (intersection)", () => {
   assert.deepEqual(ids(out), ["haiper"]);
 });
 
+test("provider search treats whitespace-separated terms as alternatives", () => {
+  const searchEntries = [
+    entry("opencode-zen", "OpenCode Zen", 1),
+    entry("antigravity", "Antigravity", 1),
+    entry("openai", "OpenAI", 1),
+  ];
+
+  const out = filterConfiguredProviderEntries(
+    searchEntries,
+    false,
+    "opencode-zen antigravity",
+    false,
+    "",
+    null
+  );
+
+  assert.deepEqual(ids(out), ["antigravity", "opencode-zen"]);
+});
+
 test("a null/undefined serviceKindFilter leaves the list unchanged", () => {
   const out = filterConfiguredProviderEntries(ENTRIES, false, "", false, "", null);
   assert.deepEqual(ids(out), ids(ENTRIES));

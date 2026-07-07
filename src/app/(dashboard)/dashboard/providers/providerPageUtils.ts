@@ -93,7 +93,7 @@ export function connectionMatchesProviderCard(
 
 type GetProviderStats = (
   providerId: string,
-  authType: "oauth" | "free" | "apikey"
+  authType: ProviderEntry["toggleAuthType"]
 ) => ProviderStatsSnapshot;
 
 function getProviderSortLabel<TProvider>(entry: ProviderEntry<TProvider>): string {
@@ -244,11 +244,12 @@ export function filterConfiguredProviderEntries<TProvider>(
   }
 
   if (searchQuery && searchQuery.trim()) {
+    const searchTerms = searchQuery.trim().split(/\s+/).filter(Boolean);
     filtered = filtered.filter((entry) => {
       const provider = entry.provider as Record<string, unknown>;
-      return (
-        matchesSearch(String(provider.name || ""), searchQuery) ||
-        matchesSearch(entry.providerId, searchQuery)
+      return searchTerms.some(
+        (term) =>
+          matchesSearch(String(provider.name || ""), term) || matchesSearch(entry.providerId, term)
       );
     });
   }
