@@ -243,6 +243,7 @@ mise.toml
 *.diff
 *.version
 .eslintcache
-*.bak
+**/*.bak
+**/*.bak-*
 _artifacts/
 .opencode/memory/
