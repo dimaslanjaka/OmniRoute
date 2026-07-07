@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/shared/components";
 import SourceToggleBar, {
@@ -31,6 +31,7 @@ export default function FreePoolTab() {
   const [addingIds, setAddingIds] = useState<Set<string>>(new Set());
   const [bulkAdding, setBulkAdding] = useState(false);
   const [bulkProgress, setBulkProgress] = useState<string | null>(null);
+  const stopBulkAddRef = useRef(false);
   // #5595: per-source sync errors so a "Total: 0" result is never silent.
   const [syncErrors, setSyncErrors] = useState<Record<string, string[]> | null>(null);
 
@@ -173,12 +174,18 @@ export default function FreePoolTab() {
   const handleBulkAdd = async (ids: string[]) => {
     if (!ids.length || bulkAdding) return;
     setBulkAdding(true);
+    stopBulkAddRef.current = false;
     setBulkProgress(`Testing 1/${ids.length}...`);
     let succeeded = 0;
     let failed = 0;
+    let stopped = false;
 
     try {
       for (let i = 0; i < ids.length; i++) {
+        if (stopBulkAddRef.current) {
+          stopped = true;
+          break;
+        }
         const id = ids[i];
         setBulkProgress(`Testing ${i + 1}/${ids.length}...`);
 
@@ -226,12 +233,20 @@ export default function FreePoolTab() {
         }
       }
 
-      setBulkProgress(`Complete: ${succeeded} added, ${failed} failed`);
-      setSelected(new Set());
+      setBulkProgress(
+        stopped
+          ? `Stopped: ${succeeded} added, ${failed} failed`
+          : `Complete: ${succeeded} added, ${failed} failed`
+      );
+      if (stopped) setSelected(new Set());
     } finally {
       setBulkAdding(false);
       setTimeout(() => setBulkProgress(null), 4000);
     }
+  };
+
+  const handleStopBulkAdd = () => {
+    stopBulkAddRef.current = true;
   };
 
   const notInPoolProxies = proxies.filter((p) => !p.inPool);
@@ -331,21 +346,32 @@ export default function FreePoolTab() {
 
       {notInPoolProxies.length > 0 && selected.size === 0 && (
         <div className="flex justify-end items-center gap-2">
-          {bulkProgress && <span className="text-xs text-text-muted">{bulkProgress}</span>}
-          <Button
-            size="sm"
-            variant="secondary"
-            onClick={() => handleBulkAdd(notInPoolProxies.slice(0, 100).map((p) => p.id))}
-            disabled={bulkAdding}
-            loading={bulkAdding}
-          >
-            {t("proxyFreePoolAddVisible")}
-          </Button>
+          {bulkAdding ? (
+            <>
+              <span className="text-xs text-text-muted">{bulkProgress}</span>
+              <Button size="sm" variant="secondary" icon="stop" onClick={handleStopBulkAdd}>
+                {t("stop")}
+              </Button>
+            </>
+          ) : (
+            <>
+              {bulkProgress && <span className="text-xs text-text-muted">{bulkProgress}</span>}
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={() => handleBulkAdd(notInPoolProxies.slice(0, 100).map((p) => p.id))}
+                disabled={bulkAdding}
+                loading={bulkAdding}
+              >
+                {t("proxyFreePoolAddVisible")}
+              </Button>
+            </>
+          )}
         </div>
       )}
 
       <div className="overflow-x-auto rounded border border-border bg-surface">
-        <table className="w-full min-w-[860px] text-sm table-fixed">
+        <table className="w-full min-w-[900px] text-sm whitespace-nowrap">
           <thead className="bg-surface-alt text-text-muted text-xs">
             <tr>
               <th className="px-3 py-2 text-left w-8" scope="col"></th>
