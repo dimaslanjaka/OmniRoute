@@ -1,11 +1,11 @@
 /**
- * Installer utilities — safe execFile wrapper for npm operations.
+ * Installer utilities — safe spawn wrapper for npm operations.
  *
  * Hard rule #13: never string-interpolate runtime values into shell commands.
- * All npm invocations use execFile() with an explicit args array, never exec().
+ * All npm invocations use spawn() with an explicit args array, never exec().
  */
 
-import { execFile } from "node:child_process";
+import { spawn } from "node:child_process";
 import { sanitizeErrorMessage } from "@omniroute/open-sse/utils/error";
 
 const DEFAULT_TIMEOUT_MS = 300_000; // 5 min — npm install can be slow
@@ -26,10 +26,15 @@ export class InstallError extends Error {
   }
 }
 
+type NpmExecError = NodeJS.ErrnoException & {
+  killed?: boolean;
+  signal?: NodeJS.Signals | null;
+  stdout?: string;
+  stderr?: string;
+};
+
 /** Classify raw npm/OS errors into user-friendly messages. */
-function classifyError(
-  err: NodeJS.ErrnoException & { stdout?: string; stderr?: string }
-): InstallError {
+function classifyError(err: NpmExecError): InstallError {
   const raw = sanitizeErrorMessage(err.message);
   const stderr = err.stderr ?? "";
 
@@ -91,16 +96,14 @@ export interface NpmExecOptions {
 }
 
 /**
- * Builds the `execFile` options for {@link runNpm}.
+ * Builds the `spawn` options for {@link runNpm}.
  *
- * On Windows, npm is `npm.cmd` (a batch wrapper). Node 24 refuses to `execFile`
- * a `.cmd` without a shell (nodejs/node#52554 — manifests as `spawn EINVAL`, see
- * issue #5379), so we enable `shell` on win32 only.
+ * On Windows, npm is `npm.cmd` (a batch wrapper), so `shell` is enabled on win32
+ * to run it reliably across Node versions.
  *
- * Enabling the shell means the shell — not `execFile` — splits the command line,
- * so NO runtime value may be interpolated into argv (Hard Rule #13). The install
- * prefix (a DATA_DIR path that can legitimately contain spaces, e.g.
- * `C:\Users\John Doe\.omniroute\…`) is therefore exported as the
+ * Enabling the shell means NO runtime value may be interpolated into argv (Hard
+ * Rule #13). The install prefix (a DATA_DIR path that can legitimately contain
+ * spaces, e.g. `C:\Users\John Doe\.omniroute\…`) is therefore exported as the
  * `npm_config_prefix` environment variable — npm's documented env form of
  * `--prefix` — never as an argv entry. With the prefix moved to the environment
  * and the version constrained by {@link SERVICE_VERSION_PATTERN}, every remaining
@@ -130,7 +133,7 @@ export function buildNpmExecOptions(
  * Runs npm with the given args array. Never uses shell interpolation: argv holds
  * only static flags, and any install prefix is passed via `options.prefix`
  * (exported as `npm_config_prefix`), not as an argv path. See
- * {@link buildNpmExecOptions} for the Windows/Node-24 shell handling.
+ * {@link buildNpmExecOptions} for the Windows shell handling.
  */
 export function runNpm(
   args: string[],
@@ -141,27 +144,68 @@ export function runNpm(
   const npmBin = process.platform === "win32" ? "npm.cmd" : "npm";
 
   return new Promise((resolve, reject) => {
-    execFile(
-      npmBin,
-      args,
-      buildNpmExecOptions(process.platform, {
-        cwd: options.cwd,
-        timeoutMs,
-        prefix: options.prefix,
-      }),
-      (err, stdout, stderr) => {
-        if (err) {
-          const classified = classifyError(
-            Object.assign(err, { stdout, stderr }) as NodeJS.ErrnoException & {
-              stdout: string;
-              stderr: string;
-            }
-          );
-          reject(classified);
-        } else {
-          resolve({ stdout, stderr });
-        }
+    const execOptions = buildNpmExecOptions(process.platform, {
+      cwd: options.cwd,
+      timeoutMs,
+      prefix: options.prefix,
+    });
+    const child = spawn(npmBin, args, {
+      cwd: execOptions.cwd,
+      env: execOptions.env,
+      shell: execOptions.shell,
+      windowsHide: true,
+    });
+    let stdout = "";
+    let stderr = "";
+    let settled = false;
+
+    const timeout = setTimeout(() => {
+      child.kill("SIGTERM");
+    }, execOptions.timeout);
+
+    child.stdout?.setEncoding("utf8");
+    child.stderr?.setEncoding("utf8");
+    child.stdout?.on("data", (chunk: string) => {
+      stdout += chunk;
+      if (stdout.length > execOptions.maxBuffer) {
+        child.kill("SIGTERM");
       }
-    );
+    });
+    child.stderr?.on("data", (chunk: string) => {
+      stderr += chunk;
+      if (stderr.length > execOptions.maxBuffer) {
+        child.kill("SIGTERM");
+      }
+    });
+    child.on("error", (err) => {
+      if (settled) {
+        return;
+      }
+      settled = true;
+      clearTimeout(timeout);
+      reject(classifyError(Object.assign(err, { stdout, stderr }) as NpmExecError));
+    });
+    child.on("close", (code, signal) => {
+      if (settled) {
+        return;
+      }
+      settled = true;
+      clearTimeout(timeout);
+      if (code === 0) {
+        resolve({ stdout, stderr });
+        return;
+      }
+      reject(
+        classifyError(
+          Object.assign(new Error(stderr || `npm exited with code ${code ?? "unknown"}`), {
+            code: code === null ? undefined : String(code),
+            killed: signal === "SIGTERM",
+            signal,
+            stdout,
+            stderr,
+          }) as NpmExecError
+        )
+      );
+    });
   });
 }
