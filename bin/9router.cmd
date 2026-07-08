@@ -12,6 +12,8 @@ set "NINEROUTER_INSTALL_DIR=%OMNIROUTE_DATA_DIR%\services\9router"
 set "PKG_DIR=%NINEROUTER_INSTALL_DIR%\node_modules\9router"
 set "TARBALL_CACHE=%TEMP%\npm"
 set "VERSION_FILE=%TARBALL_CACHE%\9router.version"
+set "FLAVOR_FILE=%TARBALL_CACHE%\9router-flavor.txt"
+set "FLAVOR=prod"
 set "NPM_ROOT=%NINEROUTER_INSTALL_DIR%"
 
 if not exist "%NPM_ROOT%" mkdir "%NPM_ROOT%"
@@ -57,6 +59,15 @@ if exist "%VERSION_FILE%" (
     echo [npm] No version file found
 )
 
+REM --- Check flavor ---
+if exist "!FLAVOR_FILE!" (
+    set /p STORED_FLAVOR<"!FLAVOR_FILE!"
+    if not "!STORED_FLAVOR!"=="!FLAVOR!" (
+        echo [npm] Flavor changed from !STORED_FLAVOR! to !FLAVOR!, forcing rebuild.
+        set "NEED_SETUP=1"
+    )
+)
+
 if "!NEED_SETUP!"=="1" (
     if not exist "!TARBALL!" (
         echo [npm] Downloading tarball...
@@ -93,6 +104,7 @@ if "!NEED_SETUP!"=="1" (
 
     popd
 
+    echo !FLAVOR!>"%FLAVOR_FILE%"
     echo !REMOTE_VERSION!>"%VERSION_FILE%"
     echo [npm] Setup complete.
 )
