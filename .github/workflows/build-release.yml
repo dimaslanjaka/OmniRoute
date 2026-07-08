@@ -13,6 +13,16 @@ name: Build & Release
 on:
   push:
     branches: [main, minimal]
+    paths:
+      - "**/package*.json"
+      - "scripts/**"
+      - "src/**"
+      - "open-sse/**"
+      - "config/**"
+      - "next.config.mjs"
+      - "tsconfig*.json"
+      - "postcss.config.*"
+      - "tailwind.config.*"
   workflow_dispatch:
 
 permissions:
@@ -66,7 +76,7 @@ jobs:
             .build/
             **/node_modules/**
             **/tmp/**
-          key: nextjs-${{ runner.os }}-node-${{ env.CI_NODE_VERSION }}-${{ matrix.branch }}-${{ hashFiles('package-lock.json', 'src/**/*', 'open-sse/**/*', 'db/**/*', 'next.config.mjs', 'tsconfig*.json', 'postcss.config.*', 'tailwind.config.*') }}
+          key: nextjs-${{ runner.os }}-node-${{ env.CI_NODE_VERSION }}-${{ matrix.branch }}-${{ hashFiles('package-lock.json', 'src/**/*', 'open-sse/**/*', 'config/**/*', 'next.config.mjs', 'tsconfig*.json', 'postcss.config.*', 'tailwind.config.*') }}
           restore-keys: |
             nextjs-${{ runner.os }}-node-${{ env.CI_NODE_VERSION }}-${{ matrix.branch }}-
             nextjs-${{ runner.os }}-node-${{ env.CI_NODE_VERSION }}-
@@ -139,7 +149,6 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.CI_NODE_VERSION }}
-          cache: npm
       - uses: ./.github/actions/npm-ci-retry
       - run: npm run check:node-runtime
       - name: Download Next.js build artifact
