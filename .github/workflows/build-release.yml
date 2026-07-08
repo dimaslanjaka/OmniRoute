@@ -21,17 +21,31 @@ permissions:
 env:
   CI_NODE_VERSION: "24"
 
+  # Browser automation
+  PUPPETEER_SKIP_DOWNLOAD: "true"
+  PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
+
+  # Node.js
+  NODE_OPTIONS: "--max_old_space_size=8192 --expose-gc --max-semi-space-size=512"
+  YARN_ENABLE_IMMUTABLE_INSTALLS: false
+  YARN_ENABLE_GLOBAL_CACHE: false
+  YARN_CHECKSUM_BEHAVIOR: update
+  YARN_CACHE_FOLDER: ${{ github.workspace }}/tmp/yarn-cache
+
+  # GitHub auth
+  ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN || secrets.GITHUB_TOKEN }}
+  GH_TOKEN: ${{ secrets.ACCESS_TOKEN || secrets.GITHUB_TOKEN }}
+
 jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    env:
-      ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN || secrets.GITHUB_TOKEN }}
-      GH_TOKEN: ${{ secrets.ACCESS_TOKEN || secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v7
         with:
           persist-credentials: false
+          token: ${{ secrets.ACCESS_TOKEN || secrets.GITHUB_TOKEN }}
+          submodules: recursive
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.CI_NODE_VERSION }}
