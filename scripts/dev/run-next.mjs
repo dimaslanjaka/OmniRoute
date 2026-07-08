@@ -12,6 +12,7 @@ import { ensurePeerStampToken, stampPeerIp } from "./peer-stamp.mjs";
 import methodGuard from "./http-method-guard.cjs";
 import { ensureNativeSqlite } from "./ensure-native-sqlite.mjs";
 import { randomUUID } from "node:crypto";
+import projectNextConfig from "../../next.config.mjs";
 
 const { maybeHandleDisallowedMethod } = methodGuard;
 
@@ -77,6 +78,24 @@ process.env.OMNIROUTE_WS_BRIDGE_SECRET ||= randomUUID();
 // server (read by the authz middleware in the same process). See peer-stamp.mjs.
 ensurePeerStampToken();
 
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  ...projectNextConfig,
+  reactStrictMode: true,
+  typescript: {
+    ...projectNextConfig.typescript,
+    // Allow dev server to start even with TS errors (like missing types for new providers)
+    ignoreBuildErrors: true,
+  },
+  webpack: (config, { dev }) => {
+    // Only disable source maps in development
+    if (dev) {
+      config.devtool = false;
+    }
+    return config;
+  },
+};
+
 // Next 16 picks Turbopack by default in dev. Passing `turbopack: false` to the
 // programmatic next() entry is *not* enough on its own:
 //   - parseBundlerArgs (node_modules/next/dist/lib/bundler.js) sees no positive
@@ -85,7 +104,7 @@ ensurePeerStampToken();
 //     starts Turbopack regardless of the option we passed.
 // Force webpack by both passing `webpack: true` and clearing the env var.
 // Mirrors the workaround PR #4052 applied for the production Docker build.
-if (!useTurbopack) {
+if (!useTurbopack && typeof process.env.TURBOPACK !== "undefined") {
   delete process.env.TURBOPACK;
 }
 const nextApp = next({
@@ -95,6 +114,7 @@ const nextApp = next({
   port: dashboardPort,
   turbopack: useTurbopack,
   webpack: !useTurbopack,
+  conf: nextConfig,
 });
 
 async function start() {

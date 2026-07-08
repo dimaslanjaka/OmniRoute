@@ -1,7 +1,10 @@
 @echo off
 setlocal enabledelayedexpansion
 
-set "NODE_OPTIONS=--max-old-space-size=6048 --expose-gc --max-semi-space-size=512"
+set "MEMORY_MB=6084"
+set "OMNIROUTE_MEMORY_MB=!MEMORY_MB!"
+set "OMNIROUTE_BUILD_MEMORY_MB=!MEMORY_MB!"
+set "NODE_OPTIONS=--max-old-space-size=!MEMORY_MB! --expose-gc --max-semi-space-size=512"
 set "NODE_ENV=production"
 
 set "NPM_ROOT=%TEMP%\npm"
@@ -115,4 +118,4 @@ if not defined ENTRY (
     exit /b 1
 )
 
-node "!ENTRY!" %*
+node --max-old-space-size=!MEMORY_MB! "!ENTRY!" %*
