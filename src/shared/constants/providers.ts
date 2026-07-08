@@ -10,18 +10,37 @@ export interface ProviderRiskNoticeFields {
   isEmbeddedService?: boolean;
 }
 
-import { NOAUTH_PROVIDERS } from "./providers/noauth";
-import { OAUTH_PROVIDERS } from "./providers/oauth";
-import { WEB_COOKIE_PROVIDERS, resolveWebProviderHost } from "./providers/web-cookie";
+import {
+  filterProviderIdSet,
+  filterProviderIds,
+  filterProviderMap,
+} from "@/shared/utils/providerFilter";
+
+import { NOAUTH_PROVIDERS as ALL_NOAUTH_PROVIDERS } from "./providers/noauth";
+import { OAUTH_PROVIDERS as ALL_OAUTH_PROVIDERS } from "./providers/oauth";
+import {
+  WEB_COOKIE_PROVIDERS as ALL_WEB_COOKIE_PROVIDERS,
+  resolveWebProviderHost,
+} from "./providers/web-cookie";
 export { resolveWebProviderHost };
 export type { WebProviderHostLink } from "./providers/web-cookie";
-import { APIKEY_PROVIDERS } from "./providers/apikey";
-import { LOCAL_PROVIDERS } from "./providers/local";
-import { SEARCH_PROVIDERS } from "./providers/search";
-import { AUDIO_ONLY_PROVIDERS } from "./providers/audio";
-import { UPSTREAM_PROXY_PROVIDERS } from "./providers/upstream-proxy";
-import { CLOUD_AGENT_PROVIDERS } from "./providers/cloud-agent";
+import { APIKEY_PROVIDERS as ALL_APIKEY_PROVIDERS } from "./providers/apikey";
+import { LOCAL_PROVIDERS as ALL_LOCAL_PROVIDERS } from "./providers/local";
+import { SEARCH_PROVIDERS as ALL_SEARCH_PROVIDERS } from "./providers/search";
+import { AUDIO_ONLY_PROVIDERS as ALL_AUDIO_ONLY_PROVIDERS } from "./providers/audio";
+import { UPSTREAM_PROXY_PROVIDERS as ALL_UPSTREAM_PROXY_PROVIDERS } from "./providers/upstream-proxy";
+import { CLOUD_AGENT_PROVIDERS as ALL_CLOUD_AGENT_PROVIDERS } from "./providers/cloud-agent";
 import { SYSTEM_PROVIDERS } from "./providers/system";
+
+export const NOAUTH_PROVIDERS = filterProviderMap(ALL_NOAUTH_PROVIDERS);
+export const OAUTH_PROVIDERS = filterProviderMap(ALL_OAUTH_PROVIDERS);
+export const WEB_COOKIE_PROVIDERS = filterProviderMap(ALL_WEB_COOKIE_PROVIDERS);
+export const APIKEY_PROVIDERS = filterProviderMap(ALL_APIKEY_PROVIDERS);
+export const LOCAL_PROVIDERS = filterProviderMap(ALL_LOCAL_PROVIDERS);
+export const SEARCH_PROVIDERS = filterProviderMap(ALL_SEARCH_PROVIDERS);
+export const AUDIO_ONLY_PROVIDERS = filterProviderMap(ALL_AUDIO_ONLY_PROVIDERS);
+export const UPSTREAM_PROXY_PROVIDERS = filterProviderMap(ALL_UPSTREAM_PROXY_PROVIDERS);
+export const CLOUD_AGENT_PROVIDERS = filterProviderMap(ALL_CLOUD_AGENT_PROVIDERS);
 
 export const FREE_PROVIDERS = {};
 

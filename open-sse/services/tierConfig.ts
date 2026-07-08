@@ -66,15 +66,16 @@ export const LEGACY_FREE_PROVIDERS: readonly string[] = [
  * Wrapped in try/catch to tolerate the import failing in non-Node runtimes
  * (vitest worker setup, MCP server entry) — the legacy list still applies.
  */
+type NoAuthProviderDef = { id: string; noAuth?: boolean; serviceKinds?: string[] };
+
 export function deriveNoAuthFreeProviders(): string[] {
   try {
     const ids: string[] = [];
-    for (const def of Object.values(NOAUTH_PROVIDERS)) {
+    for (const def of Object.values(NOAUTH_PROVIDERS) as NoAuthProviderDef[]) {
       if (!def || typeof def !== "object") continue;
       if (def.noAuth !== true) continue;
-      const kinds = (def as { serviceKinds?: unknown }).serviceKinds;
-      const isLlm =
-        !Array.isArray(kinds) || kinds.length === 0 || (kinds as unknown[]).includes("llm");
+      const kinds = def.serviceKinds;
+      const isLlm = !Array.isArray(kinds) || kinds.length === 0 || kinds.includes("llm");
       if (!isLlm) continue;
       if (typeof def.id === "string" && def.id.length > 0) {
         ids.push(def.id);

@@ -2,6 +2,8 @@ import { getCodexRequestDefaults } from "../../src/lib/providers/requestDefaults
 import { getProviderConnections } from "../../src/lib/db/providers.ts";
 import { AI_PROVIDERS, NOAUTH_PROVIDERS } from "../../src/shared/constants/providers.ts";
 
+type ProviderDef = { id: string; alias?: string; noAuth?: boolean };
+
 type JsonRecord = Record<string, unknown>;
 type McpCatalogStatus = "available" | "degraded" | "unavailable";
 
@@ -46,7 +48,7 @@ function toStringArray(value: unknown, fallback: string[] = []): string[] {
 function buildProviderAliasMap(): Record<string, string> {
   const aliasMap: Record<string, string> = {};
 
-  for (const provider of Object.values(AI_PROVIDERS)) {
+  for (const provider of Object.values(AI_PROVIDERS) as ProviderDef[]) {
     if (!provider?.id) continue;
     aliasMap[provider.id] = provider.id;
     if (typeof provider.alias === "string" && provider.alias.length > 0) {
@@ -54,10 +56,10 @@ function buildProviderAliasMap(): Record<string, string> {
     }
   }
 
-  for (const provider of Object.values(NOAUTH_PROVIDERS)) {
+  for (const provider of Object.values(NOAUTH_PROVIDERS) as ProviderDef[]) {
     if (!provider?.id) continue;
     aliasMap[provider.id] = provider.id;
-    if ("alias" in provider && typeof provider.alias === "string" && provider.alias.length > 0) {
+    if (typeof provider.alias === "string" && provider.alias.length > 0) {
       aliasMap[provider.alias] = provider.id;
     }
   }
