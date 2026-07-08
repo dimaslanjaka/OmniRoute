@@ -20,7 +20,6 @@ on:
       - "AGENTS.md"
       - "src/shared/constants/routingStrategies.ts"
       - "config/i18n.json"
-      - "open-sse/mcp-server/server.ts"
       - "scripts/docs/sync-wiki.mjs"
   workflow_dispatch:
 

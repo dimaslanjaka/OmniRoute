@@ -6,9 +6,9 @@ Unified AI proxy/router — route any LLM through one endpoint. Multi-provider s
 with **237 provider entries** (OpenAI, Anthropic, Gemini, DeepSeek, Groq, xAI, Mistral, Fireworks,
 Cohere, NVIDIA, Cerebras, Pollinations, Puter, Cloudflare AI, HuggingFace, DeepInfra,
 SambaNova, Meta Llama API, Moonshot AI, AI21 Labs, Databricks, Snowflake, and many more)
-with **MCP Server** (94 tools), **A2A v0.3 Protocol**, and **Electron desktop app**.
+with **A2A v0.3 Protocol** and **Electron desktop app**.
 
-> **Live counts (v3.8.43)**: providers 237 · MCP tools 94 · MCP scopes 30 · A2A skills 6 ·
+> **Live counts (v3.8.43)**: providers 237 · A2A skills 6 ·
 > open-sse services 134 · routing strategies 17 · auto-combo scoring factors 12 ·
 > DB modules 95 · DB migrations 110 · base tables 17 · search providers 11 ·
 > i18n locales 42. **Refresh with `npm run check:docs-all`.**
@@ -51,7 +51,7 @@ codebase. Run it locally before pushing docs; it runs in CI via `npm run check:d
 - **Styling**: Tailwind CSS v4
 - **i18n**: next-intl with 42 locales (`src/i18n/messages/`) — refresh with `ls src/i18n/messages/*.json | wc -l`
 - **Desktop**: Electron (cross-platform: Windows, macOS, Linux)
-- **Schemas**: Zod v4 for all API / MCP input validation
+- **Schemas**: Zod v4 for all API input validation
 
 ---
 
@@ -99,13 +99,13 @@ node --import tsx/esm --test tests/unit/security-fase01.test.ts
 # Integration tests
 node --import tsx/esm --test tests/integration/*.test.ts
 
-# Vitest (MCP server, autoCombo)
+# Vitest (autoCombo, combo, cache)
 npm run test:vitest
 
 # E2E with Playwright
 npm run test:e2e
 
-# Protocol clients E2E (MCP transports, A2A)
+# Protocol clients E2E (A2A)
 npm run test:protocols:e2e
 
 # Ecosystem compatibility tests
@@ -168,7 +168,7 @@ Always run `prettier --write` on changed files.
 - Never log SQLite encryption keys
 - Sanitize user content (dompurify for HTML)
 - **Public upstream OAuth identifiers** (Gemini / Antigravity / Windsurf-style client_id/secret + Firebase Web keys extracted from public CLIs): use `resolvePublicCred()` from `open-sse/utils/publicCreds.ts`, **never** as string literals. Full pattern in `docs/security/PUBLIC_CREDS.md`.
-- **Error responses** (HTTP / SSE / executor / MCP): use `buildErrorBody()` or `sanitizeErrorMessage()` from `open-sse/utils/error.ts`, **never** put raw `err.stack` / `err.message` in a Response body. Full pattern in `docs/security/ERROR_SANITIZATION.md`.
+- **Error responses** (HTTP / SSE / executor): use `buildErrorBody()` or `sanitizeErrorMessage()` from `open-sse/utils/error.ts`, **never** put raw `err.stack` / `err.message` in a Response body. Full pattern in `docs/security/ERROR_SANITIZATION.md`.
 - **`exec()` / `spawn()` with runtime values**: pass via the `env` option, **never** string-interpolate paths/values into the script body. Reference: `src/mitm/cert/install.ts::updateNssDatabases`.
 - Prefer secure-by-default libraries when available — see [tldrsec/awesome-secure-defaults](https://github.com/tldrsec/awesome-secure-defaults) for the curated list (Helmet.js, DOMPurify, ssrf-req-filter, safe-regex, Google Tink, etc.).
 
@@ -389,46 +389,16 @@ Policy engine modules: `policyEngine.ts`, `comboResolver.ts`, `costRules.ts`,
 `degradation.ts`, `fallbackPolicy.ts`, `lockoutPolicy.ts`, `modelAvailability.ts`,
 `providerExpiration.ts`, `quotaCache.ts`, `responses.ts`, `configAudit.ts`.
 
-### MCP Server (`open-sse/mcp-server/`)
+### MCP Server (DEPRECATED — Removed 2026-07-08)
 
-**94 tools** total (`TOTAL_MCP_TOOL_COUNT`, `open-sse/mcp-server/server.ts`): a 34-entry base registry (`MCP_TOOLS` in `schemas/tools.ts`, bundling the core / cache / compression / 1proxy / advanced tools) **plus** standalone module sets — memory (3), skill (4), agentSkill (3), pool (6), gamification (8), plugin (8), notion (6), obsidian (22). 3 transports (stdio / SSE / Streamable HTTP). Scoped auth (30 scopes — see `OMNIROUTE_MCP_SCOPES`), Zod schemas. See [`docs/frameworks/MCP-SERVER.md`](docs/frameworks/MCP-SERVER.md).
+**MCP (Model Context Protocol) server has been completely removed** to reduce build memory consumption from ~10GB to <4GB. The MCP dependency (`@modelcontextprotocol/sdk` with 207 transitive packages) was removed entirely. See `docs/dimaslanjaka/remove-mcp.md` for full removal documentation.
 
-**Core tools** (20): get_health, list_combos, get_combo_metrics, switch_combo, check_quota,
-route_request, cost_report, list_models_catalog, web_search, simulate_route, set_budget_guard,
-set_routing_strategy, set_resilience_profile, test_combo, get_provider_metrics,
-best_combo_for_task, explain_route, get_session_snapshot, db_health_check, sync_pricing.
+Remaining agent protocols:
 
-**Cache tools** (2): cache_stats, cache_flush.
-
-**Compression tools** (5): compression_status, compression_configure, set_compression_engine,
-list_compression_combos, compression_combo_stats.
-
-**1proxy tools** (3): oneproxy_fetch, oneproxy_rotate, oneproxy_stats.
-
-**Memory tools** (3): memory_search, memory_add, memory_clear.
-
-**Skill tools** (4): skills_list, skills_enable, skills_execute, skills_executions.
-
-**Agent-skill tools** (3): A2A skill discovery / invocation bridges.
-
-**Gamification tools** (8): levels, badges, leaderboard, and community-federation queries.
-
-**Plugin tools** (8): plugin marketplace listing, install/enable/disable, and runtime inspection.
-
-**Notion tools** (6) + **Obsidian tools** (22): knowledge-base read/write integrations (the largest tool family — vault search, note CRUD, WebDAV-backed file ops).
-
-#### MCP Internals
-
-- **Tool registration**: Each tool is an object with `{ name, description, inputSchema: ZodSchema,
-handler: async (args) => {...} }`. Zod validates inputs before the handler fires.
-- **`createMcpServer()`** and **`startMcpStdio()`** exported from `mcp-server/index.ts`.
-  `createMcpServer()` wires all tool sets; `startMcpStdio()` launches the stdio transport.
-- **Transports**: stdio (CLI `omniroute --mcp`), SSE (`/api/mcp/sse`), Streamable HTTP
-  (`/api/mcp/stream`). All share the same tool/scope engine.
-- **Scopes** (30): Control which tool categories an API key can access. Enforcement happens
-  before handler dispatch.
-- **Audit**: Every tool invocation is logged to SQLite (`mcp_audit` table) with tool name,
-  args, success/failure, API key attribution, and timestamp.
+- **A2A** (`src/lib/a2a/`) — JSON-RPC 2.0, active
+- **Skills** (`src/lib/skills/`) — extensible framework, active
+- **Memory** (`src/lib/memory/`) — persistent conversational memory, active
+- **Cloud Agents** (`src/lib/cloudAgent/`) — cloud-based agent orchestration, active
 
 ### A2A Server (`src/lib/a2a/`)
 
@@ -552,7 +522,6 @@ For any non-trivial change, read the matching deep-dive first:
 | Stealth                                    | [`docs/security/STEALTH_GUIDE.md`](docs/security/STEALTH_GUIDE.md)                                              |
 | Reasoning replay                           | [`docs/routing/REASONING_REPLAY.md`](docs/routing/REASONING_REPLAY.md)                                          |
 | Agent protocols (A2A / ACP / Cloud)        | [`docs/frameworks/AGENT_PROTOCOLS_GUIDE.md`](docs/frameworks/AGENT_PROTOCOLS_GUIDE.md)                          |
-| MCP server                                 | [`docs/frameworks/MCP-SERVER.md`](docs/frameworks/MCP-SERVER.md)                                                |
 | A2A server                                 | [`docs/frameworks/A2A-SERVER.md`](docs/frameworks/A2A-SERVER.md)                                                |
 | API reference                              | [`docs/reference/API_REFERENCE.md`](docs/reference/API_REFERENCE.md) + [`docs/openapi.yaml`](docs/openapi.yaml) |
 | Provider catalog (auto-generated)          | [`docs/reference/PROVIDER_REFERENCE.md`](docs/reference/PROVIDER_REFERENCE.md)                                  |
@@ -586,11 +555,11 @@ Only cherry-pick or reapply the changes intended for the upstream PR.
 
 - **DB ops** go through `src/lib/db/` modules, never raw SQL in routes
 - **Provider requests** flow through `open-sse/handlers/`
-- **MCP/A2A pages** are tabs inside `/dashboard/endpoint`, not standalone routes
+- **A2A pages** are tabs inside `/dashboard/endpoint`, not standalone routes
 - **No memory leaks** in SSE streams (abort signals, cleanup)
 - **Rate limit headers** must be parsed correctly
 - All API inputs validated with **Zod schemas**
 - **Provider constants** validated at module load via Zod (`src/shared/validation/providerSchema.ts`)
 - **Pricing data** syncs from LiteLLM via `src/lib/pricingSync.ts`
-- **Memory/Skills** are cross-cutting: affect MCP tools, request pipeline, and A2A skills
+- **Memory/Skills** are cross-cutting: affect request pipeline and A2A skills
 - **⛔ NEVER close a contributor's PR** after using their code — always merge via GitHub so they get credit. See `.agents/workflows/review-prs.md` for full policy.

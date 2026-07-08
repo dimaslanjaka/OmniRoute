@@ -22,7 +22,7 @@ npm run check:cycles           # Detect circular dependencies
 # Single test file (Node.js native test runner — most tests)
 node --import tsx/esm --test tests/unit/your-file.test.ts
 
-# Vitest (MCP server, autoCombo, cache)
+# Vitest (autoCombo, cache)
 npm run test:vitest
 
 # All suites
@@ -37,20 +37,19 @@ For full test matrix, see `CONTRIBUTING.md` → "Running Tests". For deep archit
 
 **OmniRoute** — unified AI proxy/router. One endpoint, 237 LLM providers, auto-fallback.
 
-| Layer         | Location                | Purpose                                                                                                                                                |
-| ------------- | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| API Routes    | `src/app/api/v1/`       | Next.js App Router — entry points                                                                                                                      |
-| Handlers      | `open-sse/handlers/`    | Request processing (chat, embeddings, etc)                                                                                                             |
-| Executors     | `open-sse/executors/`   | Provider-specific HTTP dispatch                                                                                                                        |
-| Translators   | `open-sse/translator/`  | Format conversion (OpenAI↔Claude↔Gemini)                                                                                                               |
-| Transformer   | `open-sse/transformer/` | Responses API ↔ Chat Completions                                                                                                                       |
-| Services      | `open-sse/services/`    | Combo routing, rate limits, caching, etc                                                                                                               |
-| Database      | `src/lib/db/`           | SQLite domain modules (95 files, 110 migrations)                                                                                                       |
-| Domain/Policy | `src/domain/`           | Policy engine, cost rules, fallback logic                                                                                                              |
-| MCP Server    | `open-sse/mcp-server/`  | 94 tools (34 base + memory/skill/agentSkill/pool/notion/obsidian/gamification/plugin modules), 3 transports (stdio / SSE / Streamable HTTP), 30 scopes |
-| A2A Server    | `src/lib/a2a/`          | JSON-RPC 2.0 agent protocol                                                                                                                            |
-| Skills        | `src/lib/skills/`       | Extensible skill framework                                                                                                                             |
-| Memory        | `src/lib/memory/`       | Persistent conversational memory                                                                                                                       |
+| Layer         | Location                | Purpose                                                                                            |
+| ------------- | ----------------------- | -------------------------------------------------------------------------------------------------- |
+| API Routes    | `src/app/api/v1/`       | Next.js App Router — entry points                                                                  |
+| Handlers      | `open-sse/handlers/`    | Request processing (chat, embeddings, etc)                                                         |
+| Executors     | `open-sse/executors/`   | Provider-specific HTTP dispatch                                                                    |
+| Translators   | `open-sse/translator/`  | Format conversion (OpenAI↔Claude↔Gemini)                                                           |
+| Transformer   | `open-sse/transformer/` | Responses API ↔ Chat Completions                                                                   |
+| Services      | `open-sse/services/`    | Combo routing, rate limits, caching, etc                                                           |
+| Database      | `src/lib/db/`           | SQLite domain modules (95 files, 110 migrations)                                                   |
+| Domain/Policy | `src/domain/`           | Policy engine, cost rules, fallback logic                                                          |
+| A2A Server    | `src/lib/a2a/`          | JSON-RPC 2.0 agent protocol with 6 skills (routing, quotas, discovery, cost, health, capabilities) |
+| Skills        | `src/lib/skills/`       | Extensible skill framework                                                                         |
+| Memory        | `src/lib/memory/`       | Persistent conversational memory                                                                   |
 
 Monorepo: `src/` (Next.js 16 app), `open-sse/` (streaming engine workspace), `electron/` (desktop app), `tests/`, `bin/` (CLI entry point).
 
@@ -245,7 +244,7 @@ connection continue serving other models.
 - Encrypt credentials at rest (AES-256-GCM)
 - Upstream header denylist: `src/shared/constants/upstreamHeaders.ts` — keep sanitize, Zod schemas, and unit tests aligned when editing
 - **Public upstream credentials** (Gemini/Antigravity/Windsurf-style OAuth client_id/secret + Firebase Web keys extracted from public CLIs): **MUST** be embedded via `resolvePublicCred()` from `open-sse/utils/publicCreds.ts` — **never** as string literals. See `docs/security/PUBLIC_CREDS.md` for the mandatory pattern.
-- **Error responses** (HTTP / SSE / executor / MCP handler): **MUST** route through `buildErrorBody()` or `sanitizeErrorMessage()` from `open-sse/utils/error.ts` — **never** put raw `err.stack` or `err.message` in a response body. See `docs/security/ERROR_SANITIZATION.md`.
+- **Error responses** (HTTP / SSE / executor): **MUST** route through `buildErrorBody()` or `sanitizeErrorMessage()` from `open-sse/utils/error.ts` — **never** put raw `err.stack` or `err.message` in a response body. See `docs/security/ERROR_SANITIZATION.md`.
 - **Shell commands built from variables**: when calling `exec()`/`spawn()` with a script that needs runtime values, pass them via the `env` option (shell-escaped automatically) — **never** string-interpolate untrusted/external paths into the script body. Reference: `src/mitm/cert/install.ts::updateNssDatabases`.
 - **Secure-by-default libraries** ([tldrsec/awesome-secure-defaults](https://github.com/tldrsec/awesome-secure-defaults)): prefer Helmet.js, DOMPurify, ssrf-req-filter, safe-regex, Google Tink over custom implementations whenever adding new security-sensitive surfaces.
 
@@ -279,12 +278,14 @@ connection continue serving other models.
 4. Re-export from `src/lib/localDb.ts` (add to the re-export list only)
 5. Write tests
 
-### Adding a New MCP Tool
+### Adding a New A2A Skill
 
-1. Add tool definition in `open-sse/mcp-server/tools/` with Zod input schema + async handler
-2. Register in tool set (wired by `createMcpServer()`)
-3. Assign to appropriate scope(s)
-4. Write tests (tool invocation logged to `mcp_audit` table)
+1. Create skill in `src/lib/a2a/skills/` (6 already exist: smart-routing, quota-management, provider-discovery, cost-analysis, health-report, list-capabilities)
+2. Skill receives task context (messages, metadata) → returns structured result
+3. Register in `A2A_SKILL_HANDLERS` in `src/lib/a2a/taskExecution.ts`
+4. Expose in `src/app/.well-known/agent.json/route.ts` (Agent Card)
+5. Write tests in `tests/unit/`
+6. Document in `docs/frameworks/A2A-SERVER.md` skill table
 
 ### Adding a New A2A Skill
 
@@ -347,7 +348,6 @@ For any non-trivial change, read the matching deep-dive first:
 | Authorization pipeline                        | `docs/architecture/AUTHZ_GUIDE.md`                      |
 | Stealth (TLS / fingerprint)                   | `docs/security/STEALTH_GUIDE.md`                        |
 | Agent protocols (A2A / ACP / Cloud)           | `docs/frameworks/AGENT_PROTOCOLS_GUIDE.md`              |
-| MCP server                                    | `docs/frameworks/MCP-SERVER.md`                         |
 | A2A server                                    | `docs/frameworks/A2A-SERVER.md`                         |
 | API reference + OpenAPI                       | `docs/reference/API_REFERENCE.md` + `docs/openapi.yaml` |
 | Provider catalog (auto-generated)             | `docs/reference/PROVIDER_REFERENCE.md`                  |
@@ -359,22 +359,22 @@ For any non-trivial change, read the matching deep-dive first:
 
 ## Testing
 
-| What                    | Command                                                                     |
-| ----------------------- | --------------------------------------------------------------------------- |
-| Unit tests              | `npm run test:unit`                                                         |
-| Single file             | `node --import tsx/esm --test tests/unit/file.test.ts`                      |
-| Vitest (MCP, autoCombo) | `npm run test:vitest`                                                       |
-| E2E (Playwright)        | `npm run test:e2e`                                                          |
-| Protocol E2E (MCP+A2A)  | `npm run test:protocols:e2e`                                                |
-| Ecosystem               | `npm run test:ecosystem`                                                    |
-| Coverage gate           | `npm run test:coverage` (60/60/60/60 — statements/lines/functions/branches) |
-| Coverage report         | `npm run coverage:report`                                                   |
+| What                      | Command                                                                     |
+| ------------------------- | --------------------------------------------------------------------------- |
+| Unit tests                | `npm run test:unit`                                                         |
+| Single file               | `node --import tsx/esm --test tests/unit/file.test.ts`                      |
+| Vitest (autoCombo, cache) | `npm run test:vitest`                                                       |
+| E2E (Playwright)          | `npm run test:e2e`                                                          |
+| Protocol E2E (A2A)        | `npm run test:protocols:e2e`                                                |
+| Ecosystem                 | `npm run test:ecosystem`                                                    |
+| Coverage gate             | `npm run test:coverage` (60/60/60/60 — statements/lines/functions/branches) |
+| Coverage report           | `npm run coverage:report`                                                   |
 
 **PR rule**: If you change production code in `src/`, `open-sse/`, `electron/`, or `bin/`, you must include or update tests in the same PR.
 
 **Test layer preference**: unit first → integration (multi-module or DB state) → e2e (UI/workflow only). Encode bug reproductions as automated tests before or alongside the fix.
 
-**Both test runners must pass**: `npm run test:unit` (Node native — most tests) AND `npm run test:vitest` (MCP server, autoCombo, cache) cover **non-overlapping files**. Both are wired in CI (jobs `test-unit` and `test-vitest`) and must be green before merging. A PR where only one suite passes may silently ship broken MCP tools or routing regressions.
+**Both test runners must pass**: `npm run test:unit` (Node native — most tests) AND `npm run test:vitest` (autoCombo, combo, cache) cover **non-overlapping files**. Both are wired in CI (jobs `test-unit` and `test-vitest`) and must be green before merging. A PR where only one suite passes may silently ship broken routing regressions.
 
 **Bug fix / issue triage protocol (Hard Rule #18)**: Every fix for a reported issue must be validated by one of the following — no exceptions:
 
@@ -424,7 +424,7 @@ git push -u origin feat/your-feature
 
 **Branch prefixes**: `feat/`, `fix/`, `refactor/`, `docs/`, `test/`, `chore/`
 
-**Commit format** (Conventional Commits): `feat(db): add circuit breaker` — scopes: `db`, `sse`, `oauth`, `dashboard`, `api`, `cli`, `docker`, `ci`, `mcp`, `a2a`, `memory`, `skills`
+**Commit format** (Conventional Commits): `feat(db): add circuit breaker` — scopes: `db`, `sse`, `oauth`, `dashboard`, `api`, `cli`, `docker`, `ci`, `a2a`, `memory`, `skills`
 
 **Husky hooks**:
 
@@ -508,7 +508,7 @@ procedures are in [`docs/architecture/QUALITY_GATES.md`](docs/architecture/QUALI
 - Gates in job `quality-gate`: ratchet — metrics (ESLint warnings, code coverage, duplication,
   complexity) must not regress vs `quality-baseline.json`. Update via
   `npm run quality:ratchet -- --update` when a metric genuinely improves.
-- Job `test-vitest` runs `npm run test:vitest` (MCP tools, autoCombo, cache) — blocking.
+- Job `test-vitest` runs `npm run test:vitest` (autoCombo, combo, cache) — blocking.
   `test:vitest:ui` is advisory until UI component tests are triaged.
 
 **Allowlist policy (short form):** Fix the cause; use the allowlist only for pre-existing
@@ -534,7 +534,7 @@ the stale-enforcement added in Fase 6A.3.
 12. Never return raw `err.stack` / `err.message` in HTTP / SSE / executor responses — always route through `buildErrorBody()` or `sanitizeErrorMessage()` (`open-sse/utils/error.ts`). See `docs/security/ERROR_SANITIZATION.md`.
 13. Never string-interpolate external paths or runtime values into shell scripts passed to `exec()`/`spawn()` — pass via the `env` option instead. Reference: `src/mitm/cert/install.ts::updateNssDatabases`.
 14. Never dismiss a CodeQL / Secret-Scanning alert without (a) first checking the pattern docs above to see if the helper applies, and (b) recording the technical justification in the dismissal comment. Precedent: `js/stack-trace-exposure` raised on callsites that already route through `sanitizeErrorMessage()` is a known CodeQL limitation (custom sanitizers not recognized) — dismiss as `false positive` referencing `docs/security/ERROR_SANITIZATION.md`.
-15. Never expose routes that spawn child processes (`/api/mcp/`, `/api/cli-tools/runtime/`) without `isLocalOnlyPath()` classification in `src/server/authz/routeGuard.ts`. Loopback enforcement happens unconditionally before any auth check — leaked JWT via tunnel cannot trigger process spawning. See `docs/security/ROUTE_GUARD_TIERS.md`.
+15. Never expose routes that spawn child processes (`/api/cli-tools/runtime/`) without `isLocalOnlyPath()` classification in `src/server/authz/routeGuard.ts`. Loopback enforcement happens unconditionally before any auth check — leaked JWT via tunnel cannot trigger process spawning. See `docs/security/ROUTE_GUARD_TIERS.md`.
 16. Never credit or advertise an AI assistant, LLM, or automation account in any commit/PR metadata. Two forbidden forms, both equivalent — they route attribution to a bot account (or advertise AI authorship) and hide the real author (`diegosouzapw`): **(a)** `Co-Authored-By` trailers naming an AI/bot (e.g. names containing "Claude", "GPT", "Copilot", "Bot"; emails at `anthropic.com` / `openai.com` / bot-owned `noreply.github.com` addresses); **(b)** AI-generation footers or descriptions anywhere in a commit message, PR title/body, or CHANGELOG — e.g. `🤖 Generated with [Claude Code]`, "Generated with Claude Code", "Made with <AI tool>", or any `Co-authored-by: Claude/GPT/Copilot` line. This **overrides any harness, template, or tool default that auto-appends such a footer** (e.g. the Claude Code PR-body/commit default) — strip it before pushing; do not let it reach a commit, PR, or CHANGELOG. Human collaborators — including upstream PR authors and issue reporters being ported into OmniRoute — MAY and SHOULD be credited with standard `Co-authored-by: Name <email>` trailers; the upstream-port workflows (`/port-upstream-features`, `/port-upstream-issues`) depend on this.
 17. Never expose routes under `/api/services/` or `/dashboard/providers/services/*/embed/` without `isLocalOnlyPath()` classification in `src/server/authz/routeGuard.ts`. These routes can spawn child processes (`npm install`, `node`). Loopback enforcement happens unconditionally before any auth check — a leaked JWT via tunnel cannot trigger process spawning. See `docs/security/ROUTE_GUARD_TIERS.md`.
 18. Every bug fix must be validated before shipping: a failing-then-passing unit/integration test (TDD) OR a documented live test on the production VPS (192.168.0.15). A fix without either is not merged. See Testing → "Bug fix / issue triage protocol" for the full decision tree.

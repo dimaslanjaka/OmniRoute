@@ -432,7 +432,6 @@ const nextConfig = {
         destination: "/docs/frameworks/gamification",
         permanent: true,
       },
-      { source: "/docs/mcp-server", destination: "/docs/frameworks/mcp-server", permanent: true },
       { source: "/docs/memory", destination: "/docs/frameworks/memory", permanent: true },
       { source: "/docs/opencode", destination: "/docs/frameworks/opencode", permanent: true },
       { source: "/docs/skills", destination: "/docs/frameworks/skills", permanent: true },

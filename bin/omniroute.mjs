@@ -192,14 +192,8 @@ process.on("exit", () => {
 });
 
 if (process.argv.includes("--mcp")) {
-  try {
-    const { startMcpCli } = await import(pathToFileURL(join(ROOT, "bin", "mcp-server.mjs")).href);
-    await startMcpCli(ROOT);
-  } catch (err) {
-    console.error("\x1b[31m✖ Failed to start MCP server:\x1b[0m", err.message || err);
-    process.exit(1);
-  }
-  process.exit(0);
+  console.error("\x1b[31m✖ MCP server is disabled (MCP removed)\x1b[0m");
+  process.exit(1);
 }
 
 if (process.argv.includes("reset-encrypted-columns")) {

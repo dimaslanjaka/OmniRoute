@@ -10,7 +10,6 @@ import { AI_PROVIDERS, getProviderByAlias } from "@/shared/constants/providers";
 import { getProviderDisplayName } from "@/lib/display/names";
 import { useTranslations } from "next-intl";
 import A2ADashboardPage from "./components/A2ADashboard";
-import McpDashboardPage from "./components/MCPDashboard";
 import NotionSourceCard from "./components/NotionSourceCard";
 import VscodeTokenAliasCard from "./VscodeTokenAliasCard";
 
@@ -107,11 +106,10 @@ type EndpointTunnelVisibility = {
   showNgrokTunnel: boolean;
 };
 
-type EndpointTab = "apis" | "mcp" | "a2a" | "context-sources";
+type EndpointTab = "apis" | "a2a" | "context-sources";
 
 const ENDPOINT_TABS: Array<{ value: EndpointTab; label: string; icon: string }> = [
   { value: "apis", label: "APIs", icon: "api" },
-  { value: "mcp", label: "MCP", icon: "extension" },
   { value: "a2a", label: "A2A", icon: "hub" },
   { value: "context-sources", label: "Context Sources", icon: "database" },
 ];
@@ -1240,7 +1238,6 @@ export default function APIPageClient({ machineId }: Readonly<APIPageClientProps
         className="w-fit"
       />
 
-      {activeEndpointTab === "mcp" ? <McpDashboardPage /> : null}
       {activeEndpointTab === "a2a" ? <A2ADashboardPage /> : null}
       {activeEndpointTab === "context-sources" ? (
         <div className="flex flex-col gap-4">

@@ -47,7 +47,6 @@ import { registerHealth } from "./health.mjs";
 import { registerQuota } from "./quota.mjs";
 import { registerCache } from "./cache.mjs";
 import { registerRedis } from "./redis.mjs";
-import { registerMcp } from "./mcp.mjs";
 import { registerA2a } from "./a2a.mjs";
 import { registerTunnel } from "./tunnel.mjs";
 import { registerEnv } from "./env.mjs";
@@ -129,7 +128,6 @@ export function registerCommands(program) {
   registerQuota(program);
   registerCache(program);
   registerRedis(program);
-  registerMcp(program);
   registerA2a(program);
   registerTunnel(program);
   registerEnv(program);

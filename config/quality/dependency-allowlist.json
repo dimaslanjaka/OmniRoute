@@ -10,7 +10,6 @@
     "@dnd-kit/utilities",
     "@huggingface/transformers",
     "@lobehub/icons",
-    "@modelcontextprotocol/sdk",
     "@monaco-editor/react",
     "@ngrok/ngrok",
     "@opencode-ai/plugin",

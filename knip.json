@@ -49,8 +49,7 @@
         "transformer/**/*.ts",
         "services/**/*.ts",
         "utils/**/*.ts",
-        "config/**/*.ts",
-        "mcp-server/**/*.ts"
+        "config/**/*.ts"
       ],
       "project": ["**/*.ts", "!**/*.test.ts"],
       "ignore": ["**/*.test.ts", "node_modules/**", "dist/**"]

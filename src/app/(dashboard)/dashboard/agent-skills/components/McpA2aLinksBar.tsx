@@ -69,17 +69,10 @@ export function McpA2aLinksBar(): JSX.Element {
   const t = useTranslations("agentSkills");
   const origin = useOrigin();
 
-  const mcpUrl = origin ? `${origin}/api/mcp/sse` : "/api/mcp/sse";
   const a2aUrl = origin ? `${origin}/.well-known/agent.json` : "/.well-known/agent.json";
 
   return (
-    <div className="flex flex-col sm:flex-row gap-2" data-testid="mcp-a2a-links-bar">
-      <LinkCard
-        label={t("mcpUrl")}
-        url={mcpUrl}
-        icon="electrical_services"
-        prompt="Add this MCP endpoint to your agent to give it 37 OmniRoute tools."
-      />
+    <div className="flex flex-col sm:flex-row gap-2" data-testid="a2a-links-bar">
       <LinkCard
         label={t("a2aLink")}
         url={a2aUrl}

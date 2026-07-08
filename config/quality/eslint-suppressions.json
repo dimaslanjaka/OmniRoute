@@ -76,7 +76,7 @@
   },
   "open-sse/handlers/search.ts": {
     "@typescript-eslint/no-explicit-any": {
-      "count": 34
+      "count": 30
     }
   },
   "open-sse/handlers/videoGeneration.ts": {
@@ -87,36 +87,6 @@
   "open-sse/lib/deepseek-pow.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 5
-    }
-  },
-  "open-sse/mcp-server/__tests__/a2aLifecycle.test.ts": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 1
-    }
-  },
-  "open-sse/mcp-server/__tests__/dbHealthTool.test.ts": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 1
-    }
-  },
-  "open-sse/mcp-server/__tests__/toolSearch.tool.test.ts": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 2
-    }
-  },
-  "open-sse/mcp-server/server.ts": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 3
-    }
-  },
-  "open-sse/mcp-server/tools/gamificationTools.ts": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 2
-    }
-  },
-  "open-sse/mcp-server/tools/pluginTools.ts": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 1
     }
   },
   "open-sse/services/batchProcessor.ts": {
@@ -324,7 +294,7 @@
   },
   "tests/e2e/protocol-clients.test.ts": {
     "@typescript-eslint/no-explicit-any": {
-      "count": 6
+      "count": 4
     }
   },
   "tests/e2e/system-failover.test.ts": {
@@ -845,11 +815,6 @@
   "tests/unit/cli-lang-commands.test.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 1
-    }
-  },
-  "tests/unit/cli-mcp-call-commands.test.ts": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 16
     }
   },
   "tests/unit/cli-memory-commands.test.ts": {

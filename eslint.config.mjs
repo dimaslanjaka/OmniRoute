@@ -109,8 +109,6 @@ const eslintConfig = [
       "electron/**",
       // Docs
       "docs/**",
-      // Open-SSE compiled/bundled output
-      "open-sse/mcp-server/dist/**",
       // Playwright test output
       "playwright-report/**",
       "test-results/**",
