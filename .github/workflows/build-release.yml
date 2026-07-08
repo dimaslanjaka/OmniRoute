@@ -23,6 +23,7 @@ on:
       - "tsconfig*.json"
       - "postcss.config.*"
       - "tailwind.config.*"
+      - ".github/workflows/build-release.yml"
   workflow_dispatch:
 
 permissions:
