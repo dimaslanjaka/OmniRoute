@@ -67,6 +67,8 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.CI_NODE_VERSION }}
+          cache: "npm"
+          cache-dependency-path: package-lock.json
       - uses: ./.github/actions/npm-ci-retry
       - run: npm run check:node-runtime
       - name: Cache Next.js build cache
@@ -149,6 +151,8 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.CI_NODE_VERSION }}
+          cache: "npm"
+          cache-dependency-path: package-lock.json
       - uses: ./.github/actions/npm-ci-retry
       - run: npm run check:node-runtime
       - name: Download Next.js build artifact
