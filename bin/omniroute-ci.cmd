@@ -1,13 +1,10 @@
 @echo off
 setlocal enabledelayedexpansion
 
-set "MEMORY_MB=6084"
-set "OMNIROUTE_MEMORY_MB=%MEMORY_MB%"
-set "OMNIROUTE_BUILD_MEMORY_MB=%MEMORY_MB%"
-set "NODE_OPTIONS=--max-old-space-size=%MEMORY_MB% --expose-gc --max-semi-space-size=512"
+set "NODE_OPTIONS=--max-old-space-size=6048 --expose-gc --max-semi-space-size=512"
 set "NODE_ENV=production"
 
-set "NPM_ROOT=%TEMP%\npm\omniroute-dev"
+set "NPM_ROOT=%TEMP%\npm"
 set "TARBALL=%NPM_ROOT%\omniroute-dev.tgz"
 set "CHECKSUM_FILE=%NPM_ROOT%\checksum.txt"
 set "CHECKSUM_TMP=%NPM_ROOT%\checksum.tmp"
@@ -15,6 +12,9 @@ set "PKG_DIR=%NPM_ROOT%\node_modules\omniroute"
 
 set "REMOTE_URL=https://github.com/dimaslanjaka/OmniRoute/releases/download/ci-build/omniroute.tgz"
 set "CHECKSUM_URL=https://github.com/dimaslanjaka/OmniRoute/releases/download/ci-build/checksum.txt"
+
+set "FLAVOR_FILE=%NPM_ROOT%\omniroute-flavor.txt"
+set "FLAVOR=dev"
 
 if not exist "%NPM_ROOT%" mkdir "%NPM_ROOT%"
 
@@ -43,6 +43,15 @@ if exist "%TARBALL%" if exist "%CHECKSUM_FILE%" if exist "%PKG_DIR%\package.json
         echo [remote] missing checksum cache, downloading...
     ) else (
         echo [remote] missing package, downloading...
+    )
+)
+
+REM --- Check flavor ---
+if exist "!FLAVOR_FILE!" (
+    set /p STORED_FLAVOR=<"!FLAVOR_FILE!"
+    if not "!STORED_FLAVOR!"=="!FLAVOR!" (
+        echo [npm] Flavor changed from !STORED_FLAVOR! to !FLAVOR!, forcing rebuild.
+        set "NEED_SETUP=1"
     )
 )
 
@@ -101,6 +110,7 @@ if "!NEED_SETUP!"=="1" (
 
     popd
 
+    echo !FLAVOR!>"%FLAVOR_FILE%"
     echo [npm] setup complete
 )
 
@@ -138,4 +148,4 @@ if not defined ENTRY (
     exit /b 1
 )
 
-node --max-old-space-size="%MEMORY_MB%" "%ENTRY%" %*
+node "%ENTRY%" %*
