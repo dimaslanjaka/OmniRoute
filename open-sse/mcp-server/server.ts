@@ -578,7 +578,7 @@ async function handleWebSearch(args: {
 
 async function handleWebFetch(args: {
   url: string;
-  provider?: "firecrawl" | "jina-reader" | "tavily-search";
+  provider?: "firecrawl" | "jina-reader" | "tavily-search" | "tinyfish";
   format?: "markdown" | "html" | "links" | "screenshot";
   include_metadata?: boolean;
   depth?: number;
