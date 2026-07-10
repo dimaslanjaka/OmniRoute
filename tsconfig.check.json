@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "strict": false,
+    "strictNullChecks": true,
+    "noImplicitAny": false,
+    "noEmit": true,
+    "incremental": false,
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true
+  },
+  "include": ["src/**/*", "open-sse/**/*", "scripts/**/*", "bin/**/*"],
+  "exclude": ["node_modules", ".next", "app.__qa_backup", "vscode-extension"]
+}

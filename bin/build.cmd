@@ -1,18 +1,20 @@
 @echo off
 setlocal enabledelayedexpansion
 
-set "MEMORY_MB=6084"
+set "MEMORY_MB=4084"
 set "OMNIROUTE_MEMORY_MB=%MEMORY_MB%"
 set "OMNIROUTE_BUILD_MEMORY_MB=%MEMORY_MB%"
 set "NODE_OPTIONS=--max-old-space-size=%MEMORY_MB% --expose-gc --max-semi-space-size=512"
 set "NODE_ENV=production"
 @REM set "OMNIROUTE_BUILD_PROFILE=minimal"
-set "NEXT_PRIVATE_BUILD_WORKER=2"
-@REM set "ENABLED_PROVIDERS=gemini,gemini-cli,codex,kiro,opencode,mimocode,ollama-cloud,nvidia,antigravity,openai-compatible-*,anthropic-compatible-*"
+set "NEXT_PRIVATE_BUILD_WORKER=0"
+@REM set "OMNIROUTE_BUILD_BACKEND_ONLY=1"
+set "OMNIROUTE_USE_TURBOPACK=0"
+@REM set "ENABLED_PROVIDERS=gemini,gemini-cli,codex,kiro,opencode,ollama-cloud,nvidia,antigravity,openai-compatible-*,anthropic-compatible-*"
 
 @REM run `tsc --noEmit -p tsconfig.typecheck-noimplicit-core.json` or `tsc --noEmit -p tsconfig.typecheck-core.json` without running build to verify all codebase no error
 echo [%date% %time%] Running TypeScript type check ...
-powershell -NoProfile -Command "tsc --noEmit -p tsconfig.typecheck-core.json 2>&1 | Tee-Object -FilePath typecheck.log"
+powershell -NoProfile -Command "tsc --noEmit -p tsconfig.check.json 2>&1 | Tee-Object -FilePath typecheck.log"
 set "EXIT_CODE=!ERRORLEVEL!"
 
 if !EXIT_CODE! equ 0 (
