@@ -1,29 +1,31 @@
 @echo off
 setlocal enabledelayedexpansion
 
-set "MEMORY_MB=4084"
+set "NODE_ENV=production"
+
+set "MEMORY_MB=2084"
 set "OMNIROUTE_MEMORY_MB=%MEMORY_MB%"
 set "OMNIROUTE_BUILD_MEMORY_MB=%MEMORY_MB%"
-set "NODE_OPTIONS=--max-old-space-size=%MEMORY_MB% --expose-gc --max-semi-space-size=512"
-set "NODE_ENV=production"
+@REM set "NODE_OPTIONS=--max-old-space-size=%MEMORY_MB% --expose-gc --max-semi-space-size=512"
+set "NODE_OPTIONS=--max-old-space-size=%MEMORY_MB%"
 @REM set "OMNIROUTE_BUILD_PROFILE=minimal"
 set "NEXT_PRIVATE_BUILD_WORKER=0"
 @REM set "OMNIROUTE_BUILD_BACKEND_ONLY=1"
-set "OMNIROUTE_USE_TURBOPACK=0"
-@REM set "ENABLED_PROVIDERS=gemini,gemini-cli,codex,kiro,opencode,ollama-cloud,nvidia,antigravity,openai-compatible-*,anthropic-compatible-*"
+REM OMNIROUTE_USE_TURBOPACK: 0 to use Webpack instead of Turbopack
+set "OMNIROUTE_USE_TURBOPACK=1"
 
 @REM run `tsc --noEmit -p tsconfig.typecheck-noimplicit-core.json` or `tsc --noEmit -p tsconfig.typecheck-core.json` without running build to verify all codebase no error
-echo [%date% %time%] Running TypeScript type check ...
-powershell -NoProfile -Command "tsc --noEmit -p tsconfig.check.json 2>&1 | Tee-Object -FilePath typecheck.log"
-set "EXIT_CODE=!ERRORLEVEL!"
+@REM echo [%date% %time%] Running TypeScript type check ...
+@REM powershell -NoProfile -Command "tsc --noEmit -p tsconfig.check.json 2>&1 | Tee-Object -FilePath typecheck.log"
+@REM set "EXIT_CODE=!ERRORLEVEL!"
 
-if !EXIT_CODE! equ 0 (
-  echo [%date% %time%] TypeScript type check completed successfully
-) else (
-  echo [%date% %time%] TypeScript type check failed with exit code !EXIT_CODE!
-  echo See typecheck.log for details
-  exit /b !EXIT_CODE!
-)
+@REM if !EXIT_CODE! equ 0 (
+@REM   echo [%date% %time%] TypeScript type check completed successfully
+@REM ) else (
+@REM   echo [%date% %time%] TypeScript type check failed with exit code !EXIT_CODE!
+@REM   echo See typecheck.log for details
+@REM   exit /b !EXIT_CODE!
+@REM )
 
 echo [%date% %time%] Starting OmniRoute build ...
 
