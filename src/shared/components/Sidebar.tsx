@@ -45,7 +45,6 @@ type SidebarProps = {
   onClose?: () => void;
   collapsed?: boolean;
   onToggleCollapse?: () => void;
-  isMacElectron?: boolean;
 };
 
 type HoveredItem = { id: string; label: string; x: number; y: number } | null;
@@ -67,12 +66,7 @@ function saveToStorage(key: string, value: unknown) {
   } catch {}
 }
 
-export default function Sidebar({
-  onClose,
-  collapsed = false,
-  onToggleCollapse,
-  isMacElectron = false,
-}: SidebarProps) {
+export default function Sidebar({ onClose, collapsed = false, onToggleCollapse }: SidebarProps) {
   const getIconStyle = (itemId: string): SidebarGlyphStyle => {
     const accent = getSidebarIconAccent(itemId);
     return {
@@ -445,7 +439,6 @@ export default function Sidebar({
           "flex h-full min-h-0 flex-col border-r border-black/5 bg-sidebar transition-all duration-300 ease-in-out dark:border-white/5",
           collapsed ? "w-16" : "w-[220px]"
         )}
-        style={{ paddingTop: isMacElectron ? "var(--desktop-safe-top)" : undefined }}
       >
         <a
           href="#main-content"
@@ -454,22 +447,17 @@ export default function Sidebar({
           {t("skipToContent")}
         </a>
 
-        {(onToggleCollapse || !isMacElectron) && (
+        {onToggleCollapse && (
           <div
             className={cn(
-              "flex items-center gap-2 pb-2",
-              isMacElectron ? "pt-3" : "pt-5",
+              "flex items-center gap-2 pb-2 pt-5",
               collapsed ? "px-3 justify-center" : "px-4"
             )}
             aria-hidden="true"
           >
-            {!isMacElectron && (
-              <>
-                <div className="w-3 h-3 rounded-full bg-[#FF5F56]" />
-                <div className="w-3 h-3 rounded-full bg-[#FFBD2E]" />
-                <div className="w-3 h-3 rounded-full bg-[#27C93F]" />
-              </>
-            )}
+            <div className="w-3 h-3 rounded-full bg-[#FF5F56]" />
+            <div className="w-3 h-3 rounded-full bg-[#FFBD2E]" />
+            <div className="w-3 h-3 rounded-full bg-[#27C93F]" />
             {!collapsed && <div className="flex-1" />}
             {onToggleCollapse && (
               <button
@@ -479,8 +467,7 @@ export default function Sidebar({
                 aria-label={collapsed ? t("expandSidebar") : t("collapseSidebar")}
                 className={cn(
                   "rounded-md p-1 text-text-muted/50 transition-colors hover:bg-black/5 hover:text-text-muted dark:hover:bg-white/5",
-                  collapsed && !isMacElectron && "mt-2",
-                  isMacElectron && "ms-auto"
+                  collapsed && "mt-2"
                 )}
               >
                 <span className="material-symbols-outlined text-[16px]" aria-hidden="true">
@@ -640,7 +627,7 @@ export default function Sidebar({
             collapsed ? "p-2 flex flex-col gap-1" : "p-2 flex gap-2"
           )}
           style={{
-            paddingBottom: isMacElectron ? "calc(0.5rem + var(--desktop-safe-bottom))" : undefined,
+            paddingBottom: "var(--desktop-safe-bottom, 0px)",
           }}
         >
           <button

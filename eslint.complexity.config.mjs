@@ -15,12 +15,7 @@ import tseslint from "typescript-eslint";
 /** @type {import("eslint").Linter.Config[]} */
 const complexityConfig = [
   {
-    files: [
-      "src/**/*.{ts,tsx}",
-      "open-sse/**/*.{ts,tsx}",
-      "electron/**/*.{ts,tsx}",
-      "bin/**/*.{ts,tsx}",
-    ],
+    files: ["src/**/*.{ts,tsx}", "open-sse/**/*.{ts,tsx}", "bin/**/*.{ts,tsx}"],
     languageOptions: {
       parser: tseslint.parser,
       parserOptions: {

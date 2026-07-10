@@ -59,9 +59,6 @@ docs/diagrams/**/*.webp
 *.md
 !README.md
 
-# Electron (separate build)
-electron
-
 # VS Code extension (separate project)
 vscode-extension
 
@@ -125,4 +122,3 @@ app.__qa_backup/
 .worktrees
 .next-playwright/
 cloud/
-electron/dist-electron

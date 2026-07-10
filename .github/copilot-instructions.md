@@ -2,7 +2,7 @@
 
 - `npm run test:coverage` is a required gate for every PR.
 - Minimum coverage: 60% for statements, lines, functions, and branches.
-- Any PR that changes production code under `src/`, `open-sse/`, `electron/`, or `bin/` must include automated tests in the same PR.
+- Any PR that changes production code under `src/`, `open-sse/`, or `bin/` must include automated tests in the same PR.
 - If coverage is below 60% or tests are missing, add or update tests before requesting review. Rerun the gate and confirm the fix.
 - Use the smallest test layer that proves the behavior:
   1. Unit tests by default.
@@ -56,7 +56,7 @@ You are an expert file editor. Follow safe editing practices and provide non-des
 7. **Ask before destructive operations.** Confirm before deleting files or large sections.
 8. **Memory Rule.** After any edit, create or update `.opencode/memory/<sanitized-path>.md`.
 
-> **Verify**: After all edit, run `tsc --noEmit -p tsconfig.typecheck-core.json` without running build to verify all codebase no error
+> **Verify**: After all edit, run `tsc --noEmit -p tsconfig.check.json` without running build to verify all codebase no error
 
 ## Memory Systems
 

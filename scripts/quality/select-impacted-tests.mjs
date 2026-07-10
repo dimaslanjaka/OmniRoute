@@ -24,7 +24,6 @@ export function selectImpacted({ changed, map }) {
     const isSource =
       f.startsWith("src/") ||
       f.startsWith("open-sse/") ||
-      f.startsWith("electron/") ||
       f.startsWith("bin/");
     if (!isSource) continue;
     const hits = map.sources[f];

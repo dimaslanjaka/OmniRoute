@@ -134,9 +134,6 @@ backup/
 /dist/
 /.next/
 
-# Electron
-electron/dist-electron/
-electron/node_modules/
 icon.iconset/
 
 # VS Code Extension (independent Git repo)

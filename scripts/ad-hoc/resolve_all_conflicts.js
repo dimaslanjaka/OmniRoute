@@ -8,7 +8,7 @@ const filesToCheckoutOurs = [
   ".source/browser.ts",
   ".source/server.ts",
   "package-lock.json",
-  "electron/package-lock.json",
+  "docs/README.md",
   "src/app/(dashboard)/dashboard/providers/[id]/page.tsx",
   "src/app/(dashboard)/dashboard/providers/components/ProviderCard.tsx",
   "src/lib/db/contextHandoffs.ts",
@@ -130,17 +130,7 @@ async function main() {
     runCmd("git add bin/cli/tray/autostart.mjs");
   }
 
-  // 10. Resolve electron/package.json
-  const electronPkg = path.join(projectRoot, "electron/package.json");
-  if (fs.existsSync(electronPkg)) {
-    let content = fs.readFileSync(electronPkg, "utf-8");
-    content = content.replace(
-      /<<<<<<< HEAD\r?\n\s+"electron": "\^42\.2\.0",\r?\n\s+"electron-builder": "\^26\.11\.0"\r?\n=======\r?\n\s+"electron": "\^41\.2\.0",\r?\n\s+"electron-builder": "\^26\.11\.1"\r?\n>>>>>>> release\/v3\.8\.4/g,
-      '    "electron": "^42.2.0",\n    "electron-builder": "^26.11.1"'
-    );
-    fs.writeFileSync(electronPkg, content);
-    runCmd("git add electron/package.json");
-  }
+  // 10. (Electron removed)
 
   // 11. Resolve .github/workflows/ci.yml
   const ciYaml = path.join(projectRoot, ".github/workflows/ci.yml");

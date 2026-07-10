@@ -62,9 +62,9 @@ const KNOWN_HOOKS = new Set([
   "onUninstall",
   // Real callbacks wired in code that docs reference (verified present in src/):
   // onChunk/onFirstChunk — streaming callbacks (src/shared/utils/streamTracker.ts,
-  //   playground ChatTab.tsx); onServerStatus/onPortChanged/onUpdateStatus — Electron
-  //   IPC callbacks (src/shared/hooks/useElectron.ts, HomePageClient.tsx);
-  //   onEmpty — model-metadata registry callback (src/lib/modelMetadataRegistry.ts).
+  //   playground ChatTab.tsx); onServerStatus/onPortChanged/onUpdateStatus — other
+  //   IPC-like callbacks; onEmpty — model-metadata registry callback
+  //   (src/lib/modelMetadataRegistry.ts).
   "onChunk",
   "onFirstChunk",
   "onServerStatus",
@@ -111,7 +111,6 @@ const ENV_VAR_ALLOWLIST = new Set([
   "PROMPTFOO_PROVIDER_KEY", // promptfoo's own provider-key env var, used by the red-team suite (GUARDRAILS.md)
   "REDIS_PORT", // docker-compose host-port override (DOCKER_GUIDE.md)
   "AUTO_UPDATE_HOST_REPO_DIR", // docker-compose self-update mount (DOCKER_GUIDE.md)
-  "LINUX_GPG_KEY", // electron AppImage signing key, CI/build only (ELECTRON_GUIDE.md)
   "BRANCH_LOCK_TOKEN", // release branch-protection ops token (QUALITY_GATE_PLAYBOOK.md)
   "NEXT_LOCALE", // next-intl locale cookie name (I18N.md)
 ]);
@@ -309,8 +308,8 @@ const ENV_VAR_DENYLIST = new Set([
   // ── Error / Node codes documented in prose (string-literal codes, not env vars) ──
   "URL_GUARD_BLOCKED", // HTTP 422 guard-violation code (ARCHITECTURE.md)
   "AUTHZ_NOT_INITIALIZED", // AuthzAssertionError code (AUTHZ_GUIDE.md)
-  "MODULE_NOT_FOUND", // Node runtime error code watched by service supervisor (ELECTRON_GUIDE.md)
-  "ERR_DLOPEN_FAILED", // Node native-module load error code (ELECTRON_GUIDE.md)
+  "MODULE_NOT_FOUND", // Node runtime error code watched by service supervisor
+  "ERR_DLOPEN_FAILED", // Node native-module load error code
   // ── Code-symbol / naming-convention examples documented in prose ─────────────
   "UPPER_SNAKE", // the literal naming-convention token in the style guide (CODEBASE_DOCUMENTATION.md)
   "DEFAULT_TIMEOUT", // example constant name in the UPPER_SNAKE convention row (AGENTS.md)
@@ -540,8 +539,8 @@ export function buildCodebaseIndex(root = ROOT) {
 
   // Env contract maintained by the sibling gate (check-env-doc-sync.mjs): a var
   // listed in .env.example or docs/reference/ENVIRONMENT.md is, by definition, a
-  // documented OmniRoute env var (including external-CLI / docker / electron vars
-  // that are not read via process.env in our own source).
+  // documented OmniRoute env var (including external-CLI / docker vars that are
+  // not read via process.env in our own source).
   function readEnvContract() {
     try {
       const t = fs.readFileSync(path.join(root, ".env.example"), "utf8");
@@ -607,7 +606,7 @@ const COARSE_PATTERNS = {
   hookName: /\b(on[A-Z][a-zA-Z]+)\b/g,
   // File references like src/lib/foo.ts, open-sse/handlers/bar.ts, bin/cli/baz.mjs
   fileRef:
-    /\b((?:src|open-sse|bin|scripts|tests|electron)\/[A-Za-z0-9_\-\/\.]+\.(?:ts|tsx|mjs|js|cjs|sh|sql))\b/g,
+    /\b((?:src|open-sse|bin|scripts|tests)\/[A-Za-z0-9_\-\/\.]+\.(?:ts|tsx|mjs|js|cjs|sh|sql))\b/g,
 };
 
 function stripCodeBlocksAndFences(text) {
