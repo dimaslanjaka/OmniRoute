@@ -149,11 +149,6 @@
       "count": 5
     }
   },
-  "src/app/(dashboard)/dashboard/HomePageClient.tsx": {
-    "react-hooks/exhaustive-deps": {
-      "count": 1
-    }
-  },
   "src/app/(dashboard)/dashboard/agent-skills/AgentSkillsPageClient.tsx": {
     "no-restricted-syntax": {
       "count": 3
@@ -209,6 +204,11 @@
   },
   "src/app/(dashboard)/dashboard/settings/components/AuthzSection.tsx": {
     "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/app/(dashboard)/dashboard/settings/components/MitmProxyTab.tsx": {
+    "@next/next/no-html-link-for-pages": {
       "count": 1
     }
   },

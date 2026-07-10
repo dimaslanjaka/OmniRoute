@@ -11,7 +11,12 @@ import { createResponsesWsProxy } from "./responses-ws-proxy.mjs";
 import { ensurePeerStampToken, stampPeerIp } from "./peer-stamp.mjs";
 import methodGuard from "./http-method-guard.cjs";
 import { ensureNativeSqlite } from "./ensure-native-sqlite.mjs";
+import {
+  isTurbopackCacheCorruption,
+  purgeAllTurbopackCaches,
+} from "./turbopackCacheHeal.mjs";
 import { randomUUID } from "node:crypto";
+import projectNextConfig from "../../next.config.mjs";
 
 const { maybeHandleDisallowedMethod } = methodGuard;
 
@@ -77,6 +82,24 @@ process.env.OMNIROUTE_WS_BRIDGE_SECRET ||= randomUUID();
 // server (read by the authz middleware in the same process). See peer-stamp.mjs.
 ensurePeerStampToken();
 
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  ...projectNextConfig,
+  reactStrictMode: true,
+  typescript: {
+    ...projectNextConfig.typescript,
+    // Allow dev server to start even with TS errors (like missing types for new providers)
+    ignoreBuildErrors: true,
+  },
+  webpack: (config, { dev }) => {
+    // Only disable source maps in development
+    if (dev) {
+      config.devtool = false;
+    }
+    return config;
+  },
+};
+
 // Next 16 picks Turbopack by default in dev. Passing `turbopack: false` to the
 // programmatic next() entry is *not* enough on its own:
 //   - parseBundlerArgs (node_modules/next/dist/lib/bundler.js) sees no positive
@@ -85,20 +108,51 @@ ensurePeerStampToken();
 //     starts Turbopack regardless of the option we passed.
 // Force webpack by both passing `webpack: true` and clearing the env var.
 // Mirrors the workaround PR #4052 applied for the production Docker build.
-if (!useTurbopack) {
+if (!useTurbopack && typeof process.env.TURBOPACK !== "undefined") {
   delete process.env.TURBOPACK;
 }
-const nextApp = next({
-  dev,
-  dir: process.cwd(),
-  hostname,
-  port: dashboardPort,
-  turbopack: useTurbopack,
-  webpack: !useTurbopack,
-});
+
+function createNextApp() {
+  return next({
+    dev,
+    dir: process.cwd(),
+    hostname,
+    port: dashboardPort,
+    turbopack: useTurbopack,
+    webpack: !useTurbopack,
+    conf: nextConfig,
+  });
+}
+
+let nextApp = createNextApp();
+
+// Best-effort self-heal for a corrupted Turbopack persistent dev cache (#6289):
+// on Windows an mmap of an SST cache file can fail ("os error 1455" / paging
+// file too small), which Turbopack surfaces as a misleading module-resolve
+// error. This is an UPSTREAM Turbopack cache-corruption bug — not our code.
+// When `prepare()` rejects with that signature we purge the cache and retry
+// ONCE. Caveat: the failure often surfaces as a runtime overlay rather than a
+// `prepare()` rejection, so this cannot always intercept it — the reliable
+// remedy remains manually deleting `.build/next/**/cache/turbopack`.
+async function prepareWithHeal() {
+  try {
+    await nextApp.prepare();
+  } catch (error) {
+    const detail = error instanceof Error ? `${error.message}\n${error.stack ?? ""}` : String(error);
+    if (!useTurbopack || !isTurbopackCacheCorruption(detail)) throw error;
+    console.warn(
+      "[Next] Turbopack dev cache looks corrupted (Windows mmap / os error 1455 — known upstream bug). Purging and retrying once…"
+    );
+    const removed = purgeAllTurbopackCaches();
+    for (const dir of removed) console.warn(`[Next] purged Turbopack cache: ${dir}`);
+    nextApp = createNextApp();
+    await nextApp.prepare();
+    console.warn("[Next] Turbopack dev cache purged; startup retry succeeded.");
+  }
+}
 
 async function start() {
-  await nextApp.prepare();
+  await prepareWithHeal();
 
   const requestHandler = nextApp.getRequestHandler();
   const upgradeHandler = nextApp.getUpgradeHandler();

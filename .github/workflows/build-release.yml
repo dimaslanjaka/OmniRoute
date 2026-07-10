@@ -5,14 +5,25 @@
 # can be triggered independently (e.g. on release tags, manual dispatch)
 # without running the full test matrix.
 #
-# Flow:  build (Next.js standalone) → package-artifact (tgz + GitHub Release)
+# Flow:  build (Next.js standalone, main + minimal) → package-artifact (tgz per branch)
+#        → release (merge tarballs + checksums, publish to ci-build GitHub Release)
 
 name: Build & Release
 
 on:
   push:
-    branches: [main]
-    tags: ["v*.*.*"]
+    branches: [main, minimal]
+    paths:
+      - "**/package*.json"
+      - "scripts/**"
+      - "src/**"
+      - "open-sse/**"
+      - "config/**"
+      - "next.config.mjs"
+      - "tsconfig*.json"
+      - "postcss.config.*"
+      - "tailwind.config.*"
+      - ".github/workflows/build-release.yml"
   workflow_dispatch:
 
 permissions:
@@ -21,30 +32,58 @@ permissions:
 env:
   CI_NODE_VERSION: "24"
 
+  # Browser automation
+  PUPPETEER_SKIP_DOWNLOAD: "true"
+  PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
+
+  # Node.js
+  NODE_OPTIONS: "--max_old_space_size=8192 --expose-gc --max-semi-space-size=512"
+  YARN_ENABLE_IMMUTABLE_INSTALLS: false
+  YARN_ENABLE_GLOBAL_CACHE: false
+  YARN_CHECKSUM_BEHAVIOR: update
+  YARN_CACHE_FOLDER: ${{ github.workspace }}/tmp/yarn-cache
+
+  # GitHub auth
+  ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN || secrets.GITHUB_TOKEN }}
+  GH_TOKEN: ${{ secrets.ACCESS_TOKEN || secrets.GITHUB_TOKEN }}
+
 jobs:
   build:
-    name: Build
+    name: Build (${{ matrix.branch }})
     runs-on: ubuntu-latest
-    env:
-      ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN || secrets.GITHUB_TOKEN }}
-      GH_TOKEN: ${{ secrets.ACCESS_TOKEN || secrets.GITHUB_TOKEN }}
+    strategy:
+      matrix:
+        include:
+          - branch: main
+            suffix: ""
+          - branch: minimal
+            suffix: "-minimal"
     steps:
       - uses: actions/checkout@v7
         with:
+          ref: ${{ matrix.branch }}
           persist-credentials: false
+          token: ${{ secrets.ACCESS_TOKEN || secrets.GITHUB_TOKEN }}
+          submodules: recursive
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.CI_NODE_VERSION }}
-          cache: npm
+          cache: "npm"
+          cache-dependency-path: package-lock.json
       - uses: ./.github/actions/npm-ci-retry
       - run: npm run check:node-runtime
       - name: Cache Next.js build cache
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
         with:
-          path: .build/next/cache
-          key: nextjs-${{ runner.os }}-node-${{ env.CI_NODE_VERSION }}-${{ hashFiles('package-lock.json') }}-${{ hashFiles('src/**/*', 'open-sse/**/*', 'db/**/*', 'next.config.mjs', 'tsconfig*.json', 'postcss.config.*', 'tailwind.config.*') }}
+          path: |
+            .build/
+            **/node_modules/**
+            **/tmp/**
+          key: nextjs-${{ runner.os }}-node-${{ env.CI_NODE_VERSION }}-${{ matrix.branch }}-${{ hashFiles('package-lock.json', 'src/**/*', 'open-sse/**/*', 'config/**/*', 'next.config.mjs', 'tsconfig*.json', 'postcss.config.*', 'tailwind.config.*') }}
           restore-keys: |
-            nextjs-${{ runner.os }}-node-${{ env.CI_NODE_VERSION }}-${{ hashFiles('package-lock.json') }}-
+            nextjs-${{ runner.os }}-node-${{ env.CI_NODE_VERSION }}-${{ matrix.branch }}-
+            nextjs-${{ runner.os }}-node-${{ env.CI_NODE_VERSION }}-
+            nextjs-${{ runner.os }}-
 
       - name: "🧹 Daily cleanup (dist/ .build/ — once per 24h)"
         if: ${{ !cancelled() }}
@@ -73,14 +112,14 @@ jobs:
       - run: npm run build
       - name: Archive Next.js build for downstream jobs
         run: |
-          tar -czf /tmp/e2e-build.tar.gz \
+          tar -czf /tmp/e2e-build-${{ matrix.branch }}.tar.gz \
             --exclude='.build/next/cache' \
             .build/next
       - name: Upload Next.js build for downstream jobs
         uses: actions/upload-artifact@v7
         with:
-          name: next-build
-          path: /tmp/e2e-build.tar.gz
+          name: next-build-${{ matrix.branch }}
+          path: /tmp/e2e-build-${{ matrix.branch }}.tar.gz
           retention-days: 1
 
       - name: "🧹 Remove last github cache entry"
@@ -91,51 +130,88 @@ jobs:
           --repo "${{ github.repository }}" --sha "${{ github.sha }}"
 
   package-artifact:
-    name: Package Artifact
+    name: Package Artifact (${{ matrix.branch }})
     runs-on: ubuntu-latest
     needs: build
     permissions:
-      contents: write
+      contents: read
+    strategy:
+      matrix:
+        include:
+          - branch: main
+            suffix: ""
+          - branch: minimal
+            suffix: "-minimal"
     env:
       JWT_SECRET: ci-build-secret-with-sufficient-length-for-validation
     steps:
       - uses: actions/checkout@v7
         with:
+          ref: ${{ matrix.branch }}
           persist-credentials: false
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.CI_NODE_VERSION }}
-          cache: npm
+          cache: "npm"
+          cache-dependency-path: package-lock.json
       - uses: ./.github/actions/npm-ci-retry
       - run: npm run check:node-runtime
       - name: Download Next.js build artifact
         uses: actions/download-artifact@v8
         with:
-          name: next-build
+          name: next-build-${{ matrix.branch }}
           path: /tmp/
       - name: Extract Next.js build artifact
         run: |
-          tar -xzf /tmp/e2e-build.tar.gz
+          tar -xzf /tmp/e2e-build-${{ matrix.branch }}.tar.gz
       - run: npm run build:cli
       - name: Assert dist/server.js exists
         run: test -f dist/server.js || (echo "dist/server.js missing — build:cli did not assemble correctly" && exit 1)
       - run: npm run check:pack-artifact
         continue-on-error: true
-      - name: Pack omniroute.tgz
+      - name: Pack omniroute${{ matrix.suffix }}.tgz
         run: |
           mkdir -p release
           npm pack --silent --pack-destination ./release
-          mv "release/omniroute-$(node -p "require('./package.json').version").tgz" release/omniroute.tgz
-          sha256sum release/omniroute.tgz > release/checksum.txt
+          mv "release/omniroute-$(node -p "require('./package.json').version").tgz" "release/omniroute${{ matrix.suffix }}.tgz"
       - name: Verify tarball contents
         run: |
           ls -la release/
-          tar -tzf release/omniroute.tgz | head -20
+          tar -tzf "release/omniroute${{ matrix.suffix }}.tgz" | head -20
       - name: Verify tarball install CLI
         run: |
           set -euo pipefail
-          npm exec --yes --package ./release/omniroute.tgz omniroute --help 2>&1 | tee /tmp/omniroute-help.txt
+          npm exec --yes --package "./release/omniroute${{ matrix.suffix }}.tgz" omniroute --help 2>&1 | tee /tmp/omniroute-help.txt
           grep -qi "usage" /tmp/omniroute-help.txt
+      - name: Upload packaged tarball for release job
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-${{ matrix.branch }}
+          path: release/omniroute${{ matrix.suffix }}.tgz
+          retention-days: 1
+
+  release:
+    name: Create/update GitHub Release
+    runs-on: ubuntu-latest
+    needs: package-artifact
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Download packaged tarballs (main + minimal)
+        uses: actions/download-artifact@v8
+        with:
+          pattern: release-*
+          path: release
+          merge-multiple: true
+      - name: Merge checksums (main + minimal)
+        run: |
+          cd release
+          ls -la
+          sha256sum omniroute.tgz omniroute-minimal.tgz > checksum.txt
+          cat checksum.txt
       - name: Create/update GitHub Release
         env:
           ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN || secrets.GITHUB_TOKEN }}
@@ -151,14 +227,17 @@ jobs:
           # Extra safety: ensure tag is gone even if it existed without a release
           git push origin ":refs/tags/$TAG" 2>/dev/null || true
 
-          # Recreate release at current commit with new tarball.
-          # Download URL will be:
+          # Recreate release at current commit with both branch tarballs.
+          # Download URLs will be:
           # https://github.com/OWNER/REPO/releases/download/ci-build/omniroute.tgz
+          # https://github.com/OWNER/REPO/releases/download/ci-build/omniroute-minimal.tgz
           gh release create "$TAG" \
             --target "${{ github.sha }}" \
             --title "CI Build ($(date +%Y-%m-%d))" \
             --notes "Automated build from commit [${{ github.sha }}](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }})
 
+            Includes tarballs built from both \`main\` and \`minimal\` branches.
             Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
             ./release/omniroute.tgz \
+            ./release/omniroute-minimal.tgz \
             ./release/checksum.txt

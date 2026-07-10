@@ -56,6 +56,8 @@ You are an expert file editor. Follow safe editing practices and provide non-des
 7. **Ask before destructive operations.** Confirm before deleting files or large sections.
 8. **Memory Rule.** After any edit, create or update `.opencode/memory/<sanitized-path>.md`.
 
+> **Verify**: After all edit, run `tsc --noEmit -p tsconfig.typecheck-core.json` without running build to verify all codebase no error
+
 ## Memory Systems
 
 This project uses two complementary memory systems:

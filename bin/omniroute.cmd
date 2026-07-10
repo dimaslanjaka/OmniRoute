@@ -7,6 +7,8 @@ set "NODE_ENV=production"
 set "NPM_ROOT=%TEMP%\npm"
 set "PKG_DIR=%NPM_ROOT%\node_modules\omniroute"
 set "VERSION_FILE=%NPM_ROOT%\omniroute.version"
+set "FLAVOR_FILE=%NPM_ROOT%\omniroute-flavor.txt"
+set "FLAVOR=prod"
 
 if not exist "%NPM_ROOT%" mkdir "%NPM_ROOT%"
 
@@ -40,6 +42,15 @@ if exist "%VERSION_FILE%" (
             echo [npm] Cached version valid, skipping setup.
             set "NEED_SETUP=0"
         )
+    )
+)
+
+REM --- Check flavor ---
+if exist "!FLAVOR_FILE!" (
+    set /p STORED_FLAVOR=<"!FLAVOR_FILE!"
+    if not "!STORED_FLAVOR!"=="!FLAVOR!" (
+        echo [npm] Flavor changed from !STORED_FLAVOR! to !FLAVOR!, forcing rebuild.
+        set "NEED_SETUP=1"
     )
 )
 
@@ -86,6 +97,7 @@ if "!NEED_SETUP!"=="1" (
 
     popd
 
+    echo !FLAVOR!>"%FLAVOR_FILE%"
     echo !REMOTE_VERSION!>"%VERSION_FILE%"
     echo [npm] Setup complete.
 )

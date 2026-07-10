@@ -10,47 +10,37 @@ export interface ProviderRiskNoticeFields {
   isEmbeddedService?: boolean;
 }
 
+import {
+  filterProviderIdSet,
+  filterProviderIds,
+  filterProviderMap,
+} from "@/shared/utils/providerFilter";
+
 import { NOAUTH_PROVIDERS as ALL_NOAUTH_PROVIDERS } from "./providers/noauth";
 import { OAUTH_PROVIDERS as ALL_OAUTH_PROVIDERS } from "./providers/oauth";
-import { WEB_COOKIE_PROVIDERS as ALL_WEB_COOKIE_PROVIDERS } from "./providers/web-cookie";
+import {
+  WEB_COOKIE_PROVIDERS as ALL_WEB_COOKIE_PROVIDERS,
+  resolveWebProviderHost,
+} from "./providers/web-cookie";
+export { resolveWebProviderHost };
+export type { WebProviderHostLink } from "./providers/web-cookie";
 import { APIKEY_PROVIDERS as ALL_APIKEY_PROVIDERS } from "./providers/apikey";
 import { LOCAL_PROVIDERS as ALL_LOCAL_PROVIDERS } from "./providers/local";
 import { SEARCH_PROVIDERS as ALL_SEARCH_PROVIDERS } from "./providers/search";
 import { AUDIO_ONLY_PROVIDERS as ALL_AUDIO_ONLY_PROVIDERS } from "./providers/audio";
 import { UPSTREAM_PROXY_PROVIDERS as ALL_UPSTREAM_PROXY_PROVIDERS } from "./providers/upstream-proxy";
 import { CLOUD_AGENT_PROVIDERS as ALL_CLOUD_AGENT_PROVIDERS } from "./providers/cloud-agent";
-import { SYSTEM_PROVIDERS as ALL_SYSTEM_PROVIDERS } from "./providers/system";
+import { SYSTEM_PROVIDERS } from "./providers/system";
 
-// ── Build-time / runtime provider allowlist filter ──
-import { filterProviderMap, filterProviderIdSet, filterProviderIds } from "../utils/providerFilter";
-
-// Apply filter so all downstream consumers see only enabled providers.
-export const NOAUTH_PROVIDERS = filterProviderMap(
-  ALL_NOAUTH_PROVIDERS
-) as typeof ALL_NOAUTH_PROVIDERS;
-export const OAUTH_PROVIDERS = filterProviderMap(ALL_OAUTH_PROVIDERS) as typeof ALL_OAUTH_PROVIDERS;
-export const APIKEY_PROVIDERS = filterProviderMap(
-  ALL_APIKEY_PROVIDERS
-) as typeof ALL_APIKEY_PROVIDERS;
-export const WEB_COOKIE_PROVIDERS = filterProviderMap(
-  ALL_WEB_COOKIE_PROVIDERS
-) as typeof ALL_WEB_COOKIE_PROVIDERS;
-export const LOCAL_PROVIDERS = filterProviderMap(ALL_LOCAL_PROVIDERS) as typeof ALL_LOCAL_PROVIDERS;
-export const SEARCH_PROVIDERS = filterProviderMap(
-  ALL_SEARCH_PROVIDERS
-) as typeof ALL_SEARCH_PROVIDERS;
-export const AUDIO_ONLY_PROVIDERS = filterProviderMap(
-  ALL_AUDIO_ONLY_PROVIDERS
-) as typeof ALL_AUDIO_ONLY_PROVIDERS;
-export const UPSTREAM_PROXY_PROVIDERS = filterProviderMap(
-  ALL_UPSTREAM_PROXY_PROVIDERS
-) as typeof ALL_UPSTREAM_PROXY_PROVIDERS;
-export const CLOUD_AGENT_PROVIDERS = filterProviderMap(
-  ALL_CLOUD_AGENT_PROVIDERS
-) as typeof ALL_CLOUD_AGENT_PROVIDERS;
-export const SYSTEM_PROVIDERS = filterProviderMap(
-  ALL_SYSTEM_PROVIDERS
-) as typeof ALL_SYSTEM_PROVIDERS;
+export const NOAUTH_PROVIDERS = filterProviderMap(ALL_NOAUTH_PROVIDERS);
+export const OAUTH_PROVIDERS = filterProviderMap(ALL_OAUTH_PROVIDERS);
+export const WEB_COOKIE_PROVIDERS = filterProviderMap(ALL_WEB_COOKIE_PROVIDERS);
+export const APIKEY_PROVIDERS = filterProviderMap(ALL_APIKEY_PROVIDERS);
+export const LOCAL_PROVIDERS = filterProviderMap(ALL_LOCAL_PROVIDERS);
+export const SEARCH_PROVIDERS = filterProviderMap(ALL_SEARCH_PROVIDERS);
+export const AUDIO_ONLY_PROVIDERS = filterProviderMap(ALL_AUDIO_ONLY_PROVIDERS);
+export const UPSTREAM_PROXY_PROVIDERS = filterProviderMap(ALL_UPSTREAM_PROXY_PROVIDERS);
+export const CLOUD_AGENT_PROVIDERS = filterProviderMap(ALL_CLOUD_AGENT_PROVIDERS);
 
 export const FREE_PROVIDERS = {};
 
