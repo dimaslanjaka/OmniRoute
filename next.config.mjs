@@ -130,6 +130,8 @@ const nextConfig = {
   // accept for image-bearing requests; tune via env if a deployment needs
   // more.
   experimental: {
+    cpus: 1,
+    workerThreads: false,
     serverActions: {
       bodySizeLimit: process.env.OMNIROUTE_SERVER_ACTIONS_BODY_LIMIT || "50mb",
     },
@@ -247,7 +249,7 @@ const nextConfig = {
     // TODO: Re-enable after fixing all sub-component useTranslations scope issues
     ignoreBuildErrors: true,
   },
-  webpack(config, { webpack }) {
+  webpack(config, { webpack, dev }) {
     config.ignoreWarnings = [
       ...(config.ignoreWarnings || []),
       isNextIntlExtractorDynamicImportWarning,
@@ -334,6 +336,10 @@ const nextConfig = {
       }
     }
 
+    // Only disable source maps in development
+    if (dev) {
+      config.devtool = false;
+    }
     return config;
   },
   images: {

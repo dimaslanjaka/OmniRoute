@@ -1,16 +1,19 @@
 @echo off
 setlocal enabledelayedexpansion
 
-REM OMNIROUTE_USE_TURBOPACK: 0 to use Webpack instead of Turbopack
-set "OMNIROUTE_USE_TURBOPACK=0"
 set "PORT=20128"
 set "NODE_ENV=development"
 
-set "MEMORY_MB=6084"
+set "MEMORY_MB=2084"
 set "OMNIROUTE_MEMORY_MB=%MEMORY_MB%"
 set "OMNIROUTE_BUILD_MEMORY_MB=%MEMORY_MB%"
-set "NODE_OPTIONS=--max-old-space-size=%MEMORY_MB% --expose-gc --max-semi-space-size=512"
-set "NEXT_PRIVATE_BUILD_WORKER=2"
+@REM set "NODE_OPTIONS=--max-old-space-size=%MEMORY_MB% --expose-gc --max-semi-space-size=512"
+set "NODE_OPTIONS=--max-old-space-size=%MEMORY_MB%"
+@REM set "OMNIROUTE_BUILD_PROFILE=minimal"
+set "NEXT_PRIVATE_BUILD_WORKER=0"
+@REM set "OMNIROUTE_BUILD_BACKEND_ONLY=1"
+REM OMNIROUTE_USE_TURBOPACK: 0 to use Webpack instead of Turbopack
+set "OMNIROUTE_USE_TURBOPACK=1"
 
 echo [%date% %time%] Starting OmniRoute dev server...
 
