@@ -84,7 +84,7 @@
     "release:sync-changelog-i18n": "node scripts/release/sync-changelog-i18n.mjs",
     "build": "node scripts/build/build-next-isolated.mjs",
     "build:secure": "OMNIROUTE_BUILD_PROFILE=minimal node scripts/build/build-next-isolated.mjs",
-    "build:providers:target": "cross-env ENABLED_PROVIDERS=gemini,gemini-cli,codex,kiro,opencode,mimocode,ollama-cloud,nvidia,antigravity,openai-compatible-*,anthropic-compatible-* node scripts/build/build-next-isolated.mjs",
+    "build:providers:target": "cross-env NEXT_PUBLIC_ENABLED_PROVIDERS=gemini,gemini-cli,codex,kiro,opencode,mimocode,ollama-cloud,nvidia,antigravity,openai-compatible-*,anthropic-compatible-* node scripts/build/build-next-isolated.mjs",
     "build:backend": "cross-env OMNIROUTE_BUILD_BACKEND_ONLY=1 node scripts/build/build-next-isolated.mjs",
     "build:cli": "node --import tsx scripts/build/prepublish.ts",
     "build:release": "cross-env OMNIROUTE_BUILD_SHA=$(git rev-parse --short HEAD) npm run build && npm run build:cli && node scripts/build/write-build-sha.mjs",

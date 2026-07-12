@@ -173,7 +173,7 @@ import { isProviderEnabled } from "@/shared/utils/providerFilter";
 export function getExecutor(provider) {
   if (!isProviderEnabled(provider)) {
     throw new Error(
-      `Provider "${provider}" is not enabled in this build (filtered by ENABLED_PROVIDERS)`
+      `Provider "${provider}" is not enabled in this build (filtered by NEXT_PUBLIC_ENABLED_PROVIDERS)`
     );
   }
   if (executors[provider]) return executors[provider];

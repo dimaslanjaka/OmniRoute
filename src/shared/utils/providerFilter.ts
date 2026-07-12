@@ -1,7 +1,7 @@
 /**
  * Provider Filter — build-time / runtime provider allowlisting.
  *
- * Reads `ENABLED_PROVIDERS` (comma-separated) and exports helpers that let
+ * Reads `NEXT_PUBLIC_ENABLED_PROVIDERS` (comma-separated) and exports helpers that let
  * every registration layer (constants, registry, executors, translators) decide
  * whether to include a given provider.
  *
@@ -12,15 +12,14 @@
  * When the env var is unset or empty every provider is included (full build).
  */
 
-const ENV_KEY = "ENABLED_PROVIDERS";
-
 // ── Internal parsing (lazy, cached) ────────────────────────────────────────
 
 let _parsed: { enabled: Set<string>; patterns: RegExp[] } | null = null;
 
 function getFilter(): { enabled: Set<string>; patterns: RegExp[] } {
   if (_parsed) return _parsed;
-  const raw = typeof process !== "undefined" ? (process.env[ENV_KEY] ?? "").trim() : "";
+  const raw =
+    typeof process !== "undefined" ? (process.env.NEXT_PUBLIC_ENABLED_PROVIDERS ?? "").trim() : "";
   if (!raw) {
     _parsed = { enabled: new Set<string>(), patterns: [] };
     return _parsed;
