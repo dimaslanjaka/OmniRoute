@@ -133,7 +133,7 @@ export default function FreePoolTab() {
                   testResult: {
                     success: false,
                     latencyMs: data?.latencyMs,
-                    error: data?.error || "Proxy test failed",
+                    error: data?.error || `Proxy test failed ${res.statusText}`,
                   },
                 }
               : p
@@ -208,7 +208,7 @@ export default function FreePoolTab() {
                       testResult: {
                         success: false,
                         latencyMs: data?.latencyMs,
-                        error: data?.error || "Proxy test failed",
+                        error: data?.error || `Proxy test failed ${res.statusText}`,
                       },
                     }
                   : p
