@@ -3,7 +3,10 @@
 > **Author:** dimaslanjaka
 > **Date:** 2026-06-26 — 2026-07-05
 > **OmniRoute Version:** 3.8.40+
-> **Commits:** `694bb04a2` (feature), subsequent merge resolutions
+> **Commits:**
+>
+> - [`694bb04a2`](https://github.com/dimaslanjaka/OmniRoute/commit/694bb04a2) — add `ENABLED_PROVIDERS` env var with wildcard support; core filter, provider constants, registry, executor guard + 19 tests + docs
+> - [`4b53291f3`](https://github.com/dimaslanjaka/OmniRoute/commit/4b53291f3) — consolidation to `NEXT_PUBLIC_ENABLED_PROVIDERS`
 
 ## Table of Contents
 

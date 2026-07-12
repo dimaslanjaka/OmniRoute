@@ -5,8 +5,8 @@
 **OmniRoute Version:** 3.8.44 (fix) → 3.8.46 (extraction)
 **Commits:**
 
-- [`6698e26c`](https://github.com/diegosouzapw/OmniRoute/commit/6698e26c) — initial fix (inline→shared parser)
-- [`4b7a2eed2`](https://github.com/diegosouzapw/OmniRoute/commit/4b7a2eed2) — extraction parser enhancement
+- [`6698e26c`](https://github.com/dimaslanjaka/OmniRoute/commit/6698e26c) — initial fix (inline→shared parser)
+- [`4b7a2eed2`](https://github.com/dimaslanjaka/OmniRoute/commit/4b7a2eed2) — extraction parser enhancement
 
 ---
 

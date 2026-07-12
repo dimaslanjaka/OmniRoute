@@ -3,7 +3,7 @@
 > **Author:** dimaslanjaka
 > **Date:** 2026-07-07
 > **OmniRoute Version:** 3.8.44+
-> **PR:** Adds `publiclists` — a generic plain-text proxy list provider (`cc3fa2aaa`)
+> **PR:** Adds `publiclists` — a generic plain-text proxy list provider ([`cc3fa2aaa`](https://github.com/dimaslanjaka/OmniRoute/commit/cc3fa2aaa))
 
 ## Table of Contents
 
