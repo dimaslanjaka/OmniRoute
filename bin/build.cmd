@@ -1,6 +1,8 @@
 @echo off
 setlocal enabledelayedexpansion
 
+chcp 65001 >nul
+
 set "NODE_ENV=production"
 
 set "MEMORY_MB=2084"

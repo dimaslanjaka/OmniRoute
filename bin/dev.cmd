@@ -1,6 +1,8 @@
 @echo off
 setlocal enabledelayedexpansion
 
+chcp 65001 >nul
+
 set "PORT=20128"
 set "NODE_ENV=development"
 
