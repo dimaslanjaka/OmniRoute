@@ -10,10 +10,8 @@ import {
   DEFAULT_COMPRESSION_LANGUAGE_CONFIG,
   DEFAULT_COMPRESSION_CONFIG,
   DEFAULT_CONTEXT_EDITING_CONFIG,
-  DEFAULT_MCP_ACCESSIBILITY_CONFIG,
   DEFAULT_RTK_CONFIG,
   DEFAULT_ULTRA_CONFIG,
-  clampMcpAccessibilityConfig,
   type AggressiveConfig,
   type CavemanConfig,
   type CavemanOutputModeConfig,
@@ -24,7 +22,6 @@ import {
   type CompressionMode,
   type ContextEditingConfig,
   type EngineToggle,
-  type McpAccessibilityConfig,
   type RtkConfig,
   type UltraConfig,
 } from "@omniroute/open-sse/services/compression/types.ts";
@@ -747,33 +744,4 @@ export async function updateCompressionSettings(
     ultraSlmPrewarm: next.ultraSlmPrewarm,
   });
   return next;
-}
-
-function normalizeMcpAccessibilityConfig(value: unknown): McpAccessibilityConfig {
-  // clampMcpAccessibilityConfig (engine layer) owns the numeric floors so the DB normalizer and
-  // the live MCP-server read path agree — in particular it floors maxTextChars to a sane minimum
-  // (a value below the tail reservation would make smartFilterText truncate the whole text away).
-  return clampMcpAccessibilityConfig(value);
-}
-
-export async function getMcpAccessibilityConfig(): Promise<McpAccessibilityConfig> {
-  const db = getDbInstance();
-  const row = db
-    .prepare("SELECT value FROM key_value WHERE namespace = ? AND key = ?")
-    .get(NAMESPACE, "mcpAccessibility") as { value: string } | undefined;
-  return normalizeMcpAccessibilityConfig(parseJsonSafe(row?.value ?? null));
-}
-
-export async function setMcpAccessibilityConfig(
-  value: Partial<McpAccessibilityConfig>
-): Promise<void> {
-  const next = normalizeMcpAccessibilityConfig({ ...DEFAULT_MCP_ACCESSIBILITY_CONFIG, ...value });
-  const db = getDbInstance();
-  db.prepare("INSERT OR REPLACE INTO key_value (namespace, key, value) VALUES (?, ?, ?)").run(
-    NAMESPACE,
-    "mcpAccessibility",
-    JSON.stringify(next)
-  );
-  compressionSettingsCache = null;
-  invalidateDbCache();
 }
