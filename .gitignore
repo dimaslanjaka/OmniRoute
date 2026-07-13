@@ -247,3 +247,4 @@ mise.toml
 **/*.bak-*
 _artifacts/
 .opencode/memory/
+*.lnk
