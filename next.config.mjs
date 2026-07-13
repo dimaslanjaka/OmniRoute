@@ -3,6 +3,7 @@ import { createMDX } from "fumadocs-mdx/next";
 import { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { mitmManagerAliasFor } from "./scripts/build/mitm-stub-flag.mjs";
+import isInCI from "./scripts/dev/is-in-ci.mjs";
 
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 const distDir = process.env.NEXT_DIST_DIR || ".build/next";
@@ -135,8 +136,16 @@ const nextConfig = {
   // accept for image-bearing requests; tune via env if a deployment needs
   // more.
   experimental: {
-    cpus: 1,
-    workerThreads: false,
+    // Disable parallel worker threads for static generation
+    workerThreads: !isInCI ? true : false,
+    // Force Next.js to use a specific number of CPU cores/workers
+    cpus: !isInCI ? 1 : 4,
+    // Max pages processed per worker at once
+    staticGenerationMaxConcurrency: !isInCI ? 1 : 10,
+    // Minimum pages needed to spawn a new worker
+    staticGenerationMinPagesPerWorker: !isInCI ? 1 : 25,
+    // Set to false to disable separate webpack compilation workers
+    webpackBuildWorker: !isInCI ? false : true,
     serverActions: {
       bodySizeLimit: process.env.OMNIROUTE_SERVER_ACTIONS_BODY_LIMIT || "50mb",
     },
