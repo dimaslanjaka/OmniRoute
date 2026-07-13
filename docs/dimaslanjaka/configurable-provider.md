@@ -1,12 +1,14 @@
 # Configurable Provider Build — `NEXT_PUBLIC_ENABLED_PROVIDERS`
 
 > **Author:** dimaslanjaka
-> **Date:** 2026-06-26 — 2026-07-05
-> **OmniRoute Version:** 3.8.40+
+> **Date:** 2026-06-26 — 2026-07-13
+> **OmniRoute Version:** 3.8.46+
 > **Commits:**
 >
 > - [`694bb04a2`](https://github.com/dimaslanjaka/OmniRoute/commit/694bb04a2) — add `ENABLED_PROVIDERS` env var with wildcard support; core filter, provider constants, registry, executor guard + 19 tests + docs
 > - [`4b53291f3`](https://github.com/dimaslanjaka/OmniRoute/commit/4b53291f3) — consolidation to `NEXT_PUBLIC_ENABLED_PROVIDERS`
+> - [`7d7523957`](https://github.com/diegosouzapw/OmniRoute/commit/7d7523957) — scope provider index generation to targeted set; build-time filtering via `generate-provider-index.mjs` with `DEFAULT_BUILD_PROVIDER_FILTER`; reduce 10GB build RAM by defaulting to 8-provider set; gitignore auto-generated index
+> - [`a27c9348b`](https://github.com/diegosouzapw/OmniRoute/commit/a27c9348b) — fix model search filter tests; refactor provider dashboard utilities for disabled provider filtering
 
 ## Table of Contents
 
