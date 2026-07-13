@@ -490,13 +490,23 @@ If MCP removal is reversed in the future:
 - **Result**: 1 file changed, 6 lines deleted
 - **Verification**: TypeScript 0 errors, all hooks passing
 
+### Phase 5: Build Error Cleanup (2026-07-13)
+
+**Commit**: `c61e9fb39`
+
+- Fixed: `src/app/(dashboard)/dashboard/agent-skills/AgentSkillsPageClient.tsx` (removed `McpA2aLinksBar` import and JSX usage)
+- Fixed: `src/lib/db/compression.ts` (removed 3 MCP imports: `normalizeMcpAccessibilityConfig`, `getMcpAccessibilityConfig`, `setMcpAccessibilityConfig`)
+- Resolves: 5 Turbopack build errors after MCP infrastructure removal
+- **Result**: 2 files changed, 36 deletions
+- **Verification**: docs-sync, t11:any-budget, tracked-artifacts all passing
+
 ### Total Removal Summary
 
 | Metric                           | Count            |
 | -------------------------------- | ---------------- |
-| Total commits                    | 4                |
+| Total commits                    | 5                |
 | Total files deleted              | 171              |
-| Total lines deleted              | 22,320           |
+| Total lines deleted              | 22,356           |
 | npm dependencies removed         | 207 (transitive) |
 | Configuration files cleaned      | 17+              |
 | MCP test files deleted           | 12+              |
