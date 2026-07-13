@@ -15,6 +15,7 @@ import {
   stubDashboardPages,
   restoreDashboardPages,
 } from "./backendOnlyPages.mjs";
+import { generateProviderIndex } from "./generate-provider-index.mjs";
 
 /**
  * Layer 1: `app/` has been renamed to `dist/` and the App-Router collision is gone.
@@ -227,6 +228,7 @@ export async function main() {
     }
 
     await resetStandaloneOutput(projectRoot);
+    await generateProviderIndex();
 
     const result = await runNextBuild();
     const standaloneDir = path.join(distDir, "standalone");
