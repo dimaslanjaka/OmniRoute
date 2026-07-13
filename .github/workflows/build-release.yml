@@ -54,6 +54,7 @@ jobs:
     name: Build (${{ matrix.branch }})
     runs-on: ubuntu-latest
     strategy:
+      max-parallel: 1
       matrix:
         include:
           - branch: main
@@ -143,6 +144,7 @@ jobs:
     permissions:
       contents: read
     strategy:
+      max-parallel: 1
       matrix:
         include:
           - branch: main
@@ -201,7 +203,6 @@ jobs:
           name: release-${{ matrix.branch }}
           path: release/omniroute${{ matrix.suffix }}.tgz
           retention-days: 1
-
   release:
     name: Create/update GitHub Release
     runs-on: ubuntu-latest
