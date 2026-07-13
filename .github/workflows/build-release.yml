@@ -5,7 +5,7 @@
 # can be triggered independently (e.g. on release tags, manual dispatch)
 # without running the full test matrix.
 #
-# Flow:  build (Next.js standalone, main + minimal) → package-artifact (tgz per branch)
+# Flow:  build-and-package (Next.js standalone + tgz, main + minimal)
 #        → release (merge tarballs + checksums, publish to ci-build GitHub Release)
 
 name: Build & Release
@@ -50,9 +50,13 @@ env:
   REDIS_URL: "redis://localhost:6379"
 
 jobs:
-  build:
-    name: Build (${{ matrix.branch }})
+  build-and-package:
+    name: Build & Package (${{ matrix.branch }})
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      JWT_SECRET: ci-build-secret-with-sufficient-length-for-validation
     strategy:
       max-parallel: 1
       matrix:
@@ -118,66 +122,6 @@ jobs:
           echo "[clean] done — next eligible clean in 24h"
 
       - run: npm run build
-      - name: Archive Next.js build for downstream jobs
-        run: |
-          tar -czf /tmp/e2e-build-${{ matrix.branch }}.tar.gz \
-            --exclude='.build/next/cache' \
-            .build/next
-      - name: Upload Next.js build for downstream jobs
-        uses: actions/upload-artifact@v7
-        with:
-          name: next-build-${{ matrix.branch }}
-          path: /tmp/e2e-build-${{ matrix.branch }}.tar.gz
-          retention-days: 1
-
-      - name: "🧹 Remove last github cache entry"
-        continue-on-error: true
-        if: ${{ !cancelled() }}
-        run: npx --legacy-peer-deps -y
-          binary-collections@https://github.com/dimaslanjaka/bin/raw/9688287aecab1a125de2d63fdd30651017a9862e/releases/bin.tgz clean-github-actions-cache
-          --repo "${{ github.repository }}" --sha "${{ github.sha }}"
-
-  package-artifact:
-    name: Package Artifact (${{ matrix.branch }})
-    runs-on: ubuntu-latest
-    needs: build
-    permissions:
-      contents: read
-    strategy:
-      max-parallel: 1
-      matrix:
-        include:
-          - branch: main
-            suffix: ""
-          - branch: minimal
-            suffix: "-minimal"
-    env:
-      JWT_SECRET: ci-build-secret-with-sufficient-length-for-validation
-    steps:
-      - name: Start Redis
-        uses: supercharge/redis-github-action@1.8.1
-        with:
-          redis-version: 7
-          redis-port: 6379
-      - uses: actions/checkout@v7
-        with:
-          ref: ${{ matrix.branch }}
-          persist-credentials: false
-      - uses: actions/setup-node@v6
-        with:
-          node-version: ${{ env.CI_NODE_VERSION }}
-          cache: "npm"
-          cache-dependency-path: package-lock.json
-      - uses: ./.github/actions/npm-ci-retry
-      - run: npm run check:node-runtime
-      - name: Download Next.js build artifact
-        uses: actions/download-artifact@v8
-        with:
-          name: next-build-${{ matrix.branch }}
-          path: /tmp/
-      - name: Extract Next.js build artifact
-        run: |
-          tar -xzf /tmp/e2e-build-${{ matrix.branch }}.tar.gz
       - run: npm run build:cli
       - name: Assert dist/server.js exists
         run: test -f dist/server.js || (echo "dist/server.js missing — build:cli did not assemble correctly" && exit 1)
@@ -203,10 +147,18 @@ jobs:
           name: release-${{ matrix.branch }}
           path: release/omniroute${{ matrix.suffix }}.tgz
           retention-days: 1
+
+      - name: "🧹 Remove last github cache entry"
+        continue-on-error: true
+        if: ${{ !cancelled() }}
+        run: npx --legacy-peer-deps -y
+          binary-collections@https://github.com/dimaslanjaka/bin/raw/9688287aecab1a125de2d63fdd30651017a9862e/releases/bin.tgz clean-github-actions-cache
+          --repo "${{ github.repository }}" --sha "${{ github.sha }}"
+
   release:
     name: Create/update GitHub Release
     runs-on: ubuntu-latest
-    needs: package-artifact
+    needs: build-and-package
     permissions:
       contents: write
     steps:
