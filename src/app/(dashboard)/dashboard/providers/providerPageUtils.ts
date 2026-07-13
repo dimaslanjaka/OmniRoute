@@ -13,6 +13,7 @@ import {
 } from "@/shared/constants/providers";
 import { getModelsByProviderId } from "@/shared/constants/models";
 import { providerHasServiceKind } from "@/lib/providers/serviceKindIndex";
+import { isProviderEnabledWithAlias } from "@/shared/utils/providerFilter";
 import { compareTr, matchesSearch } from "@/shared/utils/turkishText";
 import { fetchWithTimeout } from "@/shared/utils/fetchTimeout";
 import type { ProviderDisplayMode } from "./providerPageStorage";
@@ -148,6 +149,8 @@ export function buildStaticProviderEntries(
     group.displayAuthType,
     group.toggleAuthType,
     getProviderStats
+  ).filter((entry) =>
+    isProviderEnabledWithAlias(entry.providerId, (entry.provider as { alias?: string }).alias)
   );
 }
 
@@ -170,6 +173,8 @@ export function buildCompatibleProviderGroups(
   const claudeCode: CompatibleProviderInfo[] = [];
 
   for (const node of providerNodes) {
+    if (!isProviderEnabledWithAlias(node.id)) continue;
+
     if (node.type === "openai-compatible") {
       openai.push({
         id: node.id,

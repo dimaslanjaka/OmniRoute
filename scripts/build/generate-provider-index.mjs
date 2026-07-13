@@ -9,11 +9,18 @@ const projectRoot = path.resolve(scriptDir, "../..");
 const registryRoot = path.join(projectRoot, "open-sse/config/providers/registry");
 const outputPath = path.join(projectRoot, "open-sse/config/providers/__generated-index.ts");
 
+export const DEFAULT_BUILD_PROVIDER_FILTER =
+  "gemini,gemini-cli,codex,kiro,opencode,mimocode,ollama-cloud,nvidia,antigravity,openai-compatible-*,anthropic-compatible-*";
+
+function resolveProviderFilterRaw(env = process.env) {
+  return env.NEXT_PUBLIC_ENABLED_PROVIDERS?.trim() || DEFAULT_BUILD_PROVIDER_FILTER;
+}
+
 function escapeRegExp(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-function parseProviderFilter(raw = process.env.NEXT_PUBLIC_ENABLED_PROVIDERS || "") {
+function parseProviderFilter(raw = resolveProviderFilterRaw()) {
   const enabled = new Set();
   const patterns = [];
 
@@ -81,7 +88,8 @@ async function findRegistryEntries(dir = registryRoot, prefix = "") {
 }
 
 export async function generateProviderIndex() {
-  const filter = parseProviderFilter();
+  const filterRaw = resolveProviderFilterRaw();
+  const filter = parseProviderFilter(filterRaw);
   const entries = (await findRegistryEntries())
     .filter((entry) => shouldRegisterProvider(entry.id, filter))
     .sort(compareProviderEntries);
@@ -106,13 +114,7 @@ export async function generateProviderIndex() {
   ].join("\n")}`;
 
   await fs.writeFile(outputPath, content, "utf8");
-  console.log(
-    `[provider-index] registered ${entries.length} provider modules${
-      process.env.NEXT_PUBLIC_ENABLED_PROVIDERS
-        ? ` from NEXT_PUBLIC_ENABLED_PROVIDERS=${process.env.NEXT_PUBLIC_ENABLED_PROVIDERS}`
-        : ""
-    }`
-  );
+  console.log(`[provider-index] registered ${entries.length} provider modules from ${filterRaw}`);
 }
 
 const isCli = process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href;

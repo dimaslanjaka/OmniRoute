@@ -1,16 +1,18 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import type { ProviderEntry } from "../../src/app/(dashboard)/dashboard/providers/providerPageUtils.ts";
 
 const providerPageUtils =
   await import("../../src/app/(dashboard)/dashboard/providers/providerPageUtils.ts");
 const providerPageStorage =
   await import("../../src/app/(dashboard)/dashboard/providers/providerPageStorage.ts");
 const providers = await import("../../src/shared/constants/providers.ts");
+const providerFilter = await import("@/shared/utils/providerFilter");
 const providerCatalog = await import("../../src/lib/providers/catalog.ts");
 
 test("merged OAuth providers keep free-tier providers in the OAuth section", () => {
   const statsCalls = [];
-  const getProviderStats = (providerId, authType) => {
+  const getProviderStats = (providerId: string, authType: string) => {
     statsCalls.push({ providerId, authType });
     return { total: authType === "free" ? 1 : 0 };
   };
@@ -47,7 +49,7 @@ test("merged OAuth providers keep free-tier providers in the OAuth section", () 
 });
 
 test("configured-only filter keeps only providers with saved connections", () => {
-  const entries = [
+  const entries: Array<ProviderEntry<{ id: string }>> = [
     {
       providerId: "claude",
       provider: { id: "claude" },
@@ -81,7 +83,7 @@ test("configured-only filter keeps only providers with saved connections", () =>
 });
 
 test("configured-only filter keeps no-auth providers even without a saved connection (#3290)", () => {
-  const entries = [
+  const entries: Array<ProviderEntry<{ id: string }>> = [
     {
       providerId: "claude",
       provider: { id: "claude" },
@@ -115,28 +117,28 @@ test("configured-only filter keeps no-auth providers even without a saved connec
 });
 
 test("compact provider entries dedupe providers and move no-auth entries to the end", () => {
-  const openRouterFromFree = {
+  const openRouterFromFree: ProviderEntry<{ id: string; name: string }> = {
     providerId: "openrouter",
     provider: { id: "openrouter", name: "OpenRouter" },
     stats: { total: 1 },
     displayAuthType: "apikey",
     toggleAuthType: "apikey",
   };
-  const openRouterFromAggregator = {
+  const openRouterFromAggregator: ProviderEntry<{ id: string; name: string }> = {
     providerId: "openrouter",
     provider: { id: "openrouter", name: "OpenRouter" },
     stats: { total: 1 },
     displayAuthType: "apikey",
     toggleAuthType: "apikey",
   };
-  const claude = {
+  const claude: ProviderEntry<{ id: string; name: string }> = {
     providerId: "claude",
     provider: { id: "claude", name: "Claude" },
     stats: { total: 1 },
     displayAuthType: "oauth",
     toggleAuthType: "oauth",
   };
-  const opencode = {
+  const opencode: ProviderEntry<{ id: string; name: string }> = {
     providerId: "opencode",
     provider: { id: "opencode", name: "OpenCode" },
     stats: { total: 0 },
@@ -157,14 +159,14 @@ test("compact provider entries dedupe providers and move no-auth entries to the 
 });
 
 test("compact provider entries prefer non-no-auth duplicates over deferred no-auth entries", () => {
-  const noAuthEntry = {
+  const noAuthEntry: ProviderEntry<{ id: string; name: string }> = {
     providerId: "opencode",
     provider: { id: "opencode", name: "OpenCode" },
     stats: { total: 0 },
     displayAuthType: "no-auth",
     toggleAuthType: "no-auth",
   };
-  const configuredEntry = {
+  const configuredEntry: ProviderEntry<{ id: string; name: string }> = {
     providerId: "opencode",
     provider: { id: "opencode", name: "OpenCode" },
     stats: { total: 1 },
@@ -183,7 +185,7 @@ test("compact provider entries prefer non-no-auth duplicates over deferred no-au
 });
 
 test("search filter matches provider name and id case-insensitively", () => {
-  const entries = [
+  const entries: Array<ProviderEntry<{ id: string; name: string }>> = [
     {
       providerId: "claude",
       provider: { id: "claude", name: "Claude" },
@@ -246,7 +248,7 @@ test("search filter matches provider name and id case-insensitively", () => {
 });
 
 test("search and configured-only filters work together", () => {
-  const entries = [
+  const entries: Array<ProviderEntry<{ id: string; name: string }>> = [
     {
       providerId: "claude",
       provider: { id: "claude", name: "Claude" },
@@ -767,6 +769,52 @@ test("compatible catalog entries keep dynamic compatible metadata", () => {
   assert.equal(compatibleProvider?.iconUrl, "https://cdn.example.com/icons/lab.png");
 });
 
+test("compatible provider groups hide disabled provider nodes", () => {
+  const previousEnabledProviders = process.env.NEXT_PUBLIC_ENABLED_PROVIDERS;
+  process.env.NEXT_PUBLIC_ENABLED_PROVIDERS = "openai-compatible-*";
+  providerFilter.resetProviderFilterCache();
+
+  try {
+    const groups = providerPageUtils.buildCompatibleProviderGroups(
+      [
+        {
+          id: "openai-compatible-lab",
+          name: "OpenAI Lab",
+          type: "openai-compatible",
+          apiType: "responses",
+        },
+        {
+          id: "anthropic-compatible-lab",
+          name: "Anthropic Lab",
+          type: "anthropic-compatible",
+          apiType: "responses",
+        },
+        {
+          id: "anthropic-compatible-cc-lab",
+          name: "Claude Code Lab",
+          type: "anthropic-compatible",
+          apiType: "responses",
+        },
+      ],
+      {
+        openaiCompatibleName: "OpenAI Compatible",
+        anthropicCompatibleName: "Anthropic Compatible",
+        claudeCodeCompatibleName: "Claude Code Compatible",
+      }
+    );
+
+    assert.deepEqual(
+      groups.openai.map((provider) => provider.id),
+      ["openai-compatible-lab"]
+    );
+    assert.deepEqual(groups.anthropic, []);
+    assert.deepEqual(groups.claudeCode, []);
+  } finally {
+    process.env.NEXT_PUBLIC_ENABLED_PROVIDERS = previousEnabledProviders;
+    providerFilter.resetProviderFilterCache();
+  }
+});
+
 test("model search filter matches providers by model id", async () => {
   const { getModelsByProviderId } = await import("../../src/shared/constants/models.ts");
 
@@ -1010,6 +1058,10 @@ test("model search filter is case-insensitive and partial-match", () => {
 // providers page renders. The memoization in page.tsx wraps this pure helper, so
 // guarding the partition logic here is the regression that matters (Rule #18).
 test("buildCompatibleProviderGroups partitions nodes by type + claude-code prefix", () => {
+  const previousEnabledProviders = process.env.NEXT_PUBLIC_ENABLED_PROVIDERS;
+  process.env.NEXT_PUBLIC_ENABLED_PROVIDERS = "";
+  providerFilter.resetProviderFilterCache();
+
   const labels = {
     openaiCompatibleName: "OpenAI-compatible",
     anthropicCompatibleName: "Anthropic-compatible",
@@ -1065,6 +1117,9 @@ test("buildCompatibleProviderGroups partitions nodes by type + claude-code prefi
     ["anthropic-compatible-cc-acme"],
     "anthropic-compatible nodes with the cc- prefix land in the claudeCode bucket"
   );
+
+  process.env.NEXT_PUBLIC_ENABLED_PROVIDERS = previousEnabledProviders;
+  providerFilter.resetProviderFilterCache();
 });
 
 test("connectionMatchesProviderCard counts a dual-auth provider's PAT (apikey) connection on its OAuth card", () => {
