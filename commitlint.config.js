@@ -83,7 +83,7 @@ const Configuration = {
     "subject-min-length": [2, "always", 4],
 
     // Body rules
-    "header-trim": [1, "always"],
+    "header-trim": [2, "always"],
     "header-max-length": [0],
     "body-max-line-length": [0],
 
