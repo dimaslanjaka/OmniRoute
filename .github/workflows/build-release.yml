@@ -47,7 +47,11 @@ env:
   ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN || secrets.GITHUB_TOKEN }}
   GH_TOKEN: ${{ secrets.ACCESS_TOKEN || secrets.GITHUB_TOKEN }}
 
+  # Next.js
+  NEXT_TELEMETRY_DISABLED: 1
   REDIS_URL: "redis://localhost:6379"
+  NEXT_PRIVATE_BUILD_WORKER: 4
+  OMNIROUTE_USE_TURBOPACK: 0
 
 jobs:
   build-and-package:
