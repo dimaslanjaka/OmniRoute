@@ -1,9 +1,11 @@
 @echo off
 setlocal enabledelayedexpansion
 
+chcp 65001 >nul
+
 set "NODE_ENV=production"
 
-set "MEMORY_MB=2084"
+set "MEMORY_MB=4028"
 set "OMNIROUTE_MEMORY_MB=%MEMORY_MB%"
 set "OMNIROUTE_BUILD_MEMORY_MB=%MEMORY_MB%"
 @REM set "NODE_OPTIONS=--max-old-space-size=%MEMORY_MB% --expose-gc --max-semi-space-size=512"
@@ -11,7 +13,7 @@ set "NODE_OPTIONS=--max-old-space-size=%MEMORY_MB%"
 @REM set "OMNIROUTE_BUILD_PROFILE=minimal"
 set "NEXT_PRIVATE_BUILD_WORKER=0"
 @REM set "OMNIROUTE_BUILD_BACKEND_ONLY=1"
-REM OMNIROUTE_USE_TURBOPACK: 0 to use Webpack instead of Turbopack
+REM 1/0 to use Webpack instead of Turbopack
 set "OMNIROUTE_USE_TURBOPACK=1"
 
 @REM run `tsc --noEmit -p tsconfig.typecheck-noimplicit-core.json` or `tsc --noEmit -p tsconfig.typecheck-core.json` without running build to verify all codebase no error

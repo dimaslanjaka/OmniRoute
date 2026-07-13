@@ -1,9 +1,14 @@
-# Configurable Provider Build — `ENABLED_PROVIDERS`
+# Configurable Provider Build — `NEXT_PUBLIC_ENABLED_PROVIDERS`
 
 > **Author:** dimaslanjaka
-> **Date:** 2026-06-26 — 2026-07-05
-> **OmniRoute Version:** 3.8.40+
-> **Commits:** `694bb04a2` (feature), subsequent merge resolutions
+> **Date:** 2026-06-26 — 2026-07-13
+> **OmniRoute Version:** 3.8.46+
+> **Commits:**
+>
+> - [`694bb04a2`](https://github.com/dimaslanjaka/OmniRoute/commit/694bb04a2) — add `ENABLED_PROVIDERS` env var with wildcard support; core filter, provider constants, registry, executor guard + 19 tests + docs
+> - [`4b53291f3`](https://github.com/dimaslanjaka/OmniRoute/commit/4b53291f3) — consolidation to `NEXT_PUBLIC_ENABLED_PROVIDERS`
+> - [`7d7523957`](https://github.com/diegosouzapw/OmniRoute/commit/7d7523957) — scope provider index generation to targeted set; build-time filtering via `generate-provider-index.mjs` with `DEFAULT_BUILD_PROVIDER_FILTER`; reduce 10GB build RAM by defaulting to 8-provider set; gitignore auto-generated index
+> - [`a27c9348b`](https://github.com/diegosouzapw/OmniRoute/commit/a27c9348b) — fix model search filter tests; refactor provider dashboard utilities for disabled provider filtering
 
 ## Table of Contents
 
@@ -17,7 +22,7 @@
 
 ## Overview
 
-The `ENABLED_PROVIDERS` environment variable adds a provider allowlist that restricts which
+The `NEXT_PUBLIC_ENABLED_PROVIDERS` environment variable adds a provider allowlist that restricts which
 providers are exposed at build time and runtime. This lets you ship a smaller build with
 only the providers you need, reducing bundle size and surface area.
 
@@ -38,7 +43,7 @@ all providers whose ID starts with the given prefix.
 The filter propagates through three layers:
 
 ```
-ENABLED_PROVIDERS env var
+NEXT_PUBLIC_ENABLED_PROVIDERS env var
   → src/shared/utils/providerFilter.ts       (core filter logic)
     → src/shared/constants/providers.ts        (filtered constant exports)
     → open-sse/config/providerRegistry.ts      (filtered runtime registry)
@@ -51,7 +56,7 @@ ENABLED_PROVIDERS env var
   lifetime. Call `resetProviderFilterCache()` to re-read (e.g. in tests).
 - Comma-separated parsing with whitespace trimming.
 - Wildcard suffix matching: converts `anthropic-compatible-*` to `/^anthropic-compatible-.*$/`.
-- When `ENABLED_PROVIDERS` is unset or empty, **all** providers pass through (no filtering).
+- When `NEXT_PUBLIC_ENABLED_PROVIDERS` is unset or empty, **all** providers pass through (no filtering).
 - Functions exported:
   - `isProviderEnabled(id)` — exact ID or wildcard match.
   - `isProviderEnabledWithAlias(id, alias?)` — checks `id` first, then falls back to `alias`.
@@ -114,8 +119,8 @@ for (const [id, entry] of Object.entries(registry)) {
 | `open-sse/config/providerRegistry.ts` | Added `_filterRegistry()` with alias awareness; `REGISTRY` export is filtered                                                              |
 | `open-sse/executors/index.ts`         | Import `isProviderEnabled`; `getExecutor()` throws for disabled providers                                                                  |
 | `package.json`                        | Added `build:providers:target` script with preset provider list                                                                            |
-| `.env.example`                        | Added `ENABLED_PROVIDERS` examples (lines 1864-1871)                                                                                       |
-| `docs/reference/ENVIRONMENT.md`       | Added `ENABLED_PROVIDERS` env var row (line 261)                                                                                           |
+| `.env.example`                        | Added `NEXT_PUBLIC_ENABLED_PROVIDERS` examples                                                                                             |
+| `docs/reference/ENVIRONMENT.md`       | Added `NEXT_PUBLIC_ENABLED_PROVIDERS` env var row                                                                                          |
 
 ---
 
@@ -125,7 +130,7 @@ for (const [id, entry] of Object.entries(registry)) {
 
 ```bash
 # Only include gemini and codex (Build-time + runtime filtering)
-ENABLED_PROVIDERS=gemini,codex npm run build
+NEXT_PUBLIC_ENABLED_PROVIDERS=gemini,codex npm run build
 
 # Use the preset target script
 npm run build:providers:target
@@ -138,7 +143,7 @@ The preset includes: `gemini`, `gemini-cli`, `codex`, `kiro`, `opencode`, `mimoc
 
 ```bash
 # Alternatively at runtime (no build-time bundle savings)
-export ENABLED_PROVIDERS=gemini,anthropic,openai-compatible-*
+export NEXT_PUBLIC_ENABLED_PROVIDERS=gemini,anthropic,openai-compatible-*
 npm run start
 ```
 
@@ -146,10 +151,10 @@ npm run start
 
 ```bash
 # All OpenAI-compatible providers
-ENABLED_PROVIDERS=openai-compatible-*
+NEXT_PUBLIC_ENABLED_PROVIDERS=openai-compatible-*
 
 # Specific set with wildcard
-ENABLED_PROVIDERS=gemini,codex,openai-compatible-*,anthropic-compatible-*
+NEXT_PUBLIC_ENABLED_PROVIDERS=gemini,codex,openai-compatible-*,anthropic-compatible-*
 ```
 
 ---

@@ -83,12 +83,8 @@ Updated routes:
 
 Path unification (completed):
 
-```text
-dd8bd46b3 chore(bin): unify 9router installation folder with omniroute services
-```
+- [`dd8bd46b3`](https://github.com/dimaslanjaka/OmniRoute/commit/dd8bd46b3) — chore(bin): unify 9router installation folder with omniroute services
 
 Dashboard bug fix + regression test (completed):
 
-```text
-d34c66ab5 fix(services): reconcile 9router install state from disk when DB is stale
-```
+- [`d34c66ab5`](https://github.com/dimaslanjaka/OmniRoute/commit/d34c66ab5) — fix(services): reconcile 9router install state from disk when DB is stale

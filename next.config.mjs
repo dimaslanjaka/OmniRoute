@@ -103,6 +103,11 @@ const nextConfig = {
   // the two redirect call sites that re-add it via `request.nextUrl.basePath`.
   basePath: process.env.OMNIROUTE_BASE_PATH || "",
   distDir,
+  // Expose NEXT_PUBLIC_ENABLED_PROVIDERS to the client bundle so provider
+  // filtering works on the dashboard.
+  env: {
+    NEXT_PUBLIC_ENABLED_PROVIDERS: process.env.NEXT_PUBLIC_ENABLED_PROVIDERS || "",
+  },
   // Turbopack config: redirect native modules to stubs at build time
   turbopack: {
     root: projectRoot,

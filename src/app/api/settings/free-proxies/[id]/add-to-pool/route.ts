@@ -17,9 +17,9 @@ async function testProxyConnectivity(
   host: string,
   port: number,
   type: string
-): Promise<{ success: boolean; latencyMs: number; publicIp?: string }> {
+): Promise<{ success: boolean; latencyMs: number; publicIp?: string; error?: string }> {
   const proxyUrl = proxyConfigToUrl({ type, host, port });
-  if (!proxyUrl) return { success: false, latencyMs: 0 };
+  if (!proxyUrl) return { success: false, latencyMs: 0, error: "Invalid proxy URL" };
 
   const dispatcher = createProxyDispatcher(proxyUrl);
   const start = Date.now();
@@ -43,9 +43,11 @@ async function testProxyConnectivity(
       success: res.statusCode === 200,
       latencyMs: Date.now() - start,
       publicIp: parsed.ip,
+      error: res.statusCode !== 200 ? `HTTP ${res.statusCode}` : undefined,
     };
-  } catch {
-    return { success: false, latencyMs: Date.now() - start };
+  } catch (err) {
+    const errorMsg = err instanceof Error ? err.message : String(err);
+    return { success: false, latencyMs: Date.now() - start, error: errorMsg };
   } finally {
     clearTimeout(timeout);
   }
@@ -77,19 +79,30 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   }
 
   try {
-    const testResult = await _connectivityTester(freeProxy.host, freeProxy.port, freeProxy.type);
-    if (!testResult.success) {
-      // #4878: a failed connectivity probe must surface a non-2xx status so the
-      // frontend (which gates on res.ok) does NOT optimistically mark the proxy
-      // as "In Pool". 422 = the request was well-formed but the proxy is unusable.
-      return Response.json(
-        {
-          success: false,
-          error: "Proxy test failed",
-          latencyMs: testResult.latencyMs,
-        },
-        { status: 422 }
-      );
+    // If the proxy source already marked it as alive (quality score set, recently validated),
+    // skip the redundant connectivity test. Free proxy sources validate on sync; trust that.
+    const shouldSkipTest =
+      freeProxy.qualityScore !== null ||
+      (freeProxy.lastValidated &&
+        new Date(freeProxy.lastValidated).getTime() > Date.now() - 3600000); // within 1 hour
+
+    let testResult = { success: true, latencyMs: 0 };
+    if (!shouldSkipTest) {
+      testResult = await _connectivityTester(freeProxy.host, freeProxy.port, freeProxy.type);
+      if (!testResult.success) {
+        // #4878: a failed connectivity probe must surface a non-2xx status so the
+        // frontend (which gates on res.ok) does NOT optimistically mark the proxy
+        // as "In Pool". 422 = the request was well-formed but the proxy is unusable.
+        return Response.json(
+          {
+            success: false,
+            error: testResult.error || "Proxy test failed",
+            latencyMs: testResult.latencyMs,
+            skippedTest: false,
+          },
+          { status: 422 }
+        );
+      }
     }
 
     const newPoolProxyId = await promoteFreeProxyToPool(id, {

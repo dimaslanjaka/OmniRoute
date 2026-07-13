@@ -1,6 +1,6 @@
 ---
 title: Custom Builds — Provider Allowlists
-description: Build OmniRoute with only the providers you need using ENABLED_PROVIDERS
+description: Build OmniRoute with only the providers you need using NEXT_PUBLIC_ENABLED_PROVIDERS
 ---
 
 # Custom Builds — Provider Allowlists
@@ -14,7 +14,7 @@ This is useful when:
 
 ## How It Works
 
-The `ENABLED_PROVIDERS` environment variable controls which providers appear in:
+The `NEXT_PUBLIC_ENABLED_PROVIDERS` environment variable controls which providers appear in:
 
 - **Provider constants** (`src/shared/constants/providers.ts`) — dashboard dropdowns, catalog UI, public API.
 - **Provider registry** (`open-sse/config/providerRegistry.ts`) — runtime model/alias/category lookups.
@@ -28,7 +28,7 @@ responses.
 ## Syntax
 
 ```
-ENABLED_PROVIDERS=provider1,provider2,openai-compatible-*,anthropic-compatible-*
+NEXT_PUBLIC_ENABLED_PROVIDERS=provider1,provider2,openai-compatible-*,anthropic-compatible-*
 ```
 
 - **Comma-separated** values.
@@ -62,7 +62,7 @@ Provider IDs are defined in `src/shared/constants/providers.ts`. Common examples
 
 ```bash
 # Build exposing only the target providers
-ENABLED_PROVIDERS=gemini,gemini-cli,codex,kiro,opencode,mimocode,ollama-cloud,nvidia,antigravity,openai-compatible-*,anthropic-compatible-* npm run build
+NEXT_PUBLIC_ENABLED_PROVIDERS=gemini,gemini-cli,codex,kiro,opencode,mimocode,ollama-cloud,nvidia,antigravity,openai-compatible-*,anthropic-compatible-* npm run build
 ```
 
 ### Preset script
@@ -76,7 +76,7 @@ npm run build:providers:target
 This runs:
 
 ```
-ENABLED_PROVIDERS=gemini,gemini-cli,codex,kiro,opencode,mimocode,ollama-cloud,nvidia,antigravity,openai-compatible-*,anthropic-compatible-* node scripts/build/build-next-isolated.mjs
+NEXT_PUBLIC_ENABLED_PROVIDERS=gemini,gemini-cli,codex,kiro,opencode,mimocode,ollama-cloud,nvidia,antigravity,openai-compatible-*,anthropic-compatible-* node scripts/build/build-next-isolated.mjs
 ```
 
 > **Note for Windows (PowerShell):** The `cross-env` package handles cross-platform env setup. The preset script uses it; for ad-hoc builds, use `cross-env` or set the env var before the build command.
@@ -84,7 +84,7 @@ ENABLED_PROVIDERS=gemini,gemini-cli,codex,kiro,opencode,mimocode,ollama-cloud,nv
 ### Run dev server with restrictions
 
 ```bash
-ENABLED_PROVIDERS=openai,anthropic npm run dev
+NEXT_PUBLIC_ENABLED_PROVIDERS=openai,anthropic npm run dev
 ```
 
 The dev server will only show and route to enabled providers.
@@ -94,17 +94,17 @@ The dev server will only show and route to enabled providers.
 After a successful `npm run build:providers:target`, start the production server with the **same** env var:
 
 ```bash
-# Must set ENABLED_PROVIDERS at runtime too — the filter re-reads it when modules load
-cross-env ENABLED_PROVIDERS=gemini,gemini-cli,codex,kiro,opencode,mimocode,ollama-cloud,nvidia,antigravity,openai-compatible-*,anthropic-compatible-* npm run start
+# Must set NEXT_PUBLIC_ENABLED_PROVIDERS at runtime too — the filter re-reads it when modules load
+cross-env NEXT_PUBLIC_ENABLED_PROVIDERS=gemini,gemini-cli,codex,kiro,opencode,mimocode,ollama-cloud,nvidia,antigravity,openai-compatible-*,anthropic-compatible-* npm run start
 ```
 
-> **Why both build-time and runtime?** The provider filter reads `ENABLED_PROVIDERS` from `process.env` lazily when the provider module is first imported. At build time it controls what gets compiled into the bundle; at startup the production server loads those modules fresh and needs the same env var to re-apply the filter. Without it at runtime, the server would show all 231+ providers even though the build only included your target set — the UI would reference providers that were never compiled in.
+> **Why both build-time and runtime?** The provider filter reads `NEXT_PUBLIC_ENABLED_PROVIDERS` from `process.env` lazily when the provider module is first imported. At build time it controls what gets compiled into the bundle; at startup the production server loads those modules fresh and needs the same env var to re-apply the filter. Without it at runtime, the server would show all 231+ providers even though the build only included your target set — the UI would reference providers that were never compiled in.
 
 For convenience, save the list to `.env` so both build and start pick it up automatically:
 
 ```ini
 # .env
-ENABLED_PROVIDERS=gemini,gemini-cli,codex,kiro,opencode,mimocode,ollama-cloud,nvidia,antigravity,openai-compatible-*,anthropic-compatible-*
+NEXT_PUBLIC_ENABLED_PROVIDERS=gemini,gemini-cli,codex,kiro,opencode,mimocode,ollama-cloud,nvidia,antigravity,openai-compatible-*,anthropic-compatible-*
 ```
 
 Then simply:
@@ -131,7 +131,7 @@ curl http://localhost:20128/api/v1/models | jq '.data | group_by(.provider) | le
 ## How Filtering Propagates
 
 ```
-ENABLED_PROVIDERS
+NEXT_PUBLIC_ENABLED_PROVIDERS
   └─► src/shared/utils/providerFilter.ts  (isProviderEnabled / filterProviderMap)
         ├─► src/shared/constants/providers.ts  ── filtered public exports
         ├─► open-sse/config/providerRegistry.ts ── filtered REGISTRY
@@ -150,7 +150,7 @@ When a provider is excluded:
 The two env vars are independent and can be combined:
 
 ```bash
-OMNIROUTE_BUILD_PROFILE=minimal ENABLED_PROVIDERS=gemini,codex npm run build
+OMNIROUTE_BUILD_PROFILE=minimal NEXT_PUBLIC_ENABLED_PROVIDERS=gemini,codex npm run build
 ```
 
 This produces a minimal build (no privileged modules) that only exposes Gemini and Codex.
@@ -161,7 +161,7 @@ After building, verify the filter works:
 
 ```bash
 # Set the env for a dev server check
-ENABLED_PROVIDERS=gemini npm run dev
+NEXT_PUBLIC_ENABLED_PROVIDERS=gemini npm run dev
 # Visit http://localhost:20128/dashboard/providers — only Gemini should appear
 ```
 

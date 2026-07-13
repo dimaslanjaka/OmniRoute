@@ -1,9 +1,9 @@
 # Refactor: Proxy "Check All" Button Consolidation & Free Pool Result Display
 
-**Date**: 2026-07-07  
-**Session**: Context Architect refactoring session  
-**Commit**: `657b6007d`  
-**Files Modified**: 4 (2 committed, 2 auto-generated)
+**Date**: 2026-07-07
+**Session**: Context Architect refactoring session
+**Commit**: [`657b6007d`](https://github.com/dimaslanjaka/OmniRoute/commit/657b6007d)
+**Files Changed**: 2 (`FreePoolTab.tsx` +110/-17, `FreeProxyRow.tsx` +22/-0)
 
 ---
 
@@ -216,9 +216,9 @@ setBulkProgress(`Complete: ${succeeded} added, ${failed} failed`)
 
 ### Critical Incident
 
-**Time**: During refactoring  
-**Action**: Accidental `git reset --hard HEAD`  
-**Impact**: Destroyed uncommitted free proxy pool result column implementation  
+**Time**: During refactoring
+**Action**: Accidental `git reset --hard HEAD`
+**Impact**: Destroyed uncommitted free proxy pool result column implementation
 **Recovery**: Re-implemented from user description (sequential testing + result column)
 
 ### Lessons Learned
@@ -232,7 +232,7 @@ setBulkProgress(`Complete: ${succeeded} added, ${failed} failed`)
 
 ## Commit Information
 
-**Commit SHA**: `657b6007d`  
+**Commit SHA**: [`657b6007d`](https://github.com/dimaslanjaka/OmniRoute/commit/657b6007d)
 **Message**: `feat(dashboard): add result column to free proxy pool and sequential testing`
 
 **Files Changed**:

@@ -35,7 +35,7 @@ function _filterRegistry<R extends Record<string, { alias?: string }>>(registry:
   return filtered;
 }
 
-/** Filtered registry — only includes providers allowed by `ENABLED_PROVIDERS`. */
+/** Filtered registry — only includes providers allowed by `NEXT_PUBLIC_ENABLED_PROVIDERS`. */
 export const REGISTRY = _filterRegistry(_ALL_REGISTRY);
 
 // ── Generator Functions ───────────────────────────────────────────────────

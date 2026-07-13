@@ -5,6 +5,7 @@ import http from "node:http";
 import path from "node:path";
 import next from "next";
 import { bootstrapEnv } from "../build/bootstrap-env.mjs";
+import { generateProviderIndex } from "../build/generate-provider-index.mjs";
 import { resolveRuntimePorts, withRuntimePortEnv } from "../build/runtime-env.mjs";
 import { createOmnirouteWsBridge } from "./v1-ws-bridge.mjs";
 import { createResponsesWsProxy } from "./responses-ws-proxy.mjs";
@@ -92,6 +93,9 @@ ensurePeerStampToken();
 if (!useTurbopack) {
   delete process.env.TURBOPACK;
 }
+
+await generateProviderIndex();
+
 function createNextApp() {
   return next({
     dev,

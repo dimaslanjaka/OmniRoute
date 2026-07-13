@@ -5,7 +5,7 @@ import test from "node:test";
 
 // Save original env so we can restore between tests
 const ORIGINAL_ENV = { ...process.env };
-const ENV_KEY = "ENABLED_PROVIDERS";
+const ENV_KEY = "NEXT_PUBLIC_ENABLED_PROVIDERS";
 
 function setEnv(value: string | undefined): void {
   if (value === undefined) {

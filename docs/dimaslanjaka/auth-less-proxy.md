@@ -1,9 +1,12 @@
 # Auth-Less Proxy Bulk Import — Bug & Fix
 
-**Date:** 2026-07-07
+**Date:** 2026-07-07 (bug fix) / 2026-07-12 (extraction enhancement)
 **Author:** dimaslanjaka
-**OmniRoute Version:** 3.8.44
-**Commit:** [`6698e26c`](https://github.com/diegosouzapw/OmniRoute/commit/6698e26c)
+**OmniRoute Version:** 3.8.44 (fix) → 3.8.46 (extraction)
+**Commits:**
+
+- [`6698e26c`](https://github.com/dimaslanjaka/OmniRoute/commit/6698e26c) — initial fix (inline→shared parser)
+- [`4b7a2eed2`](https://github.com/dimaslanjaka/OmniRoute/commit/4b7a2eed2) — extraction parser enhancement
 
 ---
 
@@ -74,6 +77,112 @@ The fix was a single-file change to [`ProxyRegistryManager.tsx`](<https://github
 ```
 
 The pre-commit hooks all passed: lint-staged (formatting + ESLint), docs-sync, any-budget:t11, tracked-artifacts, and commitlint.
+
+## Pre-Existing Shared Parser Design
+
+The shared parser (`parseBulkProxyImport.ts`) detects format by checking for pipe characters:
+
+```ts
+if (!raw.includes("|")) {
+  // URL-prefixed or auth-less short syntax
+  const urlMatch = raw.match(/^(socks[45]|https?):\/\/([^\s/]+)$/);
+  if (urlMatch) {
+    /* URL-prefixed: scheme://host:port or scheme://user:pass@host:port */
+  } else {
+    /* Auth-less short: host:port */
+  }
+} else {
+  // Pipe-delimited: NAME|HOST|PORT|...
+}
+```
+
+Lines starting with `#` and blank lines are skipped. All formats produce the same `ParsedProxyEntry` shape consumed by the bulk-add API.
+
+## Enhancement: Extraction-Based Parser for Noisy Data (v3.8.46)
+
+**Problem:** Real-world proxy lists often have metadata on the same line:
+
+```
+206.135.43.62:999 MX-N -
+119.93.94.108:8080 PH-N-S! -
+socks5://user:pass@1.1.1.1:443 (some notes)
+```
+
+The original parser would fail to extract proxies when metadata was present, even though the proxy pattern was clearly identifiable.
+
+**Solution:** The parser now uses **regex-based extraction** to find proxy patterns within noisy lines:
+
+```ts
+function extractProxyPatterns(line: string): string[] {
+  const patterns: string[] = [];
+
+  // Pattern 1: scheme://[user:pass@]host:port
+  const schemePattern = /(?:socks[45]|https?):\/\/(?:[^\s/@]+@)?[\d.]+:\d+/gi;
+  // Matches: http://1.1.1.1:80, socks5://user:pass@1.1.1.1:443
+
+  // Pattern 2: user:pass@host:port (no scheme)
+  const credPattern = /(?:[^\s/@]+):(?:[^\s/@]+)@(?:[\d.]+):\d+/g;
+  // Matches: user:pass@1.1.1.1:80
+
+  // Pattern 3: host:port (bare IPv4:port)
+  const hostPortPattern = /((?:\d{1,3}\.){3}\d{1,3}):(\d{1,5})\b/g;
+  // Matches: 206.135.43.62:999 (extracts and validates port 1-65535)
+
+  // ... collect all patterns, deduplicate, return array
+  return patterns;
+}
+```
+
+**Extraction Flow:**
+
+1. For each line, detect all 3 proxy pattern types via regex
+2. Validate each extracted pattern (port range 1-65535, valid schemes)
+3. Parse pattern into `{scheme, username, password, host, port}`
+4. Create `ParsedProxyEntry` with auto-generated name if needed
+5. Report errors only for lines with no extractable patterns or invalid ports
+
+**Real-World Example:**
+
+```
+Input line:
+  206.135.43.62:999 MX-N -
+
+Extraction step:
+  1. Check for scheme:// pattern → no match
+  2. Check for user:pass@ pattern → no match
+  3. Check for bare host:port → MATCH: "206.135.43.62:999"
+
+Result:
+  {
+    name: "http://206.135.43.62:999",
+    host: "206.135.43.62",
+    port: 999,
+    type: "http",
+    username: "",
+    password: "",
+    region: "",
+    status: "active",
+    notes: ""
+  }
+```
+
+**Test Coverage:**
+
+- ✅ Extraction from 30-line noisy list (user data with country codes, status flags)
+- ✅ Scheme prefixes with/without credentials
+- ✅ Pipe-delimited format preservation
+- ✅ Error reporting for malformed entries
+- ✅ Comment/blank line skipping
+- ✅ Port validation (rejects >65535 or non-numeric)
+- ✅ Multiple formats in single session
+
+**Commit:** [`4b7a2eed2`](https://github.com/diegosouzapw/OmniRoute/commit/4b7a2eed2)
+
+- Files: 2 changed (+315 / -127)
+- New tests: `tests/unit/parseBulkProxyImport.test.ts` (5 test cases)
+- Updated: `src/app/(dashboard)/dashboard/settings/components/parseBulkProxyImport.ts`
+
+---
 
 ## Pre-Existing Shared Parser Design
 
