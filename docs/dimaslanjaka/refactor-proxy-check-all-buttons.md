@@ -283,3 +283,33 @@ These can be regenerated and should not be manually committed (verify in `.gitig
 This refactoring consolidates UI controls while improving user feedback for bulk proxy operations. The shift from batch to sequential testing trades raw performance for observability and error granularity — acceptable tradeoff for administrative tasks where transparency is valued over milliseconds.
 
 The recovery from the git reset incident demonstrates the importance of session memory and descriptive user context when automated tools cannot access lost state.
+
+---
+
+## Merge Conflict Resolution (2026-07-14)
+
+During a merge from upstream, `ProxyRegistryManager.tsx` had **4 conflicts** that were resolved to combine two independent features:
+
+### Feature A: "Check All" Sequential Testing (Our Branch)
+
+- **State added**: `checkingAll`, `checkAllProgress`, `checkAllStopped`, `checkAllStoppedRef`
+- **Functions added**: `handleCheckAllProxies()` (sequential testing loop with progress), `handleStopCheckAll()` (abort)
+- **Purpose**: Test all proxies in registry sequentially with live progress feedback
+
+### Feature B: Relay Repair (Upstream Branch)
+
+- **State added**: `repairingId`, `repairErrorById`, `relayTested`, `relayAlive`
+- **Function added**: `handleRepairRelay()`
+- **Prop added**: `onRedeployRelay` callback
+- **Purpose**: Repair individual relay connections with test and redeploy flow
+
+### Conflicts Resolved:
+
+1. **Imports** — merged both `PoolStrategy` + `ProxyItem` imports
+2. **Props interface** — added `onRedeployRelay` to component props
+3. **State declarations** — combined both feature's state variables
+4. **Line 349 marker** — removed incomplete conflict marker
+
+**Result**: Both features coexist in `ProxyRegistryManager.tsx` without interference. The "Check All" button handles registry-wide proxy testing, while the relay repair handles individual connection troubleshooting.
+
+**Test Status**: All 37 unit tests in `tests/unit/proxy-registry-manager.test.ts` passing.

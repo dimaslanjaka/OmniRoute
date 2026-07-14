@@ -3,6 +3,7 @@ import { z } from "zod";
 import { isAuthenticated } from "@/shared/utils/apiAuth";
 import { getNotionConfig, setNotionToken, clearNotionToken } from "@/lib/db/notion";
 import { createNotionClient } from "@/lib/notion/api";
+import { sanitizeErrorMessage } from "@omniroute/open-sse/utils/error";
 
 const setTokenSchema = z
   .object({
@@ -22,7 +23,7 @@ export async function GET(request: NextRequest) {
       hasToken: config.token !== null,
     });
   } catch (error) {
-    return NextResponse.json({ error: String(error) }, { status: 500 });
+    return NextResponse.json({ error: sanitizeErrorMessage(error) }, { status: 500 });
   }
 }
 
@@ -71,7 +72,10 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     clearNotionToken();
     const msg = error instanceof Error ? error.message : String(error);
-    return NextResponse.json({ error: msg, connected: false }, { status: 400 });
+    return NextResponse.json(
+      { error: sanitizeErrorMessage(msg), connected: false },
+      { status: 400 }
+    );
   }
 }
 
@@ -87,6 +91,6 @@ export async function DELETE(request: NextRequest) {
       message: "Notion integration disconnected",
     });
   } catch (error) {
-    return NextResponse.json({ error: String(error) }, { status: 500 });
+    return NextResponse.json({ error: sanitizeErrorMessage(error) }, { status: 500 });
   }
 }

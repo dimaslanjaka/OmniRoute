@@ -30,7 +30,7 @@ const CLAUDE_CLI_PROFILE: ClientIdentityProfile = Object.freeze({
   id: "claude-cli",
   label: "Claude CLI",
   headers: Object.freeze({
-    "User-Agent": "claude-cli/2.1.195 (external, cli)",
+    "User-Agent": "claude-cli/2.1.207 (external, cli)",
     "X-App": "cli",
   }),
 });
@@ -39,7 +39,7 @@ const CODEX_CLI_PROFILE: ClientIdentityProfile = Object.freeze({
   id: "codex-cli",
   label: "Codex CLI",
   headers: Object.freeze({
-    "User-Agent": "codex_cli_rs/0.136.0",
+    "User-Agent": "codex_cli_rs/0.144.1",
     originator: "codex_cli_rs",
   }),
 });

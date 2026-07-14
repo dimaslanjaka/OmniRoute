@@ -97,7 +97,7 @@ export function PlaygroundInput({
           checked={riskGate}
           onChange={onToggleRisk}
         />
-        Proteger conteúdo sensível (risk-gate)
+        Protect sensitive content (risk-gate)
       </label>
       <label className="flex items-center gap-1 text-xs">
         <input

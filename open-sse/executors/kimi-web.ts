@@ -264,7 +264,7 @@ export class KimiWebExecutor extends BaseExecutor {
     }
 
     const messages = (bodyObj.messages as Array<{ role: string; content: unknown }>) || [];
-    const modelId = (bodyObj.model as string) || "kimi-default";
+    const modelId = (bodyObj.model as string) || "k2d6";
     // Resolve scenario + default thinking flag from the model id (catalog truth),
     // then honour an explicit `reasoning_effort: "none"` override from the caller.
     const modelConfig = resolveModelConfig(modelId);

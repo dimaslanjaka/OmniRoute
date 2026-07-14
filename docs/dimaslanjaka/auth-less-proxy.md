@@ -221,3 +221,79 @@ my-proxy|192.168.1.1|8080|user|pass|http|US|active|testing
 ```
 
 All four should parse without errors.
+
+---
+
+## Merge Conflict Resolution (2026-07-14)
+
+During a merge from upstream, `parseBulkProxyImport.ts` and `proxy-registry-manager.test.ts` had conflicts that required resolution:
+
+### parseBulkProxyImport.ts Changes
+
+**Critical Bug Fixes**:
+
+1. **Line 296** — Fixed `.has()` method call on `Record<string, true>` type. Changed from:
+
+   ```typescript
+   if (!VALID_PROXY_TYPES.has(normalizedScheme))
+   ```
+
+   to:
+
+   ```typescript
+   if (!VALID_PROXY_TYPES[normalizedScheme])
+   ```
+
+2. **Error clearing logic** — Added tracking to prevent fallback from clearing valid errors:
+
+   ```typescript
+   const errorsBeforeShorthand = errors.length;
+   // ... parseShorthandLine ...
+   if (patterns.length > 0) {
+     errors.length = errorsBeforeShorthand; // Only clear if fallback succeeds
+   }
+   ```
+
+3. **Entry naming** — Fixed entry name format from `"Imported host:port"` to `"scheme://host:port"` for consistency.
+
+4. **Noisy-line detection** — Added `/\s|[^\w:@.\-/]/` pattern to distinguish noisy input (with metadata) from clean formats:
+
+   ```typescript
+   const isNoisyLine = /\s|[^\w:@.\-/]/.test(raw);
+   if (parseResult === false && isNoisyLine) {
+     // Apply regex fallback only for noisy lines
+   }
+   ```
+
+5. **socks4→socks5 mapping** — Added regex pattern `/^(https?|socks[45]):\/\/(.+)$/i` and automatic socks4→socks5 conversion.
+
+6. **Error message semantics** — Refined final fallthrough logic:
+   ```typescript
+   if (working.includes(".")) {
+     // Structured host (FQDN/IP) → invalid port
+     errors.push({ line: lineNum, reason: "bulkImportErrorInvalidPort" });
+   } else {
+     // Bare text → missing host
+     errors.push({ line: lineNum, reason: "bulkImportErrorMissingHost" });
+   }
+   ```
+
+### proxy-registry-manager.test.ts Changes
+
+**Merged both conflict sections** (HEAD + UPSTREAM):
+
+- HEAD: URL-prefixed auth tests, port validation tests
+- UPSTREAM: 4-part shorthand tests, protocol header tests
+
+**Updated test expectations**:
+
+1. **Line 91-96** — "URL-prefixed socks4 maps to socks5 type" tests socks4→socks5 mapping
+2. **Line 104-112** — Changed from rejection test to acceptance: `user:pass@127.0.0.1:8080` now valid with `socks5` default type
+3. **Line 127** — Updated expected type from `http` to `socks5` for shorthand entries
+4. **Line 435-439** — "bare text with no colons or pipes produces error" expects `bulkImportErrorMissingHost` for `"justtext"`
+
+**Test Result**: All 37 tests passing (0 failures).
+
+### ProxyRegistryManager.tsx Merge
+
+See [refactor-proxy-check-all-buttons.md](./refactor-proxy-check-all-buttons.md#merge-conflict-resolution-2026-07-14) for details on the 4 conflicts resolved in the component file.

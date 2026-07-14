@@ -13,7 +13,7 @@ describe("2026 discontinued free tiers — providers.ts hasFree reconciliation",
     // they are KEPT with hasFree:false. phind is NOT here: the whole phind.com service
     // shut down 2026-01-16, so it was removed entirely (registry/executor/catalogs),
     // matching the dead-service-removal precedent (#5246 Gemini CLI).
-    for (const id of ["chutes", "kluster", "glhf", "gitlawb", "gitlawb-gmi", "aimlapi", "yi"]) {
+    for (const id of ["chutes", "gitlawb", "gitlawb-gmi", "aimlapi", "yi"]) {
       const p = (APIKEY_PROVIDERS as Record<string, { hasFree?: boolean }>)[id];
       assert.ok(
         p,

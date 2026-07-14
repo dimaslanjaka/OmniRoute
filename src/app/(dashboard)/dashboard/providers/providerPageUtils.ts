@@ -72,6 +72,8 @@ export function shouldShowFirstProviderHint(
 
 type ProviderRecord<TProvider = Record<string, unknown>> = Record<string, TProvider>;
 
+const OAUTH_CARD_API_KEY_CONNECTION_PROVIDER_IDS = new Set(["kiro", "amazon-q"]);
+
 /**
  * Whether a provider connection should be counted on a provider card rendered in
  * the given section. Dual-auth providers (qoder, opencode, codebuddy-cn, …) are
@@ -86,8 +88,11 @@ export function connectionMatchesProviderCard(
 ): boolean {
   if (!conn || conn.provider !== providerId) return false;
   if (cardAuthType === "free") return true;
-  if (supportsApiKeyOnFreeProvider(providerId)) {
-    return conn.authType === "oauth" || conn.authType === "apikey";
+  if (
+    supportsApiKeyOnFreeProvider(providerId) ||
+    OAUTH_CARD_API_KEY_CONNECTION_PROVIDER_IDS.has(providerId)
+  ) {
+    return conn.authType === "oauth" || conn.authType === "apikey" || conn.authType === "api_key";
   }
   return conn.authType === cardAuthType;
 }

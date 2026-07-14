@@ -251,3 +251,11 @@ mise.toml
 _artifacts/
 .opencode/memory/
 *.lnk
+.ai/
+
+# ESLint file cache (npm run lint --cache / complexity ratchets)
+.eslintcache-complexity
+
+# CI/local quality artifacts (eslint-results.json, etc.)
+.artifacts/
+.claude-flow/

@@ -205,9 +205,9 @@ export function CompareView({ text }: CompareViewProps) {
           <tr className="text-left opacity-60">
             <th>Engine</th>
             <th>Savings</th>
-            <th>Retenção</th>
+            <th>Retention</th>
             <th>Out tok</th>
-            <th>Fidelidade</th>
+            <th>Fidelity</th>
           </tr>
         </thead>
         <tbody>

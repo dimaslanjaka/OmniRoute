@@ -1,12 +1,21 @@
 /**
  * Pure parser for the proxy bulk-import textarea.
  *
- * Supported formats (extracted from noisy textarea data):
- *   1. Pipe-delimited:       NAME|HOST|PORT[|USERNAME|PASSWORD|TYPE|REGION|STATUS|NOTES]
- *   2. URL-prefixed:         [socks5://][http://][https://][user:pass@]HOST:PORT
- *   3. Auth-less short:      HOST:PORT → name auto-generated as "Imported HOST:PORT"
- *   4. Credentials in URL:   user:pass@HOST:PORT (extracted from noisy lines)
- *   5. Protocol-only short:  socks5://HOST:PORT (extracted with regex)
+ * Supported line formats (one proxy per line):
+ *   1. Pipe-delimited:  NAME|HOST|PORT[|USERNAME|PASSWORD|TYPE|REGION|STATUS|NOTES]
+ *   2. Shorthand formats (no pipe character):
+ *        a. ip:port
+ *        b. ip:port:user:pass
+ *        c. user:pass@ip:port
+ *        d. user:pass:ip:port
+ *        e. protocol://ip:port
+ *        f. protocol://user:pass@ip:port
+ *
+ * Protocol header mode:
+ *   If a line contains only a bare protocol name (http, https, socks5),
+ *   it sets the default type for all subsequent shorthand lines that
+ *   don't include an explicit protocol:// prefix. The per-line prefix
+ *   always takes precedence over the header default.
  *
  * Regex extraction mode (when input contains extra metadata):
  *   - Finds all [user:pass@]host:port patterns in each line
@@ -37,8 +46,167 @@ export type ParseError = {
   reason: string;
 };
 
-export const VALID_PROXY_TYPES = new Set(["http", "https", "socks5", "socks4"]);
-export const VALID_PROXY_STATUSES = new Set(["active", "inactive"]);
+export const VALID_PROXY_TYPES: Record<string, true> = { http: true, https: true, socks5: true };
+export const VALID_PROXY_STATUSES: Record<string, true> = { active: true, inactive: true };
+
+/**
+ * True if a string looks like an IPv4 address or a DNS hostname.
+ */
+function looksLikeHost(s: string): boolean {
+  if (!s) return false;
+  // IPv4: four dot-separated octets, each 0–255
+  const ipParts = s.split(".");
+  if (
+    ipParts.length === 4 &&
+    ipParts.every((o) => /^\d+$/.test(o) && Number(o) >= 0 && Number(o) <= 255)
+  ) {
+    return true;
+  }
+  // Hostname: alphanumeric + dots/hyphens, at least one char
+  return /^[a-zA-Z0-9]([a-zA-Z0-9.-]*[a-zA-Z0-9])?$/.test(s);
+}
+
+/**
+ * Validate and push an entry from parsed shorthand components.
+ * Returns true if an entry was pushed, false if an error was pushed.
+ */
+function pushShorthandEntry(
+  entries: ParsedProxyEntry[],
+  errors: ParseError[],
+  lineNum: number,
+  host: string,
+  portStr: string,
+  username: string,
+  password: string,
+  type: string
+): boolean {
+  if (!host) {
+    errors.push({ line: lineNum, reason: "bulkImportErrorMissingHost" });
+    return false;
+  }
+  const port = Number(portStr);
+  if (!portStr || isNaN(port) || port < 1 || port > 65535) {
+    errors.push({ line: lineNum, reason: "bulkImportErrorInvalidPort" });
+    return false;
+  }
+  const normalizedType = type.toLowerCase();
+  if (!VALID_PROXY_TYPES[normalizedType]) {
+    errors.push({ line: lineNum, reason: "bulkImportErrorInvalidType" });
+    return false;
+  }
+  entries.push({
+    name: `Imported ${host}:${portStr}`,
+    host,
+    port,
+    username,
+    password,
+    type: normalizedType,
+    region: "",
+    status: "active",
+    notes: "",
+  });
+  return true;
+}
+
+/**
+ * Parse a shorthand (non-pipe) proxy line.
+ *
+ * Recognized formats:
+ *   protocol://user:pass@host:port
+ *   protocol://host:port
+ *   user:pass@host:port
+ *   host:port:user:pass
+ *   user:pass:host:port
+ *   host:port
+ */
+function parseShorthandLine(
+  raw: string,
+  lineNum: number,
+  defaultType: string,
+  entries: ParsedProxyEntry[],
+  errors: ParseError[]
+): boolean {
+  let type = defaultType;
+  let working = raw;
+
+  // Check for protocol:// prefix
+  const protocolMatch = working.match(/^(https?|socks[45]):\/\/(.+)$/i);
+  if (protocolMatch) {
+    type = protocolMatch[1].toLowerCase();
+    if (type === "socks4") type = "socks5"; // map socks4 to socks5
+    working = protocolMatch[2];
+  }
+
+  // Check for user:pass@host:port format (after protocol stripped)
+  const atIdx = working.indexOf("@");
+  if (atIdx > 0) {
+    const authPart = working.slice(0, atIdx);
+    const hostPart = working.slice(atIdx + 1);
+    const credColon = authPart.indexOf(":");
+    let username = "";
+    let password = "";
+    if (credColon > 0) {
+      username = authPart.slice(0, credColon).trim();
+      password = authPart.slice(credColon + 1).trim();
+    } else {
+      username = authPart.trim();
+    }
+    // hostPart is now host:port
+    const colonIdx = hostPart.lastIndexOf(":");
+    if (colonIdx > 0) {
+      const host = hostPart.slice(0, colonIdx).trim();
+      const portStr = hostPart.slice(colonIdx + 1).trim();
+      return pushShorthandEntry(entries, errors, lineNum, host, portStr, username, password, type);
+    }
+    errors.push({ line: lineNum, reason: "bulkImportErrorInvalidPort" });
+    return false;
+  }
+
+  // No @ — split by colon to determine which colon-delimited format
+  const colonParts = working.split(":").map((p) => p.trim());
+
+  if (colonParts.length === 2) {
+    // host:port
+    const [host, portStr] = colonParts;
+    return pushShorthandEntry(entries, errors, lineNum, host, portStr, "", "", type);
+  }
+
+  if (colonParts.length === 4) {
+    // Two possibilities: ip:port:user:pass OR user:pass:ip:port
+    // Require the "host" slot to look like an IP/hostname AND the "port" slot to be a valid port.
+    const isPort1 =
+      /^\d+$/.test(colonParts[1]) && Number(colonParts[1]) >= 1 && Number(colonParts[1]) <= 65535;
+    const isPort3 =
+      /^\d+$/.test(colonParts[3]) && Number(colonParts[3]) >= 1 && Number(colonParts[3]) <= 65535;
+    const hostLooksLikePart0 = looksLikeHost(colonParts[0]);
+    const hostLooksLikePart2 = looksLikeHost(colonParts[2]);
+
+    if (hostLooksLikePart0 && isPort1) {
+      // ip:port:user:pass
+      const [host, portStr, username, password] = colonParts;
+      return pushShorthandEntry(entries, errors, lineNum, host, portStr, username, password, type);
+    }
+    if (hostLooksLikePart2 && isPort3) {
+      // user:pass:ip:port
+      const [username, password, host, portStr] = colonParts;
+      return pushShorthandEntry(entries, errors, lineNum, host, portStr, username, password, type);
+    }
+    // Can't determine format
+    errors.push({ line: lineNum, reason: "bulkImportErrorInvalidPort" });
+    return false;
+  }
+
+  // No @ and not 2 or 4 colon parts, so it's either host-only or just bare text
+  // Check if it looks like a structured host input (has dots, suggesting FQDN or IP)
+  if (working.includes(".")) {
+    // Looks like a host (FQDN or IP), but no port found
+    errors.push({ line: lineNum, reason: "bulkImportErrorInvalidPort" });
+  } else {
+    // Single word with no dots - too bare to be a valid proxy specification
+    errors.push({ line: lineNum, reason: "bulkImportErrorMissingHost" });
+  }
+  return false;
+}
 
 /**
  * Extract proxy patterns from a string (handles noisy data with metadata).
@@ -136,7 +304,7 @@ function parseProxyPattern(pattern: string): {
   // Normalize scheme
   const normalizedScheme = scheme === "socks4" ? "socks5" : scheme === "socks5" ? "socks5" : scheme;
 
-  if (!VALID_PROXY_TYPES.has(normalizedScheme)) {
+  if (!VALID_PROXY_TYPES[normalizedScheme]) {
     return null;
   }
 
@@ -152,6 +320,7 @@ export function parseBulkImportText(text: string): {
   const entries: ParsedProxyEntry[] = [];
   const errors: ParseError[] = [];
   let skipped = 0;
+  let defaultType = "socks5";
 
   for (let i = 0; i < lines.length; i++) {
     const raw = lines[i].trim();
@@ -162,9 +331,15 @@ export function parseBulkImportText(text: string): {
 
     const lineNum = i + 1;
 
-    // Check if this is pipe-delimited format (contains |)
+    // Protocol header: a bare protocol name sets the default for subsequent shorthand lines
+    const lower = raw.toLowerCase();
+    if (VALID_PROXY_TYPES[lower]) {
+      defaultType = lower;
+      continue;
+    }
+
+    // Pipe-delimited format: NAME|HOST|PORT[|USERNAME|PASSWORD|TYPE|REGION|STATUS|NOTES]
     if (raw.includes("|")) {
-      // Full pipe-delimited format: NAME|HOST|PORT[|USERNAME|PASSWORD|TYPE|REGION|STATUS|NOTES]
       const parts = raw.split("|").map((p) => p.trim());
       const [name, host, portStr, username, password, type, region, status, notes] = parts;
 
@@ -176,21 +351,19 @@ export function parseBulkImportText(text: string): {
         errors.push({ line: lineNum, reason: "bulkImportErrorMissingHost" });
         continue;
       }
-
       const port = Number(portStr);
       if (!portStr || isNaN(port) || port < 1 || port > 65535) {
         errors.push({ line: lineNum, reason: "bulkImportErrorInvalidPort" });
         continue;
       }
 
-      const normalizedType = (type || "http").toLowerCase();
-      if (!VALID_PROXY_TYPES.has(normalizedType)) {
+      const normalizedType = (type || "socks5").toLowerCase();
+      if (!VALID_PROXY_TYPES[normalizedType]) {
         errors.push({ line: lineNum, reason: "bulkImportErrorInvalidType" });
         continue;
       }
-
       const normalizedStatus = (status || "active").toLowerCase();
-      if (!VALID_PROXY_STATUSES.has(normalizedStatus)) {
+      if (!VALID_PROXY_STATUSES[normalizedStatus]) {
         errors.push({ line: lineNum, reason: "bulkImportErrorInvalidStatus" });
         continue;
       }
@@ -209,36 +382,46 @@ export function parseBulkImportText(text: string): {
       continue;
     }
 
-    // For non-pipe-delimited lines, use regex extraction to find proxy patterns
-    const patterns = extractProxyPatterns(raw);
-
-    if (patterns.length === 0) {
-      // No patterns found in this line - could be completely malformed
-      errors.push({ line: lineNum, reason: "bulkImportErrorMissingHost" });
-      continue;
-    }
-
-    // Parse each extracted pattern
-    for (const pattern of patterns) {
-      const parsed = parseProxyPattern(pattern);
-      if (!parsed) {
-        errors.push({ line: lineNum, reason: "bulkImportErrorInvalidPort" });
-        continue;
+    // Shorthand formats (no pipe character)
+    // First try clean shorthand (host:port, user:pass@host:port, etc.)
+    const errorsBeforeShorthand = errors.length;
+    const parsed = parseShorthandLine(raw, lineNum, defaultType, entries, errors);
+    if (!parsed) {
+      // Only try regex extraction for noisy lines (with spaces or extra metadata)
+      // If the line is clean format but failed validation, keep the original error
+      const isNoisyLine = /\s|[^\w:@.\-/]/.test(raw);
+      if (isNoisyLine) {
+        // Fall back to regex extraction for noisy lines with extra metadata
+        // Discard any errors added by parseShorthandLine since regex extraction is the fallback
+        errors.length = errorsBeforeShorthand;
+        const patterns = extractProxyPatterns(raw);
+        let foundValid = false;
+        for (const pattern of patterns) {
+          const components = parseProxyPattern(pattern);
+          if (components) {
+            foundValid = true;
+            entries.push({
+              name: `${components.scheme}://${components.host}:${components.port}`,
+              host: components.host,
+              port: components.port,
+              username: components.username,
+              password: components.password,
+              type: components.scheme,
+              region: "",
+              status: "active",
+              notes: "",
+            });
+          }
+        }
+        if (!foundValid) {
+          if (patterns.length === 0) {
+            errors.push({ line: lineNum, reason: "bulkImportErrorMissingHost" });
+          } else {
+            errors.push({ line: lineNum, reason: "bulkImportErrorInvalidPort" });
+          }
+        }
       }
-
-      const { scheme, username, password, host, port } = parsed;
-
-      entries.push({
-        name: `${scheme}://${host}:${port}`,
-        host,
-        port,
-        username,
-        password,
-        type: scheme,
-        region: "",
-        status: "active",
-        notes: "",
-      });
+      // else: keep the original error from parseShorthandLine
     }
   }
 

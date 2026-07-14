@@ -1,5 +1,9 @@
 import { handleSearch } from "@omniroute/open-sse/handlers/search.ts";
-import { getProviderCredentials, extractApiKey, isValidApiKey } from "@/sse/services/auth";
+import {
+  getProviderCredentialsWithQuotaPreflight,
+  extractApiKey,
+  isValidApiKey,
+} from "@/sse/services/auth";
 import {
   getAllSearchProviders,
   getSearchProvider,
@@ -64,13 +68,15 @@ type SearchCredentials = Record<string, any>;
 type SearchCredentialLookup = SearchCredentials | RateLimitedCredentials | null;
 
 async function resolveSearchCredentials(providerId: string): Promise<SearchCredentialLookup> {
-  const credentials = await getProviderCredentials(providerId).catch(() => null);
+  const credentials = await getProviderCredentialsWithQuotaPreflight(providerId).catch(() => null);
   if (credentials && !isAllRateLimitedCredentials(credentials)) return credentials;
 
   const fallbackId = SEARCH_CREDENTIAL_FALLBACKS[providerId];
   if (!fallbackId) return credentials;
 
-  const fallbackCredentials = await getProviderCredentials(fallbackId).catch(() => null);
+  const fallbackCredentials = await getProviderCredentialsWithQuotaPreflight(fallbackId).catch(
+    () => null
+  );
   if (fallbackCredentials && !isAllRateLimitedCredentials(fallbackCredentials)) {
     return fallbackCredentials;
   }
