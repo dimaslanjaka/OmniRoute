@@ -35,23 +35,35 @@ echo [npm] Latest version: !REMOTE_VERSION!
 
 REM --- Check cache ---
 set "NEED_SETUP=1"
-if exist "%VERSION_FILE%" (
-    set /p LOCAL_VERSION=<"%VERSION_FILE%"
+set "LOCAL_VERSION="
+set "STORED_FLAVOR="
+
+if exist "!VERSION_FILE!" (
+    for /f "usebackq delims=" %%a in ("!VERSION_FILE!") do set "LOCAL_VERSION=%%a"
     if "!LOCAL_VERSION!"=="!REMOTE_VERSION!" (
         if exist "!PKG_DIR!\package.json" (
             echo [npm] Cached version valid, skipping setup.
             set "NEED_SETUP=0"
+        ) else (
+            echo [npm] Cache incomplete, re-setup required.
         )
+    ) else (
+        echo [npm] Version changed (!LOCAL_VERSION! ^> !REMOTE_VERSION!)
     )
+) else (
+    echo [npm] No version file found
 )
 
 REM --- Check flavor ---
 if exist "!FLAVOR_FILE!" (
-    set /p STORED_FLAVOR=<"!FLAVOR_FILE!"
+    for /f "usebackq delims=" %%b in ("!FLAVOR_FILE!") do set "STORED_FLAVOR=%%b"
     if not "!STORED_FLAVOR!"=="!FLAVOR!" (
         echo [npm] Flavor changed from !STORED_FLAVOR! to !FLAVOR!, forcing rebuild.
         set "NEED_SETUP=1"
     )
+) else (
+    echo [npm] No flavor file found, forcing rebuild.
+    set "NEED_SETUP=1"
 )
 
 if "!NEED_SETUP!"=="1" (
@@ -97,8 +109,10 @@ if "!NEED_SETUP!"=="1" (
 
     popd
 
-    echo !FLAVOR!>"%FLAVOR_FILE%"
-    echo !REMOTE_VERSION!>"%VERSION_FILE%"
+    <nul set /p "=!FLAVOR!" > "!FLAVOR_FILE!"
+    echo.>> "!FLAVOR_FILE!"
+    <nul set /p "=!REMOTE_VERSION!" > "!VERSION_FILE!"
+    echo.>> "!VERSION_FILE!"
     echo [npm] Setup complete.
 )
 

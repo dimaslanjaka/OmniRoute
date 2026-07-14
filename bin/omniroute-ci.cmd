@@ -47,12 +47,16 @@ if exist "%TARBALL%" if exist "%CHECKSUM_FILE%" if exist "%PKG_DIR%\package.json
 )
 
 REM --- Check flavor ---
+set "STORED_FLAVOR="
 if exist "!FLAVOR_FILE!" (
-    set /p STORED_FLAVOR=<"!FLAVOR_FILE!"
+    for /f "usebackq delims=" %%b in ("!FLAVOR_FILE!") do set "STORED_FLAVOR=%%b"
     if not "!STORED_FLAVOR!"=="!FLAVOR!" (
         echo [npm] Flavor changed from !STORED_FLAVOR! to !FLAVOR!, forcing rebuild.
         set "NEED_SETUP=1"
     )
+) else (
+    echo [npm] No flavor file found, forcing rebuild.
+    set "NEED_SETUP=1"
 )
 
 if "!NEED_SETUP!"=="1" (
@@ -110,7 +114,8 @@ if "!NEED_SETUP!"=="1" (
 
     popd
 
-    echo !FLAVOR!>"%FLAVOR_FILE%"
+    <nul set /p "=!FLAVOR!" > "!FLAVOR_FILE!"
+    echo.>> "!FLAVOR_FILE!"
     echo [npm] setup complete
 )
 
