@@ -31,7 +31,7 @@ set "OMNIROUTE_USE_TURBOPACK=1"
 
 echo [%date% %time%] Starting OmniRoute build ...
 
-powershell -NoProfile -Command "node --heap-prof --max-old-space-size=%MEMORY_MB% scripts/build/build-next-isolated.mjs 2>&1 | Tee-Object -FilePath build.log"
+powershell -NoProfile -Command "node --max-old-space-size=%MEMORY_MB% scripts/build/build-next-isolated.mjs 2>&1 | Tee-Object -FilePath build.log"
 set "EXIT_CODE=!ERRORLEVEL!"
 
 if !EXIT_CODE! equ 0 (

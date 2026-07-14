@@ -18,8 +18,6 @@ set "NEXT_PRIVATE_BUILD_WORKER=2"
 REM 0/1 to use Webpack instead of Turbopack
 set "OMNIROUTE_USE_TURBOPACK=1"
 
-set "NEXT_PUBLIC_ENABLED_PROVIDERS=gemini,gemini-cli,codex,kiro,opencode,mimocode,ollama-cloud,nvidia,antigravity,openai-compatible-*"
-
 echo [%date% %time%] Starting OmniRoute dev server...
 
 powershell -NoProfile -Command "node --max-old-space-size=%MEMORY_MB% scripts\dev\run-next.mjs dev 2>&1 | Tee-Object -FilePath run.log"
