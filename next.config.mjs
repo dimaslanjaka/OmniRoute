@@ -141,9 +141,19 @@ const nextConfig = {
     // Force Next.js to use a specific number of CPU cores/workers
     cpus: !isInCI ? 1 : 4,
     // Max pages processed per worker at once
-    staticGenerationMaxConcurrency: !isInCI ? 1 : 10,
+    staticGenerationMaxConcurrency:
+      typeof process.env.NEXT_PRIVATE_BUILD_WORKER !== "undefined"
+        ? parseInt(process.env.NEXT_PRIVATE_BUILD_WORKER)
+        : !isInCI
+          ? 1
+          : 10,
     // Minimum pages needed to spawn a new worker
-    staticGenerationMinPagesPerWorker: !isInCI ? 1 : 25,
+    staticGenerationMinPagesPerWorker:
+      typeof process.env.NEXT_PRIVATE_BUILD_WORKER !== "undefined"
+        ? parseInt(process.env.NEXT_PRIVATE_BUILD_WORKER)
+        : !isInCI
+          ? 1
+          : 25,
     // Set to false to disable separate webpack compilation workers
     webpackBuildWorker: !isInCI ? false : true,
     serverActions: {
